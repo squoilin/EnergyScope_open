@@ -1,0 +1,187 @@
+site_name: "Energyscope"
+watch: [ mkdocs.yml, README.md, src/energyscope ]
+
+nav:
+  - Home:
+      - Home: index.md
+      - introduction/getting-started.md
+  - Tutorials:
+      - Tutorials: tutorials/index.md
+      - tutorials/basic-run.ipynb
+      - tutorials/choose-datasets.ipynb
+      - tutorials/multiple-runs.ipynb
+      - tutorials/uncertainty-analysis.ipynb
+      - tutorials/add_technology.ipynb
+  #- How-To Guides: 
+  #  - how-to/index.md
+  #  - how-to/add_technology.ipynb
+  - API Reference: reference/
+  - Explanation:
+      - explanation/index.md
+      - explanation/introduction.md
+      - explanation/conceptual_foundations.md
+      - Model Formulation:
+          - explanation/model_formulation/index.md
+          - explanation/model_formulation/mathematical_framework.md
+          - Modules:
+              - explanation/model_formulation/modules/index.md
+              - explanation/model_formulation/modules/module_td.md
+              - explanation/model_formulation/modules/module_mob.md
+              - explanation/model_formulation/modules/module_infra.md
+              - explanation/model_formulation/modules/module_co2.md
+              - explanation/model_formulation/modules/module_lca.md
+      - explanation/contribution.md
+  - Technologies: technologies/
+
+theme:
+  name: material
+  logo: assets/ES_logo.png
+  favicon: assets/ES_logo.png
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    - content.tooltips
+    - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.prune
+    #- navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - toc.follow
+
+  palette:
+    
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: custom
+      accent: pink
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - admonition
+  - callouts
+  - def_list
+  - footnotes
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      pygments_lang_class: true
+  - pymdownx.inlinehilite:
+      style_plain_text: python
+  - pymdownx.magiclink
+  - pymdownx.snippets:
+      base_path: [ !relative $config_dir ]
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: plotly
+          class: mkdocs-plotly
+          format: !!python/name:mkdocs_plotly_plugin.fences.fence_plotly
+        - name: python
+          class: python
+          validator: !!python/name:markdown_exec.validator
+          format: !!python/name:markdown_exec.formatter
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - toc:
+      permalink: "¤"
+      toc_depth: 2
+
+
+plugins:
+  - search
+  - autorefs
+  - open-in-new-tab
+  - include-markdown
+  - link-marker
+  - markdown-exec
+  - glightbox
+  - mike
+  - mkdocs-jupyter:
+      execute: false
+      # include_requirejs: true
+      include_source: True
+      # no_input: True
+      # show_input: False 
+  - plotly
+  - gen-files:
+      scripts:
+        - scripts/gen_ref_nav.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ energyscope ]
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://pandas.pydata.org/docs/objects.inv
+          options:
+            docstring_options:
+              ignore_init_summary: true
+            docstring_section_style: list
+            filters: [ "!^_" ]
+            heading_level: 1
+            inherited_members: true
+            merge_init_into_class: true
+            parameter_headings: true
+            separate_signature: true
+            allow_inspection: false
+            show_if_no_docstring: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            signature_crossrefs: true
+            summary: true
+
+extra_javascript:
+  - js/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+extra:
+  version:
+    provider: mike
+    alias: true
+
+repo_url: https://gitlab.com/energyscope/energyscope
+site_url: https://library.energyscope.ch
+
+extra_css:
+  - css/extra.css
+#  - css/webkit.css

@@ -1,0 +1,57 @@
+variables:
+  SSH_PRIVATE_KEY: SECURE
+  SSH_HOST_KEY: SECURE
+  SSH_USER_HOST_LOCATION: SECURE
+
+image: ipeseserv3.epfl.ch:88/hatch:latest
+
+stages:
+  - test
+  - deploy
+
+test_docs:
+  stage: test
+  script:
+    - hatch run docs:build
+  artifacts:
+    paths:
+      - site
+
+deploy_pypi:
+  stage: deploy
+  dependencies: []
+  script:
+    - hatch build
+    - hatch publish
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+  except:
+    - branches
+
+deploy_version:
+  stage: deploy
+  variables:
+    MIKE_VERSION: $CI_COMMIT_TAG
+  dependencies: []
+  before_script:
+    - git branch -D docs || true
+    - git fetch origin docs:docs
+  script:
+    - hatch run docs:deploy_version
+    - git push $CI_REPOSITORY docs:docs
+  only:
+    - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
+  except:
+    - branches
+
+deploy_main:
+  stage: deploy
+  dependencies: []
+  before_script:
+    - git branch -D docs || true
+    - git fetch origin docs:docs
+  script:
+    - hatch run docs:deploy_main
+    - git push $CI_REPOSITORY docs:docs
+  only:
+    - main

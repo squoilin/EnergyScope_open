@@ -1,0 +1,27 @@
+### Technology: Newtech
+let INFRASTRUCTURE := INFRASTRUCTURE union {'Newtech'};
+let layers_in_out['Newtech','ELECTRICITY_MV'] := 0.5; #
+let layers_in_out['Newtech','HEAT_LOW_T_DHN'] := 1; #
+let layers_in_out['Newtech','WOOD'] := -1; #
+let ref_size['Newtech'] := 0.00018 ; # [GW]
+let c_inv['Newtech'] := 0.01 ; #
+let c_maint['Newtech'] := 40 ; # [MCHF/GW/year]
+let gwp_constr['Newtech'] := 3900 ; # ktCO2-eq./GW
+let lifetime['Newtech'] := 30 ; # year
+let c_p['Newtech'] := 1 ; # -
+let fmin_perc['Newtech'] := 0 ; #
+let fmax_perc['Newtech'] := 1 ; #
+let f_min['Newtech'] := 0 ; # [GW]
+let f_max['Newtech'] := 20 ; # [GW]
+let c_p_t['Newtech',1] := 0.0848 ; #
+let c_p_t['Newtech',2] := 0.1504 ; #
+let c_p_t['Newtech',3] := 0.192 ; #
+let c_p_t['Newtech',4] := 0.2448 ; #
+let c_p_t['Newtech',5] := 0.2496 ; #
+let c_p_t['Newtech',6] := 0.2512 ; #
+let c_p_t['Newtech',7] := 0.2624 ; #
+let c_p_t['Newtech',8] := 0.2496 ; #
+let c_p_t['Newtech',9] := 0.2048 ; #
+let c_p_t['Newtech',10] := 0.1408 ; #
+let c_p_t['Newtech',11] := 0.0832 ; #
+let c_p_t['Newtech',12] := 0.0576 ; #

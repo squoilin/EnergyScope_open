@@ -1,0 +1,417 @@
+/* Set Light Mode Colors */
+:root {
+    --background-color: hsl(0, 37%, 60%);
+    --link-color: hsl(0, 100%, 40%);
+    --text-color: hsl(0, 0%, 20%);
+    --text-color-light: hsl(0, 0%, 87%);
+    --text-color-medium: hsl(0, 0%, 33.3%);
+    --text-color-heading: hsl(0, 0%, 26.7%);
+    --text-color-coolgray: hsl(0, 2%, 57%);
+    --inverse-text-color: hsl(0, 0%, 100%);
+    --inverse-link-color: hsl(0, 100%, 70%);
+
+    --content-background-color: hsl(0, 0%, 96.9%);
+    --horizontal-rule-color: hsl(0, 0%, 86.7%);
+
+    --code-background-color: hsl(0, 0%, 94.9%);
+    --code-border-color: hsl(0, 0%, 90.6%);
+    --code-text-color: hsl(0, 0%, 26.7%);
+
+    --note-background-color: hsl(0, 100%, 94%);
+    --note-border-color: hsl(0, 100%, 90%);
+    --note-text-color: hsl(0, 90%, 35%);
+
+    --foreword-background-color: hsl(0, 0%, 94.1%);
+    --foreword-border-color: hsl(0, 0%, 90.2%);
+    --foreword-text-color: hsl(0, 2%, 57%);
+
+    --input-border-color: hsl(0, 0%, 83.9%);
+    --input-background-color: hsl(0, 0%, 100%);
+    --button-background-color: hsl(0, 0%, 100%);
+
+    --submit-button-background-color: hsl(0, 76%, 48%);
+    --submit-button-background-gradient: linear-gradient(hsl(199.9, 78.2%, 56.9%), hsl(0, 100%, 40%));
+    --submit-button-text-color: hsl(0, 0%, 100%);
+    
+    --search-glyph: url('images/search.svg#dark');
+    --search-glyph-light: url('images/search.svg#light');
+    --search-term-text-color: hsl(0, 0%, 0%);
+    --search-input-background: hsl(0, 100%, 100%);
+
+    --pagination-border-color: hsla(0, 0%, 0%, 0.07);
+    --pagination-button-shadow: inset hsla(0, 0%, 0%, 0.07) 0 0 0 1px;
+    --pagination-button-text-color: hsl(0, 0%, 100%);
+
+    --screen-reader-text-focus-color: hsl(0, 65%, 37%);
+    --screen-reader-text-border-color: hsla(0, 0%, 0%, 0.6);
+    --screen-reader-text-background-color: hsl(0, 0%, 94.5%);
+    --screen-reader-text-shadow: 0 0 2px 2px hsla(0, 0%, 0%, 0.6);
+
+    --next-router-background-color: hsl(0, 0%, 98%);
+    --previous-router-background-color: hsl(0, 0%, 95.7%);
+    --router-background-hover-color: hsl(0, 0%, 100%);
+    --router-text-color: hsl(0, 0%, 26.7%);
+    --router-text-color-light: hsl(0, 0%, 40%);
+
+    --tile-background-color: hsl(0, 0%, 100%);
+    --tile-border-color: hsla(0, 0%, 0%, 0.1);
+    --tile-subtle-border-shadow: inset hsla(0, 0%, 0%, 0.1) 0 0 0 1px;
+    --tile-subtle-image-border-shadow: inset hsla(0, 0%, 0%, 0.1) 0 1px 0 1px;
+
+    --tile-default-background-color: hsl(0, 8%, 42%);
+    --tile-background-color-blue: hsl(0, 100%, 40%);
+    --tile-background-color-green: hsl(79.5, 45.3%, 52%);
+    --tile-background-color-violet: hsl(0, 18%, 57%);
+    --tile-background-color-rose: hsl(357.1, 39%, 58.8%);
+    --tile-background-color-orange: hsl(37.1, 100%, 37.5%);
+    --tile-background-color-goldenrod: hsl(45.3, 56.5%, 53.1%);
+    --tile-background-color-purplesafari: hsl(276.7, 36.3%, 51.4%);
+    --tile-background-color-amber: hsl(48, 100%, 50%);
+    --tile-background-vignette: linear-gradient(-180deg, hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0.95) 80%, hsla(0, 0%, 100%, 1));
+    --tile-background-vignette-dark: linear-gradient(-180deg, hsla(0, 0%, 0%, 0) 33%, hsla(0, 0%, 0%, 0.85));
+
+    --tag-window-background-color-gray: hsl(0, 0%, 94.9%);
+    --tag-window-vignette: linear-gradient(-180deg, hsla(0, 0%, 94.9%, 0) 25%, hsla(0, 0%, 94.9%, 1) 65%);
+
+    --submenu-background-color: hsla(0, 0%, 100%, 0.95);
+    --submenu-shadow: 0px 3px 20px 0px hsla(0, 0%, 0%, 0.1);
+    --submenu-border-color: hsl(0, 0%, 90.6%);
+    --header-menu-shadow: 0px 5px 5px hsla(0, 0%, 0%, 0.1);
+    --header-menu-background-color: hsla(0, 0%, 100%, 0.8);
+
+    --tile-background-color-twitter: hsl(197.9, 70.6%, 53.3%);
+    --gray-tile-text-color: hsl(232.8, 100%, 37.5%);
+
+    --article-border-color: hsl(0, 0%, 90.6%);
+    --article-scrollable-border-color: hsl(0, 0%, 80%);
+    --figure-caption-rule-color: hsl(0, 0%, 80%);
+    --toc-border-color: hsl(0, 0%, 83.9%);
+    --table-top-rule-color: hsl(0, 0%, 73.3%);
+    --table-rule-color: hsl(0, 0%, 87.8%);
+    --figure-mattewhite-background-color: hsl(0, 0%, 100%);
+
+    --syntax-color-keyword: hsl(292.5, 100%, 26.7%);
+    --syntax-color-keyword-operator: hsl(357.5, 100%, 33.1%);
+    --syntax-color-builtin: hsl(309.6, 85.8%, 35.9%);
+    --syntax-color-keyword-type: hsl(17.6, 80.4%, 44.1%);
+    --syntax-color-preprocessor: hsl(60, 20%, 50%);
+    --syntax-color-comment: hsl(180, 6.9%, 60.4%);
+    --syntax-color-comment-doc: hsl(186.3, 8.3%, 55.1%);
+    --syntax-color-identifier: hsl(209.6, 71.4%, 38.4%);
+    --syntax-color-string: hsl(70.8, 93%, 22.4%);
+    --syntax-color-escaped: hsl(0, 0%, 66.7%);
+    --syntax-color-number: hsl(194.5, 14.1%, 40.2%);
+    --syntax-color-attribute: hsl(44.8, 53.2%, 33.5%);
+    --syntax-color-attribute-value: hsl(1.4, 79.8%, 42.7%);
+    --syntax-color-operator: hsl(0, 0%, 53.3%);
+    --syntax-color-whitespace-background-color: hsl(0, 0%, 20%);
+    --syntax-color-doctype: hsl(0, 0%, 75.3%);
+    --syntax-color-error-border: hsl(0, 100%, 50%);
+    --syntax-color-property: hsl(295.7, 76.8%, 32.2%);
+    --syntax-color-xml-comment: hsl(120, 100%, 22.7%);
+    --syntax-color-xml-meta: hsl(180, 50%, 40%);
+    --syntax-color-css-property: hsl(309.6, 85.8%, 35.9%);
+    --syntax-color-css-selector: hsl(0, 0%, 0%);
+    --syntax-color-css-number: hsl(248.1, 100%, 40.6%);
+
+    --code-selection-background-color: hsl(212.3, 97.8%, 81.8%);
+}
+
+/* Set Dark Mode Colors */
+@media(prefers-color-scheme:dark) {
+    :root {
+        --background-color: hsl(0, 100%, 12%);
+        --link-color: hsl(0, 100%, 70%);
+        --text-color: hsl(240, 1.3%, 84.5%);
+        --text-color-light: hsl(0, 0%, 33.3%);
+        --text-color-medium: hsl(0, 0%, 51%);
+        --text-color-heading: hsl(0, 100%, 100%);
+        --text-color-coolgray: hsl(240, 2.3%, 56.7%);
+        --inverse-text-color: hsl(0, 0%, 100%);
+        --inverse-link-color: hsl(0, 100%, 70%);
+
+        --content-background-color: hsl(120, 2%, 9%);
+        --horizontal-rule-color: hsl(0, 0%, 33.3%);
+
+        --code-background-color: hsl(120, 1%, 19.4%);
+        --code-border-color: hsl(0, 0%, 26.7%);
+        --code-text-color: hsl(180, 6.9%, 84.5%);
+
+        --note-background-color: hsl(31.9, 20.5%, 33.1%);
+        --note-border-color: hsl(31.9, 20.5%, 42%);
+        --note-text-color: hsl(48.7, 55.2%, 75.5%);
+
+        --foreword-background-color: hsl(120, 1%, 19.4%);
+        --foreword-border-color: hsl(0, 0%, 26.7%);
+        --foreword-text-color: hsl(120, 1.3%, 55%);
+
+        --input-border-color: hsl(0, 0%, 26.7%);
+        --input-background-color: hsl(0, 0%, 0%);
+        --button-background-color: hsl(120, 2%, 14%);
+
+        --submit-button-background-color: hsl(0, 76%, 48%);
+        --submit-button-background-gradient: linear-gradient(hsl(0, 78%, 57%), hsl(0, 100%, 40%));
+        --submit-button-text-color: hsl(0, 0%, 100%);
+
+        --search-glyph: url('images/search.svg#light');
+        --search-term-text-color: hsl(0, 100%, 100%);
+        --search-input-background: hsl(0, 0%, 0%);
+
+        --pagination-border-color: hsla(0, 0%, 100%, 0.1);
+        --pagination-button-shadow: inset hsla(0, 0%, 50%, 0.1) 0 0 0 1px;
+        --pagination-button-text-color: hsl(0, 0%, 100%);
+
+        --screen-reader-text-focus-color: hsl(0, 65%, 37%);
+        --screen-reader-text-border-color: hsla(0, 0%, 0%, 0.6);
+        --screen-reader-text-background-color: hsl(0, 0%, 94.5%);
+        --screen-reader-text-shadow: 0 0 2px 2px hsla(0, 0%, 0%, 0.6);
+
+        --next-router-background-color: hsl(120, 6.7%, 4.9%);
+        --previous-router-background-color: hsl(120, 4%, 8%);
+        --router-background-hover-color: hsl(0, 0%, 0%);
+        --router-text-color: hsl(120, 100%, 99.8%);
+        --router-text-color-light: hsl(30, 1%, 62%);
+
+        --tile-background-color: hsl(120, 2%, 12%);
+        --tile-border-color: hsl(0, 0%, 29%);
+        --tile-subtle-border-shadow: inset hsla(0, 0%, 50%, 0.1) 0 0 0 1px;
+        --tile-subtle-image-border-shadow: inset hsla(0, 0%, 100%, 0.05) 0 1px 0 1px;
+
+        --tile-default-background-color: hsl(215.3, 7.9%, 42.2%);
+        --tile-background-color-blue: hsl(0, 100%, 40%);
+        --tile-background-color-green: hsl(79.5, 45.3%, 52%);
+        --tile-background-color-violet: hsl(280, 18%, 57.5%);
+        --tile-background-color-rose: hsl(357.1, 39%, 58.8%);
+        --tile-background-color-orange: hsl(37.1, 100%, 37.5%);
+        --tile-background-color-goldenrod: hsl(45.3, 56.5%, 53.1%);
+        --tile-background-color-purplesafari: hsl(0, 36%, 51%);
+        --tile-background-color-amber: hsl(48, 100%, 50%);
+        --tile-background-vignette: linear-gradient(-180deg, hsla(120, 2%, 12%, 0%), hsla(120, 2%, 12%, 0.95) 80%, hsla(120, 2%, 12%, 1));
+        --tile-background-vignette-dark: linear-gradient(-180deg, hsla(0, 0%, 0%, 0) 33%, hsla(0, 0%, 0%, 0.85));
+
+        --tag-window-background-color-gray: hsl(0, 0%, 94.9%);
+        --tag-window-vignette: linear-gradient(-180deg, hsla(0, 0%, 94.9%, 0) 25%, hsla(0, 0%, 94.9%, 1) 65%);
+
+        --submenu-background-color: hsla(0, 0%, 0%, 0.95);
+        --submenu-shadow: 0px 3px 20px 0px hsla(0, 0%, 20%, 0.1);
+        --submenu-border-color: hsl(0, 0%, 15%);
+        --header-menu-shadow: 0px 5px 5px hsla(0, 0%, 0%, 0.1);
+        --header-menu-background-color: hsla(0, 0%, 0%, 0.8);
+
+        --tile-background-color-twitter: hsl(197.9, 70.6%, 53.3%);
+        --gray-tile-text-color: hsl(0, 100%, 37%);
+
+        --article-border-color: hsl(120, 4.1%, 19.2%);
+        --article-scrollable-border-color: hsl(120, 4.1%, 19.2%);
+        --figure-caption-rule-color: hsl(0, 0%, 80%);
+        --toc-border-color: hsl(0, 0%, 83.9%);
+        --table-top-rule-color: hsl(0, 0%, 73.3%);
+        --table-rule-color: hsl(0, 0%, 87.8%);
+        --figure-mattewhite-background-color: hsl(0, 0%, 0%);
+
+        --syntax-color-keyword: hsl(299.17, 70.59%, 80%);
+        --syntax-color-keyword-operator: hsl(299.17, 70.59%, 80%);
+        --syntax-color-builtin: hsl(299.17, 70.59%, 80%);
+        --syntax-color-keyword-type: hsl(299.17, 70.59%, 80%);
+        --syntax-color-preprocessor: hsl(43.9, 51.4%, 58.8%);
+        --syntax-color-comment: hsl(118.95, 39.86%, 71.96%);
+        --syntax-color-comment-doc: hsl(118.95, 39.86%, 71.96%);
+        --syntax-color-identifier: hsl(240, 1.3%, 84.5%);
+        --syntax-color-string: hsl(28.3, 84.13%, 62.94%);
+        --syntax-color-escaped: hsl(0, 0%, 44%);
+        --syntax-color-number: hsl(299.17, 70.59%, 80%);
+        --syntax-color-attribute: hsl(27.06, 100%, 80%);
+        --syntax-color-attribute-value: hsl(28.1, 72.2%, 46.5%);
+        --syntax-color-operator: hsl(180, 6.9%, 60.4%);
+        --syntax-color-whitespace-background-color: hsl(0, 0%, 20%);
+        --syntax-color-doctype: hsl(0, 0%, 42%);
+        --syntax-color-error-border: hsl(0, 100%, 20%);
+        --syntax-color-property: hsl(299.2, 58.7%, 51.6%);
+        --syntax-color-xml-comment: hsl(118.95, 39.86%, 71.96%);
+        --syntax-color-xml-meta: hsl(180, 50%, 40%);
+        --syntax-color-css-property: hsl(299.17, 70.59%, 80%);
+        --syntax-color-css-selector: hsl(240, 1.3%, 84.5%);
+        --syntax-color-css-number: hsl(275.53, 100%, 85.1%);
+
+        --code-selection-background-color: hsl(214.2, 42.9%, 32.9%);
+    }
+}
+
+/* Override MkDocs Material colors with WebKit color scheme  */
+:root {
+    --md-primary-fg-color: var(--background-color);
+    --md-primary-fg-color--light: var(--button-background-color);
+    --md-primary-fg-color--dark: var(--tile-background-color);
+
+    --md-accent-fg-color: var(--link-color);
+    --md-accent-fg-color--transparent: var(--router-background-hover-color);
+
+    --md-default-fg-color: var(--text-color);
+    --md-default-fg-color--light: var(--text-color-heading);
+    --md-default-fg-color--lighter: var(--text-color-medium);
+    --md-default-fg-color--lightest: var(--text-color-light);
+    --md-default-bg-color: var(--content-background-color);
+
+    --md-code-fg-color: var(--code-text-color);
+    --md-code-bg-color: var(--code-background-color);
+    --md-footer-fg-color--light: var(--inverse-text-color);
+    --md-footer-fg-color--lighter: var(--inverse-text-color);
+
+    --md-code-hl-number-color: var(--syntax-color-number);
+    --md-code-hl-special-color: var(--syntax-color-builtin);
+    --md-code-hl-function-color: var(--syntax-color-identifier);
+    --md-code-hl-constant-color: var(--syntax-color-builtin);
+    --md-code-hl-keyword-color: var(--syntax-color-keyword);
+    --md-code-hl-string-color: var(--syntax-color-string);
+    --md-code-hl-name-color: var(--syntax-color-identifier);
+    --md-code-hl-operator-color: var(--syntax-color-operator);
+    --md-code-hl-punctuation-color: var(--syntax-color-keyword-operator);
+    --md-code-hl-comment-color: var(--syntax-color-comment);
+
+    --md-typeset-a-color: var(--link-color);
+
+    --md-footer-bg-color: var(--background-color);
+    --md-footer-fg-color: var(--text-color);
+
+    --md-primary-bg-color: var(--inverse-text-color);
+}
+
+/* font-size is wrecking havoc between WebKit and MkDocs Material theming.
+   WebKit assumes font-size at 62.5%, while MkDocs Material gives a more variable theming between 125% - 150% 
+   https://github.com/squidfunk/mkdocs-material/blob/f08bbb4dece0e7229de3d8f11f0eeaf5231d5424/src/assets/stylesheets/main/components/_base.scss#LL31C3-L31C3.
+
+   So we need to redo a lot of the calculations on the WebKit side.
+*/
+html {
+    font-synthesis: none;
+    font-size: 125%;
+}
+
+body {
+    --md-text-font-family: -apple-system, "SF Pro Text", "Helvetica", sans-serif;
+    --md-code-font-family: "SF Mono", "Menlo", monospace;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: normal;
+}
+
+/* Override Main Article Options */
+.md-typeset,
+.md-search-result .md-typeset {
+    color: var(--text-color);
+}
+
+.md-typeset {
+    text-rendering: optimizeLegibility;
+    font-kerning: auto;
+    font-style: normal;
+    -webkit-print-color-adjust: economy;
+}
+
+.md-content .md-typeset {
+    font-size: 0.85rem;
+}
+
+.md-content .md-typeset h1 {
+        font-size: 2.8rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        margin-top: -0.4rem;
+        text-align: center;
+        letter-spacing: 0.002rem;
+    }
+
+.md-content .md-typeset h2 {
+        font-size: 1.6rem;
+        line-height: 1.09375;
+        font-weight: 500;
+        margin-top: 2rem;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.0055rem;
+}
+
+.md-content .md-typeset h3 {
+        font-size: 1.2rem;
+        line-height: 1.09375;
+        font-weight: 500;
+        letter-spacing: -0.0055rem;
+}
+
+.md-content .md-typeset h4 {
+        font-size: 1.1rem;
+        line-height: 1.09375;
+        font-weight: 500;
+}
+
+.md-content .md-typeset h5 {
+        font-size: 1rem;
+        line-height: 1.09375;
+        font-weight: 500;
+}
+
+.md-content .md-typeset h6 {
+    font-size: 0.85rem;
+    line-height: 1.09375;
+    font-weight: 500;
+}
+
+.md-content .md-typeset p {
+    font-size: 0.85rem;
+    font-weight: 400;
+    font-feature-settings: normal;
+    letter-spacing: -0.0105rem;
+    margin-top: 0;
+    margin-bottom: 1.50rem;
+}
+
+.md-content pre {
+    margin-left: -1.1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 2px;
+    border: 1px solid var(--code-border-color);
+}
+
+.md-content .md-typeset code {
+    font-size: .85rem;
+    line-height: 1.25rem;
+}
+
+.md-typeset a:hover {
+    text-decoration: underline;
+}
+
+tr {
+    font-size: 0.85rem;
+}
+
+/* Sidebar */
+.md-nav__link {
+    color: var(--link-color);
+}
+
+.md-nav__link--passed {
+    opacity: 0.5;
+}
+
+.md-nav__link--active {
+    opacity: initial;
+    font-weight: bold;
+}
+
+.md-nav a:hover {
+    text-decoration: underline;
+}
+
+.md-tabs__link {
+    opacity: 1;
+    transform: 0.3s ease-out;
+}
+
+.md-tabs__link:hover {
+    color: var(--link-color);
+}
+
+/* Handle pop up menu on smaller screen sizes */
+.md-nav--primary .md-nav__title {
+    color: var(--md-primary-bg-color);
+    background-color: var(--md-primary-fg-color);
+}
