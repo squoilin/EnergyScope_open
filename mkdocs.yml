@@ -129,7 +129,8 @@ plugins:
   - link-marker
   - markdown-exec
   - glightbox
-  - mike
+  - mike:
+      deploy_prefix: 'public'
   - mkdocs-jupyter:
       execute: false
       # include_requirejs: true
