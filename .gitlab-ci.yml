@@ -28,6 +28,17 @@ deploy_pypi:
   except:
     - branches
 
+deploy_pypi_dev:
+  stage: deploy
+  dependencies: []
+  script:
+    - hatch build
+    - hatch publish
+  only:
+    - /^v\d+\.\d+\.\d+.dev\d*$/  # PEP-440 compliant version (tags)
+  except:
+    - branches
+
 deploy_version:
   stage: deploy
   variables:
