@@ -222,7 +222,7 @@ subject to layer_balance {l in LAYERS union CO2_CATEGORY diff {"H2_S","NG_S","CO
 		sum {i in RESOURCES union TECHNOLOGIES diff STORAGE_TECH} (layers_in_out[i, l] * F_Mult_t [i, t]) - GWP [l, t]
 	else (if l=="CO2_E" then
 		sum {i in RESOURCES union TECHNOLOGIES diff STORAGE_TECH} (layers_in_out[i, l] * F_Mult_t [i, t]) - GWP [l, t] 
-		#+ 1/total_time * sum {k in TECHNOLOGIES} GWP_constr[k] # the construction emission goes to CO2_E which can only be captuerd by DAC
+		+ 1/total_time * sum {k in TECHNOLOGIES} GWP_constr[k] # the construction emission goes to CO2_E which can only be captured by DAC
 	else (if l=="CO2_EE" then
 		sum {i in RESOURCES} (F_Mult_t [i, t] * gwp_e[i,t]) - GWP [l, t]
 	else (if l=="CO2_C" then
