@@ -69,6 +69,8 @@ set BOILERS within TECHNOLOGIES; # boiler tech
 set BUSES within TECHNOLOGIES;
 # For NG storage
 
+set INTERMITTENT_TECHNOLOGIES;
+
 ### PARAMETERS [Table 1.1] ###
 param end_uses_demand_year {END_USES_INPUT, SECTORS} >= 0 default 0; # end_uses_year: table end-uses demand vs sectors (input to the model). Yearly values.
 param end_uses_input {i in END_USES_INPUT} := sum {s in SECTORS} (end_uses_demand_year [i,s]); # Figure 1.4: total demand for each type of end-uses across sectors (yearly energy) as input from the demand-side model
@@ -455,14 +457,10 @@ subject to co2:
 
 subject to sng_max:
 	sum{i in TECHNOLOGIES diff STORAGE_TECH, t in PERIODS: layers_in_out[i,"SNG"]>0} Monthly_Prod[i,t]*layers_in_out[i,"SNG"]>=sng_min; 
-### enforcing full utilization of PV once installed
-subject to pv_full_utilization{t in PERIODS}:
-	F_Mult_t["PV",t] = F_Mult["PV"]*c_p_t["PV",t];
-subject to solarthermal_full_utilization{t in PERIODS}:
-	F_Mult_t["DEC_SOLAR",t] = F_Mult["DEC_SOLAR"]*c_p_t["DEC_SOLAR",t];
-subject to wind_full_utilization{t in PERIODS}:
-	F_Mult_t["WIND",t] = F_Mult["WIND"]*c_p_t["WIND",t];
 
+### enforcing full utilization of technology based on intermittent resources once installed
+subject to tech_intermittent_full_utilization{t in PERIODS, tech_inter in INTERMITTENT_TECHNOLOGIES}:
+	F_Mult_t[tech_inter,t] = F_Mult[tech_inter]*c_p_t[tech_inter,t];
 
 # TRL choice
 subject to trl_choice{i in TECHNOLOGIES: trl[i]>trl_max or trl[i]<trl_min}:
