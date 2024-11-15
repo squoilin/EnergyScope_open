@@ -232,6 +232,7 @@ let layers_in_out['CAR_ETOH_E85_LONGD','GASOLINE']:=-0.08;	#
 let layers_in_out["CAR_BEV_MEDRANGE_LOCAL","MOB_PRIVATE_LOCAL"] := 1 ;
 let layers_in_out["CAR_DIESEL_LOCAL","MOB_PRIVATE_LOCAL"] := 1 ;
 let layers_in_out["CAR_ETOH_E10_LOCAL","MOB_PRIVATE_LOCAL"] := 1 ;
+let layers_in_out["CAR_ETOH_E85_LOCAL","MOB_PRIVATE_LOCAL"] := 1 ;
 let layers_in_out["CAR_FC_H2_LOCAL","MOB_PRIVATE_LOCAL"] := 1 ;
 let layers_in_out["CAR_FC_CH4_LOCAL","MOB_PRIVATE_LOCAL"] := 1 ;
 let layers_in_out["CAR_GASOLINE_LOCAL","MOB_PRIVATE_LOCAL"] := 1 ;
@@ -243,6 +244,7 @@ let layers_in_out["CAR_PHEV_LOCAL","MOB_PRIVATE_LOCAL"] := 1 ;
 let layers_in_out["CAR_BEV_MEDRANGE_LONGD","MOB_PRIVATE_LONGD"] := 1 ;
 let layers_in_out["CAR_DIESEL_LONGD","MOB_PRIVATE_LONGD"] := 1 ;
 let layers_in_out["CAR_ETOH_E10_LONGD","MOB_PRIVATE_LONGD"] := 1 ;
+let layers_in_out["CAR_ETOH_E85_LONGD","MOB_PRIVATE_LONGD"] := 1 ;
 let layers_in_out["CAR_FC_H2_LONGD","MOB_PRIVATE_LONGD"] := 1 ;
 let layers_in_out["CAR_FC_CH4_LONGD","MOB_PRIVATE_LONGD"] := 1 ;
 let layers_in_out["CAR_GASOLINE_LONGD","MOB_PRIVATE_LONGD"] := 1 ;
@@ -1444,9 +1446,6 @@ let out_max['NG_REFORMING']:=50000;
 let c_inv['BATTERY'] := 200 ; #  200 MCHF/GW
 let lifetime['BATTERY'] := 25 ;
 
-let layers_in_out['CARBON_CAPTURE','ELECTRICITY_MV'] := -0.15; # 
-let layers_in_out['CARBON_CAPTURE','HEAT_HIGH_T'] := 0 ; # -0.722 
-
 let reno_min:=0;
 let out_max["DEC_COGEN_WOOD"]:=0;
 let fmax_perc["DEC_HP_ELEC"]:=1;
@@ -1463,8 +1462,6 @@ let f_max['DEC_ADVCOGEN_H2'] := 20 ; #
 
 
 let out_max["HT_LT_DEC"]:= 0;
-let out_max["DEC_DEEP_GEO"]:=0;
-
 let share_heat_dhn_max := 0.38 ;
 
 
