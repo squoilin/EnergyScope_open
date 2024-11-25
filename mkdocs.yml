@@ -3,7 +3,7 @@ watch: [ mkdocs.yml, README.md, src/energyscope ]
 
 nav:
   - Home:
-      - Home: index.md
+      - EnergyScope: index.md
       - introduction/getting-started.md
   - Tutorials:
       - Tutorials: tutorials/index.md
