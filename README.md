@@ -56,6 +56,7 @@ The **main contributors** includes:
 -   [Jonas Schnidrig](mailto:jonas.schnidrig@hevs.ch) (Library, Plotting, Documentation, Development)
 -   [Xavier Rixhon](mailto:xavier.rixhon@uclouvain.be) (EnergyScope Developer, Documentation)
 -   [Arthur Chuat](mailto:arthur.chuat@epfl.ch) (Library, Plotting, Documentation, Development)
+-   [Gabriel Wiest](mailto:gwiest@ethz.ch) (Library, Plotting, Documentation, Development)
 -   [Cyrille Platteau](mailto:cyrille.platteau@epfl.ch) (IT)
 
 Refer to the [Releases file](./Releases.rst) for additional contributors and acknowledgments.
