@@ -42,10 +42,10 @@ Get started by following our [Basic Run Tutorial](../tutorials/basic-run.ipynb) 
 
 ### Option B: Editable Installation for Experts 🏄
 
-If you plan to modify the source code or the underlying AMPL models:
+If you plan to customize the source code or the underlying AMPL models:
 1.	Clone the EnergyScope Repository:
 	```
-	git clone git@gitlab.com:energyscope/energyscope.git
+	git clone https://gitlab.com/energyscope/energyscope.git
 	```
 2. Install EnergyScope in Editable Mode:
 Navigate to the cloned repository and install package in editable mode:
