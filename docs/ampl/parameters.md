@@ -1,295 +1,328 @@
-# Parameters
+# Variables
 
-## end_uses_demand_year {END_USES_INPUT, SECTORS}
+## C_inv
 **Description:**  
-Yearly end-use demand by type and sector.
-
-**Domain:**  
-`END_USES_INPUT x SECTORS`
-
-**Bounds:**  
-`>= 0`, default `0`
-
-**Units:**  
-[GWh/year]
-
-**Usage:**  
-Input to compute `end_uses_input`.
-
----
-
-## end_uses_input {i in END_USES_INPUT}
-**Description:**  
-Total yearly demand for each end-use type, aggregated over all sectors.
+Total investment cost for each technology.
 
 **Definition:**  
-`end_uses_input[i] = sum {s in SECTORS} end_uses_demand_year[i,s]`
-
-**Bounds:**  
-Derived from `end_uses_demand_year`
-
-**Units:**  
-[GWh/year]
-
----
-
-## i_rate
-**Description:**  
-Discount rate (real).
-
-**Bounds:**  
-`> 0`
-
-**Units:**  
-Dimensionless
-
-**Role:**  
-Used in annualization factor calculation for technologies.
-
----
-
-## share_mobility_public_min, share_mobility_public_max
-**Description:**  
-Minimum and maximum share limits for public mobility as a fraction of total mobility.
-
-**Bounds:**  
-`>= 0`, `<= 1`
-
-**Units:**  
-Dimensionless fraction
-
----
-
-## share_freight_train_min, share_freight_train_max
-**Description:**  
-Min/max penetration limits for train in freight transportation.
-
-**Bounds:**  
-`>= 0`, `<= 1`
-
-**Units:**  
-Dimensionless fraction
-
----
-
-## share_heat_dhn_min, share_heat_dhn_max
-**Description:**  
-Min/max penetration for DHN in low-temperature heating.
-
-**Bounds:**  
-`>= 0`, `<= 1`
-
-**Units:**  
-Dimensionless fraction
-
----
-
-## t_op {PERIODS}
-**Description:**  
-Duration of each period.
-
-**Domain:**  
-`PERIODS`
-
-**Units:**  
-[h]
-
----
-
-## lighting_month {PERIODS}, heating_month {PERIODS}
-**Description:**  
-Monthly distribution factors for lighting and space heating demand.
-
-**Bounds:**  
-`>= 0`, `<= 1` for each period, summing to 1 across all periods.
-
-**Units:**  
-Dimensionless fraction
-
----
-
-## layers_in_out {RESOURCES union TECHNOLOGIES diff STORAGE_TECH, LAYERS}
-**Description:**  
-Input-output mapping of resources/technologies to layers.  
-Represents how resources and technologies feed into or draw from certain layers.
-
-**Units:**  
-[GWh/GW or analogous, depends on context]
-
----
-
-## ref_size {TECHNOLOGIES}
-**Description:**  
-Reference size for each technology’s capacity.
+`C_inv {TECHNOLOGIES} >= 0;`
 
 **Bounds:**  
 `>= 0`
 
 **Units:**  
-[GW], [GWh] for storage tech
+[MCHF]
+
+**Usage:**  
+Represents the capital expenditure for deploying technologies.
 
 ---
 
-## c_inv {TECHNOLOGIES}, c_maint {TECHNOLOGIES}
+## C_maint
 **Description:**  
-Investment and O&M cost per unit reference size.
+Total O&M cost for each technology (excluding resource costs).
+
+**Definition:**  
+`C_maint {TECHNOLOGIES} >= 0;`
 
 **Bounds:**  
 `>= 0`
 
 **Units:**  
-`c_inv`: [MCHF/GW or MCHF/GWh for storage]  
-`c_maint`: [MCHF/GW/year or MCHF/GWh for storage]
+[MCHF/year]
+
+**Usage:**  
+Captures the ongoing maintenance and operational expenses for technologies.
 
 ---
 
-## lifetime {TECHNOLOGIES}
+## C_op
 **Description:**  
-Lifetime of each technology.
+Total operational (resource) cost for each resource.
+
+**Definition:**  
+`C_op {RESOURCES} >= 0;`
 
 **Bounds:**  
 `>= 0`
 
 **Units:**  
-[years]
+[MCHF/year]
+
+**Usage:**  
+Aggregates the operational costs associated with resource usage.
 
 ---
 
-## f_max {TECHNOLOGIES}, f_min {TECHNOLOGIES}
+## End_Uses
 **Description:**  
-Max/min feasible installed capacity for each technology.
+Total demand met for each type of end-use in each period.
+
+**Definition:**  
+`End_Uses {LAYERS, PERIODS} >= 0;`
 
 **Bounds:**  
 `>= 0`
 
 **Units:**  
-[GW], [GWh for storage]
+[GW] (or corresponding unit to layers_in_out)
+
+**Usage:**  
+Represents the actual energy consumed by end-uses in each period.
 
 ---
 
-## fmax_perc {TECHNOLOGIES}, fmin_perc {TECHNOLOGIES}
+## F_Mult
 **Description:**  
-Max/min percentage constraints on output share.
+Installed capacity factor relative to reference size.
 
-**Bounds:**  
-`>= 0`, `<= 1`, default `fmax_perc=1`, `fmin_perc=0`
-
-**Units:**  
-Fraction of total output
-
----
-
-## c_p_t {TECHNOLOGIES, PERIODS}, c_p {TECHNOLOGIES}
-**Description:**  
-Capacity factors defining seasonal and annual availability.
-
-**Bounds:**  
-`>= 0`, `<= 1`, defaults: `c_p_t=1`, `c_p=1`
-
-**Units:**  
-Dimensionless
-
----
-
-## tau {TECHNOLOGIES}
-**Description:**  
-Annualization factor for cost calculation.  
-`tau[i] = i_rate * (1 + i_rate)^lifetime[i] / ((1 + i_rate)^lifetime[i] - 1)`
-
-**Units:**  
-Dimensionless
-
----
-
-## gwp_constr {TECHNOLOGIES}
-**Description:**  
-GWP emissions associated with technology construction.
+**Definition:**  
+`F_Mult {TECHNOLOGIES} >= 0;`
 
 **Bounds:**  
 `>= 0`
 
 **Units:**  
-[ktCO2-eq./GW]
+Dimensionless multiplier (size factor)
+
+**Usage:**  
+Scales the reference size to determine actual installed capacities.
 
 ---
 
-## total_time
+## F_Mult_t
 **Description:**  
-Sum of all `t_op[t]`.  
-`total_time = sum {t in PERIODS} t_op[t]`
+Operational factor in each period, scaled by capacity factor and reference size.
 
-**Units:**  
-[h]
-
----
-
-## c_op {RESOURCES, PERIODS}
-**Description:**  
-Cost of resources per period.
+**Definition:**  
+`F_Mult_t {RESOURCES union TECHNOLOGIES, PERIODS} >= 0;`
 
 **Bounds:**  
 `>= 0`
 
 **Units:**  
-[MCHF/GWh]
+Dimensionless multiplier
+
+**Usage:**  
+Determines the operational level of resources and technologies in each period.
 
 ---
 
-## avail {RESOURCES}
+## GWP_constr
 **Description:**  
-Yearly availability of resources.
+Total emissions associated with constructed technologies.
+
+**Definition:**  
+`GWP_constr {TECHNOLOGIES} >= 0;`
 
 **Bounds:**  
 `>= 0`
 
 **Units:**  
-[GWh/year]
+[ktCO2-eq.]
+
+**Usage:**  
+Calculates the emissions resulting from the construction of technologies.
 
 ---
 
-## gwp_op {RESOURCES}
+## GWP_op
 **Description:**  
-GWP emissions associated with resource use.
+Total yearly emissions of resources.
+
+**Definition:**  
+`GWP_op {RESOURCES} >= 0;`
 
 **Bounds:**  
 `>= 0`
 
 **Units:**  
-[ktCO2-eq./GWh]
+[ktCO2-eq./year]
+
+**Usage:**  
+Aggregates emissions from resource utilization annually.
 
 ---
 
-## storage_eff_in {STORAGE_TECH, LAYERS}, storage_eff_out {STORAGE_TECH, LAYERS}
+## Losses
 **Description:**  
-Efficiencies of input to and output from storage.
+Losses in the network for specific end-uses and periods.
+
+**Definition:**  
+`Losses {END_USES_TYPES, PERIODS} >= 0;`
 
 **Bounds:**  
-`>= 0`, `<= 1`
+`>= 0`
 
 **Units:**  
-Dimensionless
+[GW] or analogous
+
+**Usage:**  
+Models energy losses within end-use networks over time.
 
 ---
 
-## loss_coeff {END_USES_TYPES}
+## Number_Of_Units
 **Description:**  
-Loss coefficients in networks (e.g., electricity grid, DHN).
+Number of discrete units installed for each technology.
+
+**Definition:**  
+`Number_Of_Units {TECHNOLOGIES} integer;`
+
+**Type:**  
+Integer variable
 
 **Bounds:**  
-`>= 0`, default `0`
+`>= 0`
 
 **Units:**  
-Fractional loss
+Dimensionless (count of units)
+
+**Usage:**  
+Represents the count of installed technology units based on reference size.
 
 ---
 
-## peak_dhn_factor
+## Share_Freight_Train
 **Description:**  
-Factor associated with peak DHN conditions.
+Share of freight mobility by train.
+
+**Definition:**  
+`Share_Freight_Train >= share_freight_train_min, <= share_freight_train_max;`
+
+**Bounds:**  
+`>= share_freight_train_min`, `<= share_freight_train_max`
 
 **Units:**  
-Dimensionless
+Fraction
+
+**Usage:**  
+Determines the proportion of freight transport handled by trains.
 
 ---
 
-This completes the parameters section. Refer to **Variables** for decision variables and their roles in the model.
+## Share_Heat_Dhn
+**Description:**  
+Share of low-temperature heating demand from DHN.
+
+**Definition:**  
+`Share_Heat_Dhn >= share_heat_dhn_min, <= share_heat_dhn_max;`
+
+**Bounds:**  
+`>= share_heat_dhn_min`, `<= share_heat_dhn_max`
+
+**Units:**  
+Fraction
+
+**Usage:**  
+Allocates the portion of low-temperature heating to District Heating Networks.
+
+---
+
+## Share_Mobility_Public
+**Description:**  
+Share of public mobility out of total mobility.
+
+**Definition:**  
+`Share_Mobility_Public >= share_mobility_public_min, <= share_mobility_public_max;`
+
+**Bounds:**  
+`>= share_mobility_public_min`, `<= share_mobility_public_max`
+
+**Units:**  
+Fraction
+
+**Usage:**  
+Determines the allocation of mobility demand to public transportation.
+
+---
+
+## Storage_In
+**Description:**  
+Power input to storage in a given period.
+
+**Definition:**  
+`Storage_In {STORAGE_TECH, LAYERS, PERIODS} >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[GW]
+
+**Usage:**  
+Models the energy input into storage technologies over time.
+
+---
+
+## Storage_Out
+**Description:**  
+Power output from storage in a given period.
+
+**Definition:**  
+`Storage_Out {STORAGE_TECH, LAYERS, PERIODS} >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[GW]
+
+**Usage:**  
+Models the energy output from storage technologies over time.
+
+---
+
+## TotalCost
+**Description:**  
+Total cost in the system (including investment, O&M, resource costs).
+
+**Definition:**  
+`TotalCost >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[MCHF/year or analogous]
+
+**Usage:**  
+Aggregates all costs incurred within the system annually.
+
+---
+
+## TotalGWP
+**Description:**  
+Total Global Warming Potential (GWP) emissions in the system.
+
+**Definition:**  
+`TotalGWP >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[ktCO2-eq./year]
+
+**Usage:**  
+Aggregates all emissions contributing to global warming potential annually.
+
+---
+
+## Y_Solar_Backup
+**Description:**  
+Binary variable indicating the technology chosen as backup for solar.
+
+**Definition:**  
+`Y_Solar_Backup {TECHNOLOGIES} binary;`
+
+**Type:**  
+Binary
+
+**Units:**  
+Dimensionless (0 or 1)
+
+**Usage:**  
+Identifies which decentralized technology serves as a backup for solar energy.
+
+---

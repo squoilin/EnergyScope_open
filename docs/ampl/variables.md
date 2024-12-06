@@ -1,11 +1,65 @@
 # Variables
 
-## End_Uses {LAYERS, PERIODS}
+## C_inv
+**Description:**  
+Total investment cost for each technology.
+
+**Definition:**  
+`C_inv {TECHNOLOGIES} >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[MCHF]
+
+**Usage:**  
+Represents the capital expenditure for deploying technologies.
+
+---
+
+## C_maint
+**Description:**  
+Total O&M cost for each technology (excluding resource costs).
+
+**Definition:**  
+`C_maint {TECHNOLOGIES} >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[MCHF/year]
+
+**Usage:**  
+Captures the ongoing maintenance and operational expenses for technologies.
+
+---
+
+## C_op
+**Description:**  
+Total operational (resource) cost for each resource.
+
+**Definition:**  
+`C_op {RESOURCES} >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[MCHF/year]
+
+**Usage:**  
+Aggregates the operational costs associated with resource usage.
+
+---
+
+## End_Uses
 **Description:**  
 Total demand met for each type of end-use in each period.
 
-**Domain:**  
-`LAYERS x PERIODS`
+**Definition:**  
+`End_Uses {LAYERS, PERIODS} >= 0;`
 
 **Bounds:**  
 `>= 0`
@@ -13,11 +67,107 @@ Total demand met for each type of end-use in each period.
 **Units:**  
 [GW] (or corresponding unit to layers_in_out)
 
+**Usage:**  
+Represents the actual energy consumed by end-uses in each period.
+
 ---
 
-## Number_Of_Units {TECHNOLOGIES}
+## F_Mult
+**Description:**  
+Installed capacity factor relative to reference size.
+
+**Definition:**  
+`F_Mult {TECHNOLOGIES} >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+Dimensionless multiplier (size factor)
+
+**Usage:**  
+Scales the reference size to determine actual installed capacities.
+
+---
+
+## F_Mult_t
+**Description:**  
+Operational factor in each period, scaled by capacity factor and reference size.
+
+**Definition:**  
+`F_Mult_t {RESOURCES union TECHNOLOGIES, PERIODS} >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+Dimensionless multiplier
+
+**Usage:**  
+Determines the operational level of resources and technologies in each period.
+
+---
+
+## GWP_constr
+**Description:**  
+Total emissions associated with constructed technologies.
+
+**Definition:**  
+`GWP_constr {TECHNOLOGIES} >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[ktCO2-eq.]
+
+**Usage:**  
+Calculates the emissions resulting from the construction of technologies.
+
+---
+
+## GWP_op
+**Description:**  
+Total yearly emissions of resources.
+
+**Definition:**  
+`GWP_op {RESOURCES} >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[ktCO2-eq./year]
+
+**Usage:**  
+Aggregates emissions from resource utilization annually.
+
+---
+
+## Losses
+**Description:**  
+Losses in the network for specific end-uses and periods.
+
+**Definition:**  
+`Losses {END_USES_TYPES, PERIODS} >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[GW] or analogous
+
+**Usage:**  
+Models energy losses within end-use networks over time.
+
+---
+
+## Number_Of_Units
 **Description:**  
 Number of discrete units installed for each technology.
+
+**Definition:**  
+`Number_Of_Units {TECHNOLOGIES} integer;`
 
 **Type:**  
 Integer variable
@@ -28,101 +178,8 @@ Integer variable
 **Units:**  
 Dimensionless (count of units)
 
----
-
-## F_Mult {TECHNOLOGIES}
-**Description:**  
-Installed capacity factor relative to reference size.
-
-**Bounds:**  
-`>= 0`
-
-**Units:**  
-Dimensionless multiplier (size factor)
-
----
-
-## F_Mult_t {RESOURCES union TECHNOLOGIES, PERIODS}
-**Description:**  
-Operational factor in each period, scaled by capacity factor and reference size.
-
-**Bounds:**  
-`>= 0`
-
-**Units:**  
-Dimensionless multiplier
-
----
-
-## C_inv {TECHNOLOGIES}
-**Description:**  
-Total investment cost for each technology.
-
-**Bounds:**  
-`>= 0`
-
-**Units:**  
-[MCHF]
-
----
-
-## C_maint {TECHNOLOGIES}
-**Description:**  
-Total O&M cost for each technology (excluding resource costs).
-
-**Bounds:**  
-`>= 0`
-
-**Units:**  
-[MCHF/year]
-
----
-
-## C_op {RESOURCES}
-**Description:**  
-Total operational (resource) cost for each resource.
-
-**Bounds:**  
-`>= 0`
-
-**Units:**  
-[MCHF/year]
-
----
-
-## Storage_In {i in STORAGE_TECH, LAYERS, PERIODS}
-**Description:**  
-Power input to storage in a given period.
-
-**Bounds:**  
-`>= 0`
-
-**Units:**  
-[GW]
-
----
-
-## Storage_Out {i in STORAGE_TECH, LAYERS, PERIODS}
-**Description:**  
-Power output from storage in a given period.
-
-**Bounds:**  
-`>= 0`
-
-**Units:**  
-[GW]
-
----
-
-## Share_Mobility_Public
-**Description:**  
-Share of public mobility out of total mobility.
-
-**Bounds:**  
-`>= share_mobility_public_min`, `<= share_mobility_public_max`
-
-**Units:**  
-Fraction
+**Usage:**  
+Represents the count of installed technology units based on reference size.
 
 ---
 
@@ -130,11 +187,17 @@ Fraction
 **Description:**  
 Share of freight mobility by train.
 
+**Definition:**  
+`Share_Freight_Train >= share_freight_train_min, <= share_freight_train_max;`
+
 **Bounds:**  
 `>= share_freight_train_min`, `<= share_freight_train_max`
 
 **Units:**  
 Fraction
+
+**Usage:**  
+Determines the proportion of freight transport handled by trains.
 
 ---
 
@@ -142,71 +205,71 @@ Fraction
 **Description:**  
 Share of low-temperature heating demand from DHN.
 
+**Definition:**  
+`Share_Heat_Dhn >= share_heat_dhn_min, <= share_heat_dhn_max;`
+
 **Bounds:**  
 `>= share_heat_dhn_min`, `<= share_heat_dhn_max`
 
 **Units:**  
 Fraction
 
+**Usage:**  
+Allocates the portion of low-temperature heating to District Heating Networks.
+
 ---
 
-## Y_Solar_Backup {TECHNOLOGIES}
+## Share_Mobility_Public
 **Description:**  
-Binary variable indicating the technology chosen as backup for solar.
+Share of public mobility out of total mobility.
 
-**Type:**  
-Binary
+**Definition:**  
+`Share_Mobility_Public >= share_mobility_public_min, <= share_mobility_public_max;`
+
+**Bounds:**  
+`>= share_mobility_public_min`, `<= share_mobility_public_max`
 
 **Units:**  
-Dimensionless (0 or 1)
+Fraction
+
+**Usage:**  
+Determines the allocation of mobility demand to public transportation.
 
 ---
 
-## Losses {END_USES_TYPES, PERIODS}
+## Storage_In
 **Description:**  
-Losses in the network for specific end-uses and periods.
+Power input to storage in a given period.
+
+**Definition:**  
+`Storage_In {STORAGE_TECH, LAYERS, PERIODS} >= 0;`
 
 **Bounds:**  
 `>= 0`
 
 **Units:**  
-[GW] or analogous
+[GW]
+
+**Usage:**  
+Models the energy input into storage technologies over time.
 
 ---
 
-## GWP_constr {TECHNOLOGIES}
+## Storage_Out
 **Description:**  
-Total emissions associated with constructed technologies.
+Power output from storage in a given period.
+
+**Definition:**  
+`Storage_Out {STORAGE_TECH, LAYERS, PERIODS} >= 0;`
 
 **Bounds:**  
 `>= 0`
 
 **Units:**  
-[ktCO2-eq.]
+[GW]
 
----
-
-## GWP_op {RESOURCES}
-**Description:**  
-Total yearly emissions of resources.
-
-**Bounds:**  
-`>= 0`
-
-**Units:**  
-[ktCO2-eq./year]
-
----
-
-## TotalGWP
-**Description:**  
-Total global warming potential emissions in the system.
-
-**Bounds:**  
-`>= 0`
-
-**Units:**  
-[ktCO2-eq./year]
+**Usage:**  
+Models the energy output from storage technologies over time.
 
 ---
 
@@ -214,12 +277,52 @@ Total global warming potential emissions in the system.
 **Description:**  
 Total cost in the system (including investment, O&M, resource costs).
 
+**Definition:**  
+`TotalCost >= 0;`
+
 **Bounds:**  
 `>= 0`
 
 **Units:**  
 [MCHF/year or analogous]
 
+**Usage:**  
+Aggregates all costs incurred within the system annually.
+
 ---
 
-This completes the variables section. Refer back to **Sets** and **Parameters** for foundational context and inputs.
+## TotalGWP
+**Description:**  
+Total Global Warming Potential (GWP) emissions in the system.
+
+**Definition:**  
+`TotalGWP >= 0;`
+
+**Bounds:**  
+`>= 0`
+
+**Units:**  
+[ktCO2-eq./year]
+
+**Usage:**  
+Aggregates all emissions contributing to global warming potential annually.
+
+---
+
+## Y_Solar_Backup
+**Description:**  
+Binary variable indicating the technology chosen as backup for solar.
+
+**Definition:**  
+`Y_Solar_Backup {TECHNOLOGIES} binary;`
+
+**Type:**  
+Binary
+
+**Units:**  
+Dimensionless (0 or 1)
+
+**Usage:**  
+Identifies which decentralized technology serves as a backup for solar energy.
+
+---
