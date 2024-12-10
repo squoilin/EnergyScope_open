@@ -260,8 +260,10 @@ def generate_sankey_flows( results: Result, aggregate_mobility, aggregate_grid, 
     return df_flow
 
 
-def plot_sankey(result: Result, aggregate_mobility: bool=True, aggregate_grid: bool=True,aggregate_technology: bool=True, run_id: int = 0, colors: Union[Colors, dict] = None) -> go.Figure:
-    df_flow = generate_sankey_flows(result, aggregate_mobility=aggregate_mobility, aggregate_grid=aggregate_grid, aggregate_technology=aggregate_technology, run_id=run_id)
+def plot_sankey(result: Result, aggregate_mobility: bool = True, aggregate_grid: bool = True,
+                aggregate_technology: bool = True, run_id: int = 0, colors: Union[Colors, dict] = None) -> go.Figure:
+    df_flow = generate_sankey_flows(result, aggregate_mobility=aggregate_mobility, aggregate_grid=aggregate_grid,
+                                    aggregate_technology=aggregate_technology, run_id=run_id)
     return _create_sankey_figure(df_flow, Colors.cast(colors or default_colors))
 
 
