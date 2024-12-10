@@ -84,7 +84,8 @@ def _create_sankey_figure(df_flow: pd.DataFrame, colors: Colors) -> go.Figure:
     return fig
 
 
-def generate_sankey_flows( results: Result, aggregate_mobility, aggregate_grid, aggregate_technology, run_id ) -> pd.DataFrame:
+def generate_sankey_flows(results: Result, aggregate_mobility, aggregate_grid, aggregate_technology,
+                          run_id) -> pd.DataFrame:
     """
     Processes the `Result` object to transform and filter flow data for Sankey diagram visualization.
 
@@ -102,8 +103,8 @@ def generate_sankey_flows( results: Result, aggregate_mobility, aggregate_grid, 
             A processed DataFrame with 'source', 'target', and 'value' columns,
             ready for Sankey diagram visualization.
     """
-    
-    df_flow = results.postprocessing['df_monthly'].loc[results.postprocessing['df_monthly']['Run']==run_id,:]
+
+    df_flow = results.postprocessing['df_monthly'].loc[results.postprocessing['df_monthly']['Run'] == run_id, :]
 
     df_flow = df_flow.groupby(['Technologies', 'Flow']).sum().rename(columns={'Monthly_flow': 'value'}).loc[:,
               ['value']].reset_index()
@@ -129,7 +130,7 @@ def generate_sankey_flows( results: Result, aggregate_mobility, aggregate_grid, 
     df_flow.sort_values('source', inplace=True)
 
     # Transform pkm & tkm into GWh
-    techno_mob = df_flow.loc[df_flow['target'].str.startswith('MOB_'),:]['target'].unique().tolist()
+    techno_mob = df_flow.loc[df_flow['target'].str.startswith('MOB_'), :]['target'].unique().tolist()
 
     df_flow.loc[df_flow['target'].isin(techno_mob), 'value'] = (
         df_flow.loc[df_flow['target'].isin(df_flow.loc[df_flow['target'].isin(techno_mob), 'source']), :]
@@ -475,7 +476,7 @@ def plot_comparison(results, variable, category, labels=None, run1=None, run2=No
                 font=dict(size=12),
                 xshift=-5  # Shift text outside the bar
             )
-        
+
         # Run2 (positive side): Total value (common + additional)
         if df_run2_grouped[category] != 0:
             fig.add_annotation(
