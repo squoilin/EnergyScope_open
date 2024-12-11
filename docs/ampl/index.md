@@ -25,7 +25,7 @@ AMPL provides a flexible environment for defining optimization models in a clear
 - **Nonlinear Programming (NLP)**
 - **Mixed-Integer Nonlinear Programming (MINLP)**
 
-EnergySCope is formulated either as **Mixed-Integer Programming (MILP)** or **Linear Programming (LP)** problem.
+EnergyScope is formulated either as **Mixed-Integer Programming (MILP)** or **Linear Programming (LP)** problem.
 
 ### How is AMPL Built?
 
@@ -60,23 +60,3 @@ To maintain consistency, readability, and ease of maintenance within the EnergyS
   - **Format:** Capitalized words with underscores.  
   - **Example:** `End_Uses`, `F_Mult`, `TotalCost`  
   - **Purpose:** Highlights decision variables that the model optimizes, making them easily identifiable within the model equations.
-
-### Standards
-
-#### Consistency:
-   - All sets, parameters, and variables adhere to the above naming conventions throughout the model to ensure uniformity.
-
-#### Descriptive Naming:
-   - Names are chosen to be descriptive and indicative of their role within the model. Avoid abbreviations unless they are widely understood within the context.
-
-#### Separation of Concerns:  
-   - Variables represent decision variables to be optimized.
-   - Parameters encapsulate data inputs and fixed attributes.
-   - Sets define the indices and categories used to structure the model.
-
-#### Documentation:  
-   - Every set, parameter, and variable is thoroughly documented with descriptions, definitions, bounds, units, and usage context to aid users in understanding their purpose and application.
-
-#### Modularity:  
-   - The model is structured in a modular fashion, allowing individual components (sets, parameters, variables) to be updated or modified without affecting unrelated parts of the model.
-
