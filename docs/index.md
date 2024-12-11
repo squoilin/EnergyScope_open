@@ -109,7 +109,7 @@ Energyscope is developed by a dedicated team at EPFL, ETHZ, UCLouvain and PolyMT
 -   [Matthieu Souttre](mailto:matthieu.souttre@epfl.ch) (Library, Documentation, Development)
 -   [Cyrille Platteau](mailto:cyrille.platteau@epfl.ch) (IT)
 
-If you are interested in a specific topic, have a look at the [modules section](/explanation/model_formulation/modules/) and contact one of the team member related to the development of such feature.
+If you are interested in a specific topic, have a look at the [modules section](/explanation/model_formulation/modules/) and contact one of the team member related to the development the feature.
 
 ---
 
