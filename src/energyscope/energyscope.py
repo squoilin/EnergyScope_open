@@ -52,8 +52,6 @@ class Energyscope:
         Calls AMPL with `df` as .dat.
         """
 
-        self.es_model.reset()
-
         # Load the model files
         self._load_model_files(ds=ds)
 
@@ -61,17 +59,18 @@ class Energyscope:
         for name, value in self.solver_options.items():
             self.es_model.set_option(name, value)
 
+    def calc(self, ds: Dataset = None, parser: Callable[[AMPL], Result] = parse_result) -> Result:
+        """
+        Calls AMPL with `df` as .dat and returns the parsed result.
+        """
+        if self.es_model.getSets().__len__() == 0: # Check if AMPL instance is empty
+            self._initial_run(ds=ds)
+
         # Solve the model
         self.es_model.solve()
         if self.es_model.solve_result_num > 99:
             raise ValueError(f"No optimal solution found, see error: ", self.es_model.solve_result_num)
 
-    def calc(self, ds: Dataset = None, parser: Callable[[AMPL], Result] = parse_result) -> Result:
-        """
-        Calls AMPL with `df` as .dat and returns the parsed result.
-        """
-
-        self._initial_run(ds=ds)
         return parser(self.es_model, id_run=0)
 
     def export_ampl(self, mod_filename: str = '/tutorial_output/energyscope.mod',
@@ -241,7 +240,9 @@ class Energyscope:
 
         # Initial Run
         unique_params = data['param'].unique()
-        self._initial_run(ds=ds)
+        if self.es_model.getSets().__len__() == 0: # Check if AMPL instance is empty
+            self._initial_run(ds=ds)
+
         parameters = {param: self.es_model.get_parameter(param) for param in unique_params}
 
         data_index_columns = data.columns[data.columns.str.startswith('index')].to_list()
@@ -271,7 +272,7 @@ class Energyscope:
             results_i = parser(self.es_model, id_run=j + 1)
             if j == 0:
                 results_n = results_i
-            else:  # TODO we might consider sets but I dont see any value, yet
+            else:
                 results_n.variables = {name: pd.concat([results_n.variables[name], results_i.variables[name]]) for name
                                        in results_n.variables.keys()}
                 results_n.parameters = {name: pd.concat([results_n.parameters[name], results_i.parameters[name]]) for
