@@ -104,7 +104,7 @@ Energyscope is developed by a dedicated team at EPFL and UCLouvain, with contrib
 -   [Xavier Rixhon](mailto:xavier.rixhon@uclouvain.be) (EnergyScope Developer, Documentation)  
 -   [Arthur Chuat](mailto:arthur.chuat@epfl.ch) (Library, Plotting, Documentation, Development)  
 -   [Gabriel Wiest](mailto:gwiest@ethz.ch) (Library, Plotting, Documentation, Development)
--  [Matthieu Souttre](mailto:matthieu.souttre@epfl.ch) (LCA, QC case study)
+-  [Matthieu Souttre](mailto:matthieu.souttre@epfl.ch) (Library Testing & Validation, Documentation, LCA, QC case study)
 -   [Cyrille Platteau](mailto:cyrille.platteau@epfl.ch) (IT)
 
 ---
