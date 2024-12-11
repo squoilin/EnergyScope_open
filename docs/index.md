@@ -4,7 +4,8 @@ An Open-Source Whole-Energy System Modeling Library for Python
 ---
 ## Overview
 
-Energyscope is an open-source whole-energy system model designed to optimize the design and operation over a year for a target year. The Energyscope library provides a simple and intuitive way to use Energyscope with Python, enabling users to model and analyze regional energy systems with ease. 
+Energyscope is an open-source whole-energy system model designed to optimize the design and annual operation for a target year. The Energyscope library provides a simple and intuitive way to use Energyscope with Python, enabling users to model and analyze regional energy systems with ease. 
+
 - Developed by: EnergyScope Community
 - License: Apache 2.0 License
 - Latest Version: v1.0.0
@@ -97,15 +98,18 @@ Our documentation is divided into several sections to help you find what you nee
 
 ## Partners and Team
 
-Energyscope is developed by a dedicated team at EPFL and UCLouvain, with contributions from the global community.
+Energyscope is developed by a dedicated team at EPFL, ETHZ, UCLouvain and PolyMTL, with contributions from the global community:
+
 -   [Stefano Moret](mailto:morets@ethz.ch) (EnergyScope Creator)  
 -   [Gauthier Limpens](mailto:gauthier.limpens@uclouvain.be) (EnergyScope Improver)  
 -   [Jonas Schnidrig](mailto:jonas.schnidrig@hevs.ch) (Library, Plotting, Documentation, Development)  
 -   [Xavier Rixhon](mailto:xavier.rixhon@uclouvain.be) (EnergyScope Developer, Documentation)  
 -   [Arthur Chuat](mailto:arthur.chuat@epfl.ch) (Library, Plotting, Documentation, Development)  
 -   [Gabriel Wiest](mailto:gwiest@ethz.ch) (Library, Plotting, Documentation, Development)
--  [Matthieu Souttre](mailto:matthieu.souttre@epfl.ch) (Library Testing & Validation, Documentation, LCA, QC case study)
+-   [Matthieu Souttre](mailto:matthieu.souttre@epfl.ch) (Library, Documentation, Development)
 -   [Cyrille Platteau](mailto:cyrille.platteau@epfl.ch) (IT)
+
+If you are interested in a specific topic, have a look at the [modules section](/explanation/model_formulation/modules/) and contact one of the team member related to the development of such feature.
 
 ---
 
