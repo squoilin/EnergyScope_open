@@ -84,7 +84,8 @@ def _create_sankey_figure(df_flow: pd.DataFrame, colors: Colors) -> go.Figure:
     return fig
 
 
-def generate_sankey_flows( results: Result, aggregate_mobility, aggregate_grid, aggregate_technology, run_id ) -> pd.DataFrame:
+def generate_sankey_flows(results: Result, aggregate_mobility, aggregate_grid, aggregate_technology,
+                          run_id) -> pd.DataFrame:
     """
     Processes the `Result` object to transform and filter flow data for Sankey diagram visualization.
 
@@ -102,8 +103,8 @@ def generate_sankey_flows( results: Result, aggregate_mobility, aggregate_grid, 
             A processed DataFrame with 'source', 'target', and 'value' columns,
             ready for Sankey diagram visualization.
     """
-    
-    df_flow = results.postprocessing['df_monthly'].loc[results.postprocessing['df_monthly']['Run']==run_id,:]
+
+    df_flow = results.postprocessing['df_monthly'].loc[results.postprocessing['df_monthly']['Run'] == run_id, :]
 
     df_flow = df_flow.groupby(['Technologies', 'Flow']).sum().rename(columns={'Monthly_flow': 'value'}).loc[:,
               ['value']].reset_index()
@@ -129,7 +130,7 @@ def generate_sankey_flows( results: Result, aggregate_mobility, aggregate_grid, 
     df_flow.sort_values('source', inplace=True)
 
     # Transform pkm & tkm into GWh
-    techno_mob = df_flow.loc[df_flow['target'].str.startswith('MOB_'),:]['target'].unique().tolist()
+    techno_mob = df_flow.loc[df_flow['target'].str.startswith('MOB_'), :]['target'].unique().tolist()
 
     df_flow.loc[df_flow['target'].isin(techno_mob), 'value'] = (
         df_flow.loc[df_flow['target'].isin(df_flow.loc[df_flow['target'].isin(techno_mob), 'source']), :]
@@ -140,106 +141,130 @@ def generate_sankey_flows( results: Result, aggregate_mobility, aggregate_grid, 
         .values
     )
 
-
-    ## Add EUD 
-    # TODO Aggregate flow of the different type of elec
+    ## Add EUD
     EUD = results.parameters['end_uses_demand_year']
-    EUD = EUD.loc[EUD['Run']==run_id,:]
-    EUD = EUD.loc[EUD['end_uses_demand_year']>0,:]
-    EUD = EUD.reset_index().groupby('index0').sum().reset_index().loc[:,['index0','end_uses_demand_year']]
-    EUD = EUD.rename(columns={'index0':'source','end_uses_demand_year':'value'})
-    EUD = EUD.loc[EUD['source'].str.contains('ELECTRICITY'),:]
-    EUD['target'] = 'EUD_' + EUD['source'] 
+    EUD = EUD.loc[EUD['Run'] == run_id, :]
+    EUD = EUD.loc[EUD['end_uses_demand_year'] > 0, :]
+    EUD = EUD.reset_index().groupby('index0').sum().reset_index().loc[:, ['index0', 'end_uses_demand_year']]
+    EUD = EUD.rename(columns={'index0': 'source', 'end_uses_demand_year': 'value'})
+    EUD = EUD.loc[EUD['source'].str.contains('ELECTRICITY'), :]
+    EUD['target'] = 'EUD_' + EUD['source']
 
-
-    df_flow = pd.concat([df_flow,EUD]).reset_index().drop(columns='index')
+    df_flow = pd.concat([df_flow, EUD]).reset_index().drop(columns='index')
 
     ## Aggregate EUD types
     EUD_types = results.sets['END_USES_TYPES_OF_CATEGORY']
-    # Reverse the dictionary to map items to keys
     EUD_types_reverse = {item: key for key, values in EUD_types.items() for item in values}
-    # Preselect the rows that have a value in 'target' that exists in the reversed dict
-    mask = df_flow['target'].isin(EUD_types_reverse.keys())
-    # Replace the values only in the selected rows
-    df_flow.loc[mask, 'target'] = df_flow.loc[mask, 'target'].map(EUD_types_reverse)
 
+    # Create a mask for rows where 'target' and 'source' need changes
+    mask_target = df_flow['target'].isin(EUD_types_reverse.keys())
+    mask_source = df_flow['source'].isin(EUD_types_reverse.keys())
 
+    # Apply mapping to 'target' and 'source' columns
+    df_flow.loc[mask_target, 'target'] = df_flow.loc[mask_target, 'target'].map(EUD_types_reverse)
+    df_flow.loc[mask_source, 'source'] = df_flow.loc[mask_source, 'source'].map(EUD_types_reverse)
+
+    # Ensure consistency: if 'target' changes, update corresponding 'source' if necessary
+    for index, row in df_flow.iterrows():
+        if row['target'] in EUD_types_reverse.values() and row['source'] in EUD_types_reverse.keys():
+            df_flow.at[index, 'source'] = EUD_types_reverse[row['source']]
 
     if aggregate_mobility:
         ## Aggregation of mobility flows
         # Extract rows concerning mobility
-        mob_flow = df_flow.loc[df_flow['target'].str.startswith('MOBILITY_'),:]
-        mob_flow_2 = df_flow.loc[df_flow['target'].isin(df_flow.loc[df_flow['target'].str.startswith('MOBILITY_'),:]['source'].unique()),:]
+        mob_flow = df_flow.loc[df_flow['target'].str.startswith('MOBILITY_'), :]
+        mob_flow_2 = df_flow.loc[df_flow['target'].isin(
+            df_flow.loc[df_flow['target'].str.startswith('MOBILITY_'), :]['source'].unique()), :]
         # Drop rows concerning mobility as they will be merged
-        df_flow = df_flow.loc[~df_flow['target'].str.startswith('MOBILITY_')*~df_flow['target'].isin(df_flow.loc[df_flow['target'].str.startswith('MOBILITY_'),:]['source'].unique()),:]
+        df_flow = df_flow.loc[~df_flow['target'].str.startswith('MOBILITY_') * ~df_flow['target'].isin(
+            df_flow.loc[df_flow['target'].str.startswith('MOBILITY_'), :]['source'].unique()), :]
         # Aggregate value on type of technologies (source) and on type of mobility (target)
-        mob_flow = mob_flow.groupby([mob_flow['source'].str.split('_',expand=True).loc[:,0],mob_flow['target'].str.rsplit('_',n=1,expand=True).loc[:,0]]).sum()
-        mob_flow_2 = mob_flow_2.groupby([mob_flow_2['target'].str.split('_',expand=True).loc[:,0],mob_flow_2['source'].values]).sum()
+        mob_flow = mob_flow.groupby([mob_flow['source'].str.split('_', expand=True).loc[:, 0],
+                                     mob_flow['target'].str.rsplit('_', n=1, expand=True).loc[:, 0]]).sum()
+        mob_flow_2 = mob_flow_2.groupby(
+            [mob_flow_2['target'].str.split('_', expand=True).loc[:, 0], mob_flow_2['source'].values]).sum()
         # Clean df
-        mob_flow = mob_flow.drop(['source', 'target'],axis=1)
-        mob_flow_2 = mob_flow_2.drop(['source', 'target'],axis=1)
+        mob_flow = mob_flow.drop(['source', 'target'], axis=1)
+        mob_flow_2 = mob_flow_2.drop(['source', 'target'], axis=1)
         # Reset index
-        mob_flow.reset_index(names=['source', 'target'],inplace=True)
-        mob_flow_2.reset_index(names=['target', 'source'],inplace=True)
+        mob_flow.reset_index(names=['source', 'target'], inplace=True)
+        mob_flow_2.reset_index(names=['target', 'source'], inplace=True)
         # Concat dfs
-        df_flow = pd.concat([df_flow,mob_flow,mob_flow_2]).reset_index().drop(columns='index')
-
-
+        df_flow = pd.concat([df_flow, mob_flow, mob_flow_2]).reset_index().drop(columns='index')
 
     if aggregate_grid:
-        ## Add EUD 
+        ## Add EUD
         # TODO Aggregate flow of the different type of elec
         EUD = results.parameters['end_uses_demand_year']
-        EUD = EUD.loc[EUD['end_uses_demand_year']>0,:]
-        EUD = EUD.reset_index().groupby('index0').sum().reset_index().loc[:,['index0','end_uses_demand_year']]
-        EUD = EUD.rename(columns={'index0':'source','end_uses_demand_year':'value'})
-        EUD = EUD.loc[EUD['source'].str.contains('ELECTRICITY'),:]
+        EUD = EUD.loc[EUD['end_uses_demand_year'] > 0, :]
+        EUD = EUD.reset_index().groupby('index0').sum().reset_index().loc[:, ['index0', 'end_uses_demand_year']]
+        EUD = EUD.rename(columns={'index0': 'source', 'end_uses_demand_year': 'value'})
+        EUD = EUD.loc[EUD['source'].str.contains('ELECTRICITY'), :]
         EUD['source'] = "ELECTRICITY"
-        EUD['target'] = 'EUD_' + EUD['source'] 
+        EUD['target'] = 'EUD_' + EUD['source']
 
         ## Aggregation of grids flows
-        techno_grids = ('EXP','TRAFO','COMP')   # TODO might be replaced by a sets: INFRASTRUCTURE_GAS_GRID INFRASTRUCTURE_ELEC_GRID
+        techno_grids = (
+        'EXP', 'TRAFO', 'COMP')  # TODO might be replaced by a sets: INFRASTRUCTURE_GAS_GRID INFRASTRUCTURE_ELEC_GRID
         # Extract all flows that have an input/output of ELECTRICITY
-        df_elec = df_flow.loc[df_flow['target'].str.contains('ELECTRICITY_')+df_flow['source'].str.contains('ELECTRICITY_'),:]
-        #Exception for exports
+        df_elec = df_flow.loc[
+                  df_flow['target'].str.contains('ELECTRICITY_') + df_flow['source'].str.contains('ELECTRICITY_'), :]
+        # Exception for exports
         df_elec = df_elec.loc[~df_elec['target'].str.contains('EXPORT')]
-        df_flow.loc[df_flow['target'].str.contains('EXPORT'),'source'] = "ELECTRICITY"
+        df_flow.loc[df_flow['target'].str.contains('EXPORT'), 'source'] = "ELECTRICITY"
         # Drop them from the main df
         df_flow = df_flow.drop(df_elec.index)
         # Remove the flows related to the grid infrastructure
-        df_elec = df_elec.loc[~df_elec['target'].str.contains('|'.join(techno_grids))*~df_elec['source'].str.contains('|'.join(techno_grids)),:]
-        # Rename ELECTRICITY_XXX layers 
-        df_elec = df_elec.replace(results.sets['ELECTRICITY_LAYERS'].loc[:,'ELECTRICITY_LAYERS'].values,'ELECTRICITY') 
+        df_elec = df_elec.loc[~df_elec['target'].str.contains('|'.join(techno_grids)) * ~df_elec['source'].str.contains(
+            '|'.join(techno_grids)), :]
+        # Rename ELECTRICITY_XXX layers
+        df_elec = df_elec.replace(results.sets['ELECTRICITY_LAYERS'].loc[:, 'ELECTRICITY_LAYERS'].values, 'ELECTRICITY')
 
         # Aggregation for NG
-        df_ng = df_flow.loc[df_flow['target'].str.contains('NG_')+df_flow['source'].str.contains('NG_'),:]
+        df_ng = df_flow.loc[df_flow['target'].str.contains('NG_') + df_flow['source'].str.contains('NG_'), :]
         df_flow = df_flow.drop(df_ng.index)
-        df_ng = df_ng.loc[~df_ng['target'].str.contains('|'.join(techno_grids))*~df_ng['source'].str.contains('|'.join(techno_grids)),:]
-        df_ng = df_ng.replace(results.sets['NG_LAYERS'].loc[:,'NG_LAYERS'].values,'NG') 
-        
+        df_ng = df_ng.loc[~df_ng['target'].str.contains('|'.join(techno_grids)) * ~df_ng['source'].str.contains(
+            '|'.join(techno_grids)), :]
+        df_ng = df_ng.replace(results.sets['NG_LAYERS'].loc[:, 'NG_LAYERS'].values, 'NG')
+
         # Aggregation for H2
-        df_h2 = df_flow.loc[df_flow['target'].str.contains('H2_')+df_flow['source'].str.contains('H2_'),:]
+        df_h2 = df_flow.loc[df_flow['target'].str.contains('H2_') + df_flow['source'].str.contains('H2_'), :]
         df_flow = df_flow.drop(df_h2.index)
-        df_h2 = df_h2.loc[~df_h2['target'].str.contains('|'.join(techno_grids))*~df_h2['source'].str.contains('|'.join(techno_grids)),:]
-        df_h2 = df_h2.replace(results.sets['H2_LAYERS'].loc[:,'H2_LAYERS'].values,'H2')     
-        
-        df_flow = pd.concat([df_flow,df_elec,df_ng,df_h2]).reset_index().drop(columns='index')
+        df_h2 = df_h2.loc[~df_h2['target'].str.contains('|'.join(techno_grids)) * ~df_h2['source'].str.contains(
+            '|'.join(techno_grids)), :]
+        df_h2 = df_h2.replace(results.sets['H2_LAYERS'].loc[:, 'H2_LAYERS'].values, 'H2')
+
+        df_flow = pd.concat([df_flow, df_elec, df_ng, df_h2]).reset_index().drop(columns='index')
 
     if aggregate_technology:
-        ## Aggregation types of technologies
-        techno_list = ['COGEN', 'BOILER', 'HP', 'DIRECT_ELEC','PV','RENOVATION']
+        # List of technology types to aggregate
+        techno_list = ['COGEN', 'BOILER', 'HP', 'DIRECT_ELEC', 'PV', 'RENOVATION']
+
+        # Define a regex pattern with non-capturing groups to match flows like NG_EHP, H2_EHP, IMP_H2_EHP, NG_HP, H2_HP, etc.
+        exclude_pattern = r'(?:NG|H2|IMP_H2)_(?:EHP|HP)'
+
+        # Create masks to identify rows with matching patterns in target and source
+        exclude_mask_target = df_flow['target'].str.contains(exclude_pattern, regex=True)
+        exclude_mask_source = df_flow['source'].str.contains(exclude_pattern, regex=True)
+
+        # Iterate over technologies for aggregation, ensuring exclusions
         for tech in techno_list:
-            df_flow = df_flow.replace(df_flow.loc[df_flow['target'].str.contains(tech),'target'].values.tolist(),tech)
-            df_flow = df_flow.replace(df_flow.loc[df_flow['source'].str.contains(tech),'source'].values.tolist(),tech)
+            # Replace only where the rows do not match the exclude pattern
+            df_flow.loc[
+                (df_flow['target'].str.contains(tech)) & ~exclude_mask_target, 'target'
+            ] = tech
 
-
-
+            df_flow.loc[
+                (df_flow['source'].str.contains(tech)) & ~exclude_mask_source, 'source'
+            ] = tech
 
     return df_flow
 
 
-def plot_sankey(result: Result, aggregate_mobility: bool=True, aggregate_grid: bool=True,aggregate_technology: bool=True, run_id: int = 0, colors: Union[Colors, dict] = None) -> go.Figure:
-    df_flow = generate_sankey_flows(result, aggregate_mobility=aggregate_mobility, aggregate_grid=aggregate_grid, aggregate_technology=aggregate_technology, run_id=run_id)
+def plot_sankey(result: Result, aggregate_mobility: bool = True, aggregate_grid: bool = True,
+                aggregate_technology: bool = True, run_id: int = 0, colors: Union[Colors, dict] = None) -> go.Figure:
+    df_flow = generate_sankey_flows(result, aggregate_mobility=aggregate_mobility, aggregate_grid=aggregate_grid,
+                                    aggregate_technology=aggregate_technology, run_id=run_id)
     return _create_sankey_figure(df_flow, Colors.cast(colors or default_colors))
 
 
@@ -451,7 +476,7 @@ def plot_comparison(results, variable, category, labels=None, run1=None, run2=No
                 font=dict(size=12),
                 xshift=-5  # Shift text outside the bar
             )
-        
+
         # Run2 (positive side): Total value (common + additional)
         if df_run2_grouped[category] != 0:
             fig.add_annotation(
