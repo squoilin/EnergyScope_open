@@ -4,7 +4,8 @@ An Open-Source Whole-Energy System Modeling Library for Python
 ---
 ## Overview
 
-Energyscope is an open-source whole-energy system model designed to optimize the design and operation over a year for a target year. The Energyscope library provides a simple and intuitive way to use Energyscope with Python, enabling users to model and analyze regional energy systems with ease. 
+Energyscope is an open-source whole-energy system model designed to optimize the design and annual operation for a target year. The Energyscope library provides a simple and intuitive way to use Energyscope with Python, enabling users to model and analyze regional energy systems with ease. 
+
 - Developed by: EnergyScope Community
 - License: Apache 2.0 License
 - Latest Version: v1.0.0
@@ -25,25 +26,34 @@ Energyscope is an open-source whole-energy system model designed to optimize the
 
 ## Why Choose Energyscope?
 
-### Proven and Reliable :material-checkbox-marked: :simple-bookstack:
+### Unparalleled Speed :octicons-zap-16: :octicons-rocket-16:
 
-- **Extensively Used in Research:** Featured in numerous peer-reviewed publications.
-- **Trusted by the Community:** Developed and maintained by leading research institutions.
+- **:material-speedometer: Lightning-Fast Solving Times:** Energyscope solves complex energy models in **seconds to minutes**, outperforming other tools that require hours, days, or even months.
 
-### Accelerate Your Modeling :octicons-zap-16: :octicons-rocket-16:
+### Comprehensive and Holistic Modeling :material-earth: :fontawesome-solid-building:
 
-- **Reusable Models:** Leverage existing models to streamline your workflow.
-- **Flexible and Modular:** Customize and extend models to meet your specific needs.
+- **:material-domain: All-Inclusive Energy System Modeling:** Energyscope integrates **all sectors**—households, services, industry, and transportation—and considers all energy demands like **electricity**, **heating**, and **mobility**.
 
 ### User-Friendly Design :fontawesome-solid-hand-sparkles: :fontawesome-solid-computer:
 
-- **Simple Syntax:** Define energy systems using a flexible, text-based format.
-- **Interactive Visualization:** Utilize built-in tools to visualize and analyze results effectively.
+- **:material-keyboard: Intuitive Syntax:** Define energy systems effortlessly using a flexible, text-based format.
+- **:material-chart-bar: Interactive Visualizations:** Utilize built-in tools to visualize and analyze results effectively.
+
+
+### Proven and Reliable :material-checkbox-marked: :simple-bookstack:
+
+- **:material-book: Widely Adopted in Research:** Featured in numerous peer-reviewed publications, validating its effectiveness.
+- **:material-account-group: Trusted by Experts:** Developed and maintained by leading research institutions.
+
+### Accelerate Your Workflow :recycle: :puzzle_piece:
+
+- **:material-recycle: Reusable Models:** Leverage existing models to streamline your projects.
+- **:material-puzzle: Flexible and Modular Architecture:** Customize and extend models to meet your specific needs.
 
 ### Open Source and Transparent :octicons-unlock-16: :octicons-globe-16:
 
-- **Fully Open-Source:** Available under the Apache 2.0 license.
-- **Community Development:** Contributions are welcome on [GitHub](https://github.com/energyscope/EnergyScope).
+- **:material-folder-open: Completely Open-Source:** Available under the Apache 2.0 license for full transparency.
+- **:material-handshake: Collaborative Community Development:** Join our community on [GitHub](https://github.com/energyscope/EnergyScope) and contribute to the project.
 
 ---
 
@@ -66,10 +76,10 @@ Explore our [Example Models](explanation/model_formulation/modules/index.md) to 
 ## Documentation
 
 Our documentation is divided into several sections to help you find what you need:
-1. [Tutorials](tutorials/index.md): Step-by-step guides for beginners and advanced users.
-2. [API Reference](reference/index.md): Detailed documentation of all functions and classes.
-3. [Explanation](explanation/index.md): In-depth explanations of concepts and methodologies.
-4. [Technologies](technologies/index.md):  Information on the technologies modeled within Energyscope.
+1. [Tutorials](tutorials/index.md): Step-by-step guides for beginners and advanced users.  
+2. [API Reference](reference/index.md): Detailed documentation of all functions and classes.  
+3. [Explanation](explanation/index.md): In-depth explanations of concepts and methodologies.  
+4. [Technologies](technologies/index.md):  Information on the technologies modeled within Energyscope.  
 
 ---
 
@@ -88,14 +98,18 @@ Our documentation is divided into several sections to help you find what you nee
 
 ## Partners and Team
 
-Energyscope is developed by a dedicated team at EPFL and UCLouvain, with contributions from the global community.
--   [Stefano Moret](mailto:morets@ethz.ch) (EnergyScope Creator)
--   [Gauthier Limpens](mailto:gauthier.limpens@uclouvain.be) (EnergyScope Improver)
--   [Jonas Schnidrig](mailto:jonas.schnidrig@hevs.ch) (Library, Plotting, Documentation, Development)
--   [Xavier Rixhon](mailto:xavier.rixhon@uclouvain.be) (EnergyScope Developer, Documentation)
--   [Arthur Chuat](mailto:arthur.chuat@epfl.ch) (Library, Plotting, Documentation, Development)
+Energyscope is developed by a dedicated team at EPFL, ETHZ, UCLouvain and PolyMTL, with contributions from the global community:
+
+-   [Stefano Moret](mailto:morets@ethz.ch) (EnergyScope Creator)  
+-   [Gauthier Limpens](mailto:gauthier.limpens@uclouvain.be) (EnergyScope Improver)  
+-   [Jonas Schnidrig](mailto:jonas.schnidrig@hevs.ch) (Library, Plotting, Documentation, Development)  
+-   [Xavier Rixhon](mailto:xavier.rixhon@uclouvain.be) (EnergyScope Developer, Documentation)  
+-   [Arthur Chuat](mailto:arthur.chuat@epfl.ch) (Library, Plotting, Documentation, Development)  
 -   [Gabriel Wiest](mailto:gwiest@ethz.ch) (Library, Plotting, Documentation, Development)
+-   [Matthieu Souttre](mailto:matthieu.souttre@epfl.ch) (Library, Documentation, Development)
 -   [Cyrille Platteau](mailto:cyrille.platteau@epfl.ch) (IT)
+
+If you are interested in a specific topic, have a look at the [modules section](/explanation/model_formulation/modules/) and contact one of the team member related to the development the feature.
 
 ---
 
