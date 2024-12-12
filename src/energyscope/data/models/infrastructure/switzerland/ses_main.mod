@@ -444,7 +444,7 @@ subject to storage{i in STORAGE_TECH, t in PERIODS}:
 	Monthly_Prod[i,t]=sum{l in LAYERS: storage_eff_out [i,l] > 0} (Storage_In[i,l,t] * storage_eff_in[i,l] - Storage_Out[i,l,t]/storage_eff_out[i,l]) * t_op[t];
 
 subject to total_emission{t in PERIODS}:#kt
-	Total_emission[t]=(GWP["CO2_A",t]+GWP["CO2_E",t])*t_op[t]; # do not consider the external gwp due to import
+	Total_emission[t]=(GWP["CO2_A",t]+GWP["CO2_E",t]+GWP["CO2_EE",t])*t_op[t]; # Consider gwp from: CO2_A - carbon intensive sources (capturable on-site, eg: CCGT) + CO2_E - nonconcentrated sources (eg: CAR) + CO2_EE - scope 2 gwp related to imported energy carrier (eg: H2)
 
 
 subject to co2_emission:
