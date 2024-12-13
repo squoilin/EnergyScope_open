@@ -16,6 +16,11 @@ nav:
   #  - how-to/index.md
   #  - how-to/add_technology.ipynb
   - API Reference: reference/
+  - AMPL Reference:
+      - ampl/index.md
+      - ampl/parameters.md
+      - ampl/variables.md
+      - ampl/sets.md
   - Explanation:
       - explanation/index.md
       - explanation/introduction.md
