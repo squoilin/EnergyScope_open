@@ -173,117 +173,150 @@ class Energyscope:
         with open(dat_filename, 'w') as file:
             file.write(modified_dat_content)
 
-    def calc_sequence(self, data: pd.DataFrame, parser: Callable[[AMPL], Result] = parse_result, ds: Dataset = None) -> \
-    list[Result]:
+    def calc_sequence(self,
+                      data: pd.DataFrame,
+                      parser: Callable[[AMPL], Result] = parse_result,
+                      ds: Dataset = None
+                      ) -> list[Result]:
         """
-        Calls AMPL `n` times varying `parameters` based on `sequence` with `data` as .dat.
+        Calls AMPL `n` times, varying parameters based on `sequence` with `data` as .dat.
 
         Parameters:
-        ----------
+        -----------
         data : pd.DataFrame
-            A DataFrame containing the parameters and their associated values to be used in the AMPL model.
-            The DataFrame should have the following structure:
+            A DataFrame containing the parameters and their associated values to be used
+            in the AMPL model. The DataFrame should have the following structure:
+                - 'param': (str) The name of the parameter to be varied in the AMPL model.
+                - 'index0', 'index1', 'index2', 'index3': (str or None)
+                  Index columns used to identify the parameter configuration
+                  (optional, can be NA).
+                - 'value1', 'value2', ..., 'valueN': (float or int)
+                  One or more columns containing the numerical values for each model run.
 
-            - `param`: (str) The name of the parameter to be varied in the AMPL model.
-            - `index0`, `index1`, `index2`, `index3`: (str or categorical) Index columns used to uniquely identify the parameter
-            configurations. These can include specific categories or labels related to the parameter.
-            - `value1`, `value2`, ..., `valueN`: (float or int) One or more columns containing the numerical values to be set for the
-            respective parameter during each iteration of the model run. The number of value columns is flexible, ranging from 1 to N,
-            where N is the total number of iterations required.
-
-            Example:
-            ```
-            | param                 | index0                | index1       | index2 | index3 | value1  | value2  | value3  | ... | valueN  |
-            |-----------------------|-----------------------|--------------|--------|--------|---------|---------|---------|-----|---------|
-            | f_min                 | PV                    |              |        |        | 2       | 2.6     | 5.2     | ... | 26      |
-            | f_max                 | PV                    |              |        |        | 2       | 2.6     | 5.2     | ... | 26      |
-            | end_uses_demand_year  | MOBILITY_FREIGHT_ELD  | TRANSPORTATION|        |        | 45000   | 33226.71| 33226.71| ... | 33226.71|
-            | c_inv                 | WIND_ONSHORE          |              |        |        | 800     | 850     | 900     | ... | 1300    |
-            ```
+            Rows with all index columns = NA will be treated as scalar parameters.
+            Rows with at least one non-NA index column will be set via .set_values(...).
 
         parser : Callable[[AMPL], Result], optional
-            A function that parses the AMPL model results. It should accept an AMPL object as input and return a Result object.
-            The default is `parse_result`.
+            A function that parses the AMPL model results. It should accept an AMPL object
+            as input and return a Result object. Defaults to parse_result.
 
         ds : Dataset, optional
             An optional dataset object that can be used during the initial run of the model.
 
         Returns:
-        -------
+        --------
         list[Result]
-            A list of results obtained after each model run. Each element in the list corresponds to the result of one iteration of the model.
+            A list of results obtained after each model run. Each element in the list
+            corresponds to the result of one iteration of the model.
 
         Raises:
-        ------
+        -------
         ValueError
-            If the DataFrame does not contain the required columns or if there are missing values in the critical columns.
-
+            - If the DataFrame is missing required columns.
+            - If 'param' has missing values.
+            - If there are no 'value' columns.
         TypeError
-            If the 'value' columns do not contain numeric data.
+            If any 'value' column is not numeric.
         """
 
         # Check for required columns
         required_columns = ['param', 'index0', 'index1', 'index2', 'index3']
         missing_columns = [col for col in required_columns if col not in data.columns]
         if missing_columns:
-            raise ValueError(f"DataFrame is missing the following required columns: {missing_columns}")
+            raise ValueError(
+                f"DataFrame is missing the following required columns: {missing_columns}"
+            )
 
+        # Identify all 'value' columns
         value_columns = [col for col in data.columns if col.startswith('value')]
         if not value_columns:
-            raise ValueError("No 'value' columns found in the DataFrame. At least one 'value' column is required.")
+            raise ValueError(
+                "No 'value' columns found in the DataFrame. At least one 'value' column is required."
+            )
 
-        # Check for missing values in critical columns
+        # Check for missing values in 'param' but do NOT enforce that 'index0' must be non-NA
         if data['param'].isnull().any():
-            raise ValueError("Missing values found in the 'param' column.")
-        if data['index0'].isnull().any():
-            raise ValueError("Missing values found in the 'index0' column.")
+            raise ValueError(
+                "Missing values found in the 'param' column."
+            )
 
-        # Check for correct data types
+        # Ensure all 'value' columns have numeric data
         for col in value_columns:
             if not pd.api.types.is_numeric_dtype(data[col]):
-                raise TypeError(f"Column '{col}' should contain numeric data, but found non-numeric values.")
+                raise TypeError(
+                    f"Column '{col}' should contain numeric data, but found non-numeric values."
+                )
 
-        # Initial Run
-        unique_params = data['param'].unique()
-        if self.es_model.getSets().__len__() == 0:  # Check if AMPL instance is empty
+        # If AMPL has not been initialized, do so now
+        if self.es_model.getSets().__len__() == 0:
             self._initial_run(ds=ds)
 
+        # Map each unique 'param' to the AMPL parameter object
+        unique_params = data['param'].unique()
         parameters = {param: self.es_model.get_parameter(param) for param in unique_params}
 
+        # Gather the index columns for convenience
         data_index_columns = data.columns[data.columns.str.startswith('index')].to_list()
+
+        # Container for merged results across runs
         results_n = {}
 
-        # Remaining runs
+        # Loop over each 'value' column => each separate model run
         for j in range(len(value_columns)):
+            col_name = value_columns[j]
 
-            for index, row in data.iterrows():  # iter on param to change
-                try:
-                    params_to_set = row[data_index_columns + [value_columns[j]]].dropna()
-                    params_to_set_df = pd.DataFrame([params_to_set.values], columns=params_to_set.index)
-                    index_columns = [col for col in data_index_columns if col in params_to_set_df.columns]
-                    params_to_set_df.set_index(index_columns, inplace=True)
-                    parameters[row['param']].set_values(params_to_set_df)
-                except KeyError as e:
-                    raise ValueError(f"Index error in row {index}: {e}")
+            for row_idx, row in data.iterrows():
+                param_name = row['param']
+                param_val = row[col_name]
 
-            # Solve model and parse result
+                # Extract only non-NA entries among index0..index3
+                idx_data = {idx_col: row[idx_col]
+                            for idx_col in data_index_columns
+                            if pd.notnull(row[idx_col])}
+
+                if len(idx_data) == 0:
+                    # No valid index => treat as a scalar
+                    parameters[param_name].set(param_val)
+                else:
+                    # At least one valid index => build a small DataFrame and set via set_values
+                    row_slice = row[data_index_columns + [col_name]].dropna()
+                    param_df = pd.DataFrame([row_slice.values], columns=row_slice.index)
+
+                    # Identify which columns actually function as indices here
+                    index_cols = [ic for ic in data_index_columns if ic in param_df.columns]
+                    param_df.set_index(index_cols, inplace=True)
+
+                    parameters[param_name].set_values(param_df)
+
+            # Solve model after all parameters for this run have been updated
             self.es_model.solve()
-            print(j + 1)
+            print(f"Run {j + 1} complete.")
 
+            # Check solver status
             if self.es_model.solve_result_num > 99:
-                print(f"No optimal solution found, see error: ", self.es_model.solve_result_num)
+                print("No optimal solution found, solver status:", self.es_model.solve_result_num)
 
-            # Merge results of the sequence
-            results_i = parser(self.es_model, id_run=j + 1)
+            # Parse this run's results
+            results_current = parser(self.es_model, id_run=j + 1)
+
+            # Merge with previous runs or store as first
             if j == 0:
-                results_n = results_i
+                results_n = results_current
             else:
-                results_n.variables = {name: pd.concat([results_n.variables[name], results_i.variables[name]]) for name
-                                       in results_n.variables.keys()}
-                results_n.parameters = {name: pd.concat([results_n.parameters[name], results_i.parameters[name]]) for
-                                        name in results_n.parameters.keys()}
-                results_n.objectives = {name: pd.concat([results_n.objectives[name], results_i.objectives[name]]) for
-                                        name in results_n.objectives.keys()}
+                # Merge new data into results_n
+                for var_name in results_n.variables.keys():
+                    results_n.variables[var_name] = pd.concat(
+                        [results_n.variables[var_name], results_current.variables[var_name]]
+                    )
+                for par_name in results_n.parameters.keys():
+                    results_n.parameters[par_name] = pd.concat(
+                        [results_n.parameters[par_name], results_current.parameters[par_name]]
+                    )
+                for obj_name in results_n.objectives.keys():
+                    results_n.objectives[obj_name] = pd.concat(
+                        [results_n.objectives[obj_name], results_current.objectives[obj_name]]
+                    )
+
         return results_n
 
     def add_technology(self, tech_parameters: dict, output_dir: str, tech_sets: dict = None):
