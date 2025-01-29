@@ -30,16 +30,16 @@ class Energyscope:
     def _load_model_files(self, ds: Dataset = None):
         """
         Loads the model and data files into the given AMPL instance.
-        
+
         Args:
             ds (Dataset, optional): An optional dataset to set specific data in the model.
         """
         # Read the model and data files
-        for mod_file in self.model.mod_files:
-            self.es_model.read(mod_file)
-
-        for dat_file in self.model.dat_files:
-            self.es_model.read_data(dat_file)
+        for file in self.model.files:
+            if file[0] == 'mod':
+                self.es_model.read(file[1])
+            elif file[0] == 'dat':
+                self.es_model.read_data(file[1])
 
         # Set dataset-specific data if provided
         if ds:
@@ -63,7 +63,7 @@ class Energyscope:
         """
         Calls AMPL with `df` as .dat and returns the parsed result.
         """
-        if self.es_model.getSets().__len__() == 0: # Check if AMPL instance is empty
+        if self.es_model.getSets().__len__() == 0:  # Check if AMPL instance is empty
             self._initial_run(ds=ds)
 
         # Solve the model
@@ -73,20 +73,26 @@ class Energyscope:
 
         return parser(self.es_model, id_run=0)
 
-    def export_ampl(self, mod_filename: str = '/tutorial_output/energyscope.mod',
-                    dat_filename: str = '/tutorial_output/energyscope.dat'):
+    def export_ampl(self, mod_filename: str = 'tutorial_output/AMPL_infrastructure_ch_2050.mod',
+                    dat_filename: str = 'tutorial_output/AMPL_infrastructure_ch_2050.dat'):
         """
         Exports the model and data to .mod and .dat files for AMPL.
-        
+
         Args:
             mod_filename (str): Path to the .mod file to export the model.
             dat_filename (str): Path to the .dat file to export the data.
         """
-        # Create an AMPL instance
+        # Reset the AMPL model
         self.es_model.reset()
 
-        # Load the model files
-        self._load_model_files()
+        # Load the model and data files
+        for file_type, file_path in self.model.files:
+            if file_type == 'mod':
+                self.es_model.read(file_path)
+            elif file_type == 'dat':
+                self.es_model.read_data(file_path)
+            else:
+                raise ValueError(f"Unsupported file type: {file_type}")
 
         # Export the model and data
         self.es_model.export_model(mod_filename)
@@ -95,20 +101,22 @@ class Energyscope:
     def export_glpk(self, mod_filename: str, dat_filename: str):
         """
         Exports the model and data to files for GLPK.
-        
+
         Args:
             mod_filename (str): Path to the .mod file to export the model.
             dat_filename (str): Path to the .dat file to export the data.
         """
-        # Create an AMPL instance
+        # Reset the AMPL model
         self.es_model.reset()
 
         # Read the model and data files
-        for mod_file in self.model.mod_files:
-            self.es_model.read(mod_file)
-
-        for dat_file in self.model.dat_files:
-            self.es_model.read_data(dat_file)
+        for file_type, file_path in self.model.files:
+            if file_type == 'mod':
+                self.es_model.read(file_path)
+            elif file_type == 'dat':
+                self.es_model.read_data(file_path)
+            else:
+                raise ValueError(f"Unsupported file type: {file_type}")
 
         # Export the base model and data files
         self.es_model.export_model(mod_filename)
@@ -165,11 +173,8 @@ class Energyscope:
         with open(dat_filename, 'w') as file:
             file.write(modified_dat_content)
 
-    def calc_sequence(self,
-                      data: pd.DataFrame,
-                      parser: Callable[[AMPL], Result] = parse_result,
-                      ds: Dataset = None
-                      ) -> list[Result]:
+    def calc_sequence(self, data: pd.DataFrame, parser: Callable[[AMPL], Result] = parse_result, ds: Dataset = None) -> \
+    list[Result]:
         """
         Calls AMPL `n` times varying `parameters` based on `sequence` with `data` as .dat.
 
@@ -240,7 +245,7 @@ class Energyscope:
 
         # Initial Run
         unique_params = data['param'].unique()
-        if self.es_model.getSets().__len__() == 0: # Check if AMPL instance is empty
+        if self.es_model.getSets().__len__() == 0:  # Check if AMPL instance is empty
             self._initial_run(ds=ds)
 
         parameters = {param: self.es_model.get_parameter(param) for param in unique_params}
@@ -251,7 +256,7 @@ class Energyscope:
         # Remaining runs
         for j in range(len(value_columns)):
 
-            for index, row in data.iterrows():  # iter on param to change 
+            for index, row in data.iterrows():  # iter on param to change
                 try:
                     params_to_set = row[data_index_columns + [value_columns[j]]].dropna()
                     params_to_set_df = pd.DataFrame([params_to_set.values], columns=params_to_set.index)
@@ -263,7 +268,7 @@ class Energyscope:
 
             # Solve model and parse result
             self.es_model.solve()
-            print(j+1)
+            print(j + 1)
 
             if self.es_model.solve_result_num > 99:
                 print(f"No optimal solution found, see error: ", self.es_model.solve_result_num)
@@ -340,7 +345,6 @@ class Energyscope:
                 'c_p': 1,
                 'gwp_constr': 0,
                 'trl': 9,
-                # layers_in_out default to 0 for layers 'ELECTRICITY_MV', 'HEAT_LOW_T_DHN', and 'COAL'
                 'layers_in_out': {
                     'ELECTRICITY_MV': 0,
                     'HEAT_LOW_T_DHN': 0,
@@ -349,8 +353,8 @@ class Energyscope:
             }
 
             for attr in default_params.keys():
-                if not attr in tech_parameters.keys():
-                    print(attr + " is not defined, default value: " + str(default_params[attr]) + " will be used.")
+                if attr not in tech_parameters:
+                    print(f"{attr} is not defined, default value: {default_params[attr]} will be used.")
 
             # Update default_params with any values provided in tech_parameters
             for param, default_value in default_params.items():
@@ -358,8 +362,9 @@ class Energyscope:
 
             # Step 3: Validate all technology parameters
             required_params = [
-                'ref_size', 'c_inv', 'c_maint', 'lifetime', 'f_max', 'f_min', 'fmax_perc',
-                'fmin_perc', 'c_p_t', 'c_p', 'gwp_constr', 'trl', 'layers_in_out'
+                'ref_size', 'c_inv', 'c_maint', 'lifetime', 'f_max',
+                'f_min', 'fmax_perc', 'fmin_perc',
+                'c_p_t', 'c_p', 'gwp_constr', 'trl', 'layers_in_out'
             ]
             for param in required_params:
                 if param not in tech_parameters:
@@ -403,7 +408,7 @@ class Energyscope:
                     f.write(f"let c_p_t['{tech_abbreviation}',{month}] := {value} ; #\n")
 
             # Step 5: Append the technology to the model's dataset (e.g., infrastructure)
-            self.model.dat_files.append(output_file)
+            self.model.files.append(('dat', output_file))
 
             print(f"Technology '{tech_abbreviation}' successfully added and saved in {output_file}")
 
