@@ -77,19 +77,7 @@ param c_p_t {TECHNOLOGIES, HOURS, TYPICAL_DAYS} default 1; #Hourly capacity fact
 param end_uses_demand_year {END_USES_INPUT, SECTORS} >= 0 default 0; # end_uses_year [GWh]: table end-uses demand vs sectors (input to the model). Yearly values. [Mpkm] or [Mtkm] for passenger or freight mobility.
 param end_uses_input {i in END_USES_INPUT} := sum {s in SECTORS} (end_uses_demand_year [i,s]); # end_uses_input (Figure 1.4) [GWh]: total demand for each type of end-uses across sectors (yearly energy) as input from the demand-side model. [Mpkm] or [Mtkm] for passenger or freight mobility.
 param i_rate > 0; # discount rate [-]: real discount rate
-# param re_share_primary >= 0; # re_share [-]: minimum share of primary energy coming from RE
 param gwp_limit >= 0;    # [ktCO2-eq./year] maximum gwp emissions allowed.
-param share_mobility_public_min >= 0, <= 1; # %_public,min [-]: min limit for penetration of public mobility over total mobility 
-param share_mobility_public_max >= 0, <= 1; # %_public,max [-]: max limit for penetration of public mobility over total mobility 
-param share_freight_train_min >= 0, <= 1; # %_rail,min [-]: min limit for penetration of train in freight transportation
-param share_freight_train_max >= 0, <= 1; # %_rail,min [-]: max limit for penetration of train in freight transportation
-param share_freight_boat_min  >= 0, <= 1; # %_boat,min [-]: min limit for penetration of boat in freight transportation
-param share_freight_boat_max  >= 0, <= 1; # %_boat,min [-]: max limit for penetration of boat in freight transportation
-param share_freight_road_min  >= 0, <= 1; # %_road,min [-]: min limit for penetration of truck in freight transportation
-param share_freight_road_max  >= 0, <= 1; # %_road,min [-]: max limit for penetration of truck in freight transportation
-param share_heat_dhn_min >= 0, <= 1; # %_dhn,min [-]: min limit for penetration of dhn in low-T heating
-param share_heat_dhn_max >= 0, <= 1; # %_dhn,max [-]: max limit for penetration of dhn in low-T heating
-# param share_ned {END_USES_TYPES_OF_CATEGORY["NON_ENERGY"]} >= 0, <= 1; # %_ned [-] share of non-energy demand per type of feedstocks.
 param t_op {HOURS, TYPICAL_DAYS} default 1;# [h]: operating time 
 param f_max {TECHNOLOGIES} >= 0; # Maximum feasible installed capacity [GW], refers to main output. storage level [GWh] for STORAGE_TECH
 param f_min {TECHNOLOGIES} >= 0; # Minimum feasible installed capacity [GW], refers to main output. storage level [GWh] for STORAGE_TECH
@@ -98,7 +86,6 @@ param fmin_perc {TECHNOLOGIES} >= 0, <= 1 default 0; # value in [0,1]: this is t
 param avail {RESOURCES} >= 0; # Yearly availability of resources [GWh/y]
 param c_op {RESOURCES} >= 0; # cost of resources in the different periods [Meuros/GWh]
 param vehicule_capacity {TECHNOLOGIES} >=0, default 0; #  veh_capa [capacity/vehicles] Average capacity (pass-km/h or t-km/h) per vehicle. It makes the link between F and the number of vehicles
-# param peak_sh_factor >= 0;   # %_Peak_sh [-]: ratio between highest yearly demand and highest TDs demand
 param layers_in_out {RESOURCES union TECHNOLOGIES diff STORAGE_TECH , LAYERS}; # f: input/output Resources/Technologies to Layers. Reference is one unit ([GW] or [Mpkm/h] or [Mtkm/h]) of (main) output of the resource/technology. input to layer (output of technology) > 0.
 param c_inv {TECHNOLOGIES} >= 0; # Specific investment cost [Meuros/GW].[Meuros/GWh] for STORAGE_TECH
 param c_maint {TECHNOLOGIES} >= 0; # O&M cost [Meuros/GW/year]: O&M cost does not include resource (fuel) cost. [Meuros/GWh/year] for STORAGE_TECH
@@ -133,18 +120,11 @@ param total_time := sum {t in PERIODS, h in HOUR_OF_PERIOD [t], td in TYPICAL_DA
 #####################################
 
 ##Independent variables [Table 2.3] :
-var Share_mobility_public >= share_mobility_public_min, <= share_mobility_public_max; # %_Public: Ratio [0; 1] public mobility over total passenger mobility
-var Share_freight_train, >= share_freight_train_min, <= share_freight_train_max; # %_Fr,Rail: Ratio [0; 1] rail transport over total freight transport
-var Share_freight_road, >= share_freight_road_min, <= share_freight_road_max; # %_Fr,Truck: Ratio [0; 1] Truck transport over total freight transport
-var Share_freight_boat, >= share_freight_boat_min, <= share_freight_boat_max; # %_Fr,Boat: Ratio [0; 1] boat transport over total freight transport
-var Share_heat_dhn, >= share_heat_dhn_min, <= share_heat_dhn_max; # %_Dhn: Ratio [0; 1] centralized over total low-temperature heat
 var F {TECHNOLOGIES} >= 0; # F: Installed capacity ([GW]) with respect to main output (see layers_in_out). [GWh] for STORAGE_TECH.
 var F_t {RESOURCES union TECHNOLOGIES, HOURS, TYPICAL_DAYS} >= 0; # F_t: Operation in each period [GW] or, for STORAGE_TECH, storage level [GWh]. multiplication factor with respect to the values in layers_in_out table. Takes into account c_p
 var Storage_in {i in STORAGE_TECH, LAYERS, HOURS, TYPICAL_DAYS} >= 0; # Sto_in [GW]: Power input to the storage in a certain period
 var Storage_out {i in STORAGE_TECH, LAYERS, HOURS, TYPICAL_DAYS} >= 0; # Sto_out [GW]: Power output from the storage in a certain period
 var Power_nuclear  >=0; # [GW] P_Nuc: Constant load of nuclear
-var Shares_mobility_passenger {TECHNOLOGIES_OF_END_USES_CATEGORY["MOBILITY_PASSENGER"]} >=0; # %_PassMob [-]: Constant share of passenger mobility
-var Shares_mobility_freight {TECHNOLOGIES_OF_END_USES_CATEGORY["MOBILITY_FREIGHT"]} >=0; # %_FreightMob [-]: Constant share of passenger mobility
 var Shares_lowT_dec {TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}}>=0 ; # %_HeatDec [-]: Constant share of heat Low T decentralised + its specific thermal solar
 var F_solar         {TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}} >=0; # F_sol [GW]: Solar thermal installed capacity per heat decentralised technologies
 var F_t_solar       {TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}, h in HOURS, td in TYPICAL_DAYS} >= 0; # F_t_sol [GW]: Solar thermal operating per heat decentralised technologies
@@ -168,60 +148,21 @@ var Storage_level {STORAGE_TECH, PERIODS} >= 0; # Sto_level [GWh]: Energy stored
 ## End-uses demand calculation constraints 
 #-----------------------------------------
 
-# subject to end_uses_t {l in LAYERS, h in HOURS, td in TYPICAL_DAYS}:
-# 	End_uses [l, h, td] = (if l == "ELECTRICITY" 
-# 		then
-# 			(end_uses_input[l] / total_time + end_uses_input["LIGHTING"] * electricity_time_series [h, td] / t_op [h, td] )
-# 		else (if (l == "HEAT_LOW_T_DECEN" or l == "HEAT_LOW_T_DHN") then
-# 			(end_uses_input["HEAT_LOW_T_HW"] / total_time + end_uses_input["HEAT_LOW_T_SH"] * heating_time_series [h, td] / t_op [h, td] )
-# 		else (if (l == "MOB_PRIVATE" or l == "MOB_PUBLIC") then
-# 			(end_uses_input["MOBILITY_PASSENGER"] * mob_pass_time_series [h, td] / t_op [h, td]  )
-# 		else (if (l == "MOB_FREIGHT_RAIL" or l == "MOB_FREIGHT_ROAD"or l == "MOB_FREIGHT_BOAT") then
-# 			(end_uses_input["MOBILITY_FREIGHT"]   * mob_freight_time_series [h, td] / t_op [h, td] )
-# 		else (if l == "HEAT_HIGH_T" then
-# 			end_uses_input[l] / total_time
-# 		else 
-# 			0 ))))); # For all layers which don't have an end-use demand
-
-
-
 # [Figure 2.8] From annual energy demand to hourly power demand. End_uses is non-zero only for demand layers.
 subject to end_uses_t {l in LAYERS, h in HOURS, td in TYPICAL_DAYS}:
 	End_uses [l, h, td] = (if l == "ELECTRICITY" 
 		then
 			(end_uses_input[l] / total_time + end_uses_input["LIGHTING"] * electricity_time_series [h, td] / t_op [h, td] )
-		
-		else (if l == "HEAT_LOW_T_DHN" then
-			(end_uses_input["HEAT_LOW_T_HW"] / total_time + end_uses_input["HEAT_LOW_T_SH"] * heating_time_series [h, td] / t_op [h, td] ) * Share_heat_dhn #+ Network_losses [l,h,td]
-		else (if l == "HEAT_LOW_T_DECEN" then
-			(end_uses_input["HEAT_LOW_T_HW"] / total_time + end_uses_input["HEAT_LOW_T_SH"] * heating_time_series [h, td] / t_op [h, td] ) * (1 - Share_heat_dhn)
-
-		else (if l == "MOB_PUBLIC" then
-			(end_uses_input["MOBILITY_PASSENGER"] * mob_pass_time_series [h, td] / t_op [h, td]  ) * Share_mobility_public
-		else (if l == "MOB_PRIVATE" then
-			(end_uses_input["MOBILITY_PASSENGER"] * mob_pass_time_series [h, td] / t_op [h, td]  ) * (1 - Share_mobility_public)
-
-		else (if l == "MOB_FREIGHT_RAIL" then
-			(end_uses_input["MOBILITY_FREIGHT"]   * mob_freight_time_series [h, td] / t_op [h, td] ) *  Share_freight_train
-		else (if l == "MOB_FREIGHT_ROAD" then
-			(end_uses_input["MOBILITY_FREIGHT"]   * mob_freight_time_series [h, td] / t_op [h, td] ) *  Share_freight_road
-		else (if l == "MOB_FREIGHT_BOAT" then
-			(end_uses_input["MOBILITY_FREIGHT"]   * mob_freight_time_series [h, td] / t_op [h, td] ) *  Share_freight_boat
-
+		else (if (l == "HEAT_LOW_T_DECEN" or l == "HEAT_LOW_T_DHN") then
+			(end_uses_input["HEAT_LOW_T_HW"] / total_time + end_uses_input["HEAT_LOW_T_SH"] * heating_time_series [h, td] / t_op [h, td] )
+		else (if (l == "MOB_PRIVATE" or l == "MOB_PUBLIC") then
+			(end_uses_input["MOBILITY_PASSENGER"] * mob_pass_time_series [h, td] / t_op [h, td]  )
+		else (if (l == "MOB_FREIGHT_RAIL" or l == "MOB_FREIGHT_ROAD"or l == "MOB_FREIGHT_BOAT") then
+			(end_uses_input["MOBILITY_FREIGHT"]   * mob_freight_time_series [h, td] / t_op [h, td] )
 		else (if l == "HEAT_HIGH_T" then
 			end_uses_input[l] / total_time
-
-			
-		# else (if l == "HVC" then
-		# 	end_uses_input["NON_ENERGY"] * share_ned ["HVC"] / total_time
-		# else (if l == "AMMONIA" then
-		# 	end_uses_input["NON_ENERGY"] * share_ned ["AMMONIA"] / total_time
-		# else (if l == "METHANOL" then
-		# 	end_uses_input["NON_ENERGY"] * share_ned ["METHANOL"] / total_time
-		
 		else 
-			0 ))))))))); # For all layers which don't have an end-use demand
-
+			0 ))))); # For all layers which don't have an end-use demand
 
 ## Cost
 #------
@@ -258,7 +199,6 @@ subject to gwp_constr_calc {j in TECHNOLOGIES}:
 # [Eq. 2.8]
 subject to gwp_op_calc {i in RESOURCES}:
 	GWP_op [i] = gwp_op [i] * sum {t in PERIODS, h in HOUR_OF_PERIOD [t], td in TYPICAL_DAY_OF_PERIOD [t]} ( F_t [i, h, td] * t_op [h, td] );	
-
 	
 ## Multiplication factor
 #-----------------------
@@ -281,11 +221,6 @@ subject to capacity_factor {j in TECHNOLOGIES}:
 # [Eq. 2.12] Resources availability equation
 subject to resource_availability {i in RESOURCES}:
 	sum {t in PERIODS, h in HOUR_OF_PERIOD[t], td in TYPICAL_DAY_OF_PERIOD[t]} (F_t [i, h, td] * t_op [h, td]) <= avail [i];
-
-# [Eq. 2.12-bis] Constant flow of import for resources listed in SET RES_IMPORT_CONSTANT
-# var Import_constant {RES_IMPORT_CONSTANT} >= 0;
-# subject to resource_constant_import { i in RES_IMPORT_CONSTANT, h in HOURS, td in TYPICAL_DAYS}:
-# 	F_t [i, h, td] * t_op [h, td] = Import_constant [i];
 
 ## Layers
 #--------
@@ -339,18 +274,9 @@ subject to limit_energy_to_power_ratio_bis {i in V2G, j in EVs_BATT_OF_V2G[i], l
 ## Networks
 #----------------
 
-# [Eq. 2.20] Calculation of losses for each end-use demand type (normally for electricity and DHN)
-# subject to network_losses {eut in END_USES_TYPES, h in HOURS, td in TYPICAL_DAYS}:
-# 	Network_losses [eut,h,td] = (sum {j in RESOURCES union TECHNOLOGIES diff STORAGE_TECH: layers_in_out [j, eut] > 0} ((layers_in_out[j, eut]) * F_t [j, h, td])) * loss_network [eut];
-
-# [Eq. 2.21]  Extra grid cost for integrating 1 GW of RE is estimated to 367.8Meuros per GW of intermittent renewable (27beuros to integrate the overall potential) 
-# subject to extra_grid:
-# 	F ["GRID"] = 1 +  (c_grid_extra / c_inv["GRID"]) *(    (F ["WIND_ONSHORE"]     + F ["WIND_OFFSHORE"]     + F ["PV"]      )
-# 					                                     - (f_min ["WIND_ONSHORE"] + f_min ["WIND_OFFSHORE"] + f_min ["PV"]) );
-
 # [Eq. 2.22] DHN: assigning a cost to the network equal to the power capacity connected to the grid
-# subject to extra_dhn:
-# 	F ["DHN"] = sum {j in TECHNOLOGIES diff STORAGE_TECH: layers_in_out [j,"HEAT_LOW_T_DHN"] > 0} (layers_in_out [j,"HEAT_LOW_T_DHN"] * F [j]);
+subject to extra_dhn:
+	F ["DHN"] = sum {j in TECHNOLOGIES diff STORAGE_TECH: layers_in_out [j,"HEAT_LOW_T_DHN"] > 0} (layers_in_out [j,"HEAT_LOW_T_DHN"] * F [j]);
 	
 ## Additional constraints
 #------------------------
@@ -359,21 +285,6 @@ subject to limit_energy_to_power_ratio_bis {i in V2G, j in EVs_BATT_OF_V2G[i], l
 subject to constantNuc {h in HOURS, td in TYPICAL_DAYS}:
 	F_t ["NUCLEAR", h, td] = Power_nuclear;
 
-# [Eq. 2.24] Operating strategy in mobility passenger (to make model more realistic)
-# Each passenger mobility technology (j) has to supply a constant share  (Shares_mobility_passenger[j]) of the passenger mobility demand
-# subject to operating_strategy_mob_passenger{j in TECHNOLOGIES_OF_END_USES_CATEGORY["MOBILITY_PASSENGER"], h in HOURS, td in TYPICAL_DAYS}:
-# 	F_t [j, h, td]   = Shares_mobility_passenger [j] * (end_uses_input["MOBILITY_PASSENGER"] * mob_pass_time_series [h, td] / t_op [h, td] );
-
-# [Eq. 2.25] Operating strategy in mobility freight (to make model more realistic)
-# Each freight mobility technology (j) has to supply a constant share  (Shares_mobility_freight[j]) of the passenger mobility demand
-# subject to operating_strategy_mobility_freight{j in TECHNOLOGIES_OF_END_USES_CATEGORY["MOBILITY_FREIGHT"], h in HOURS, td in TYPICAL_DAYS}:
-# 	F_t [j, h, td]   = Shares_mobility_freight [j] * (end_uses_input["MOBILITY_FREIGHT"] * mob_freight_time_series [h, td] / t_op [h, td] );
-
-# [Eq. 2.26] To impose a constant share in the mobility
-# subject to Freight_shares :
-# 	Share_freight_train + Share_freight_road + Share_freight_boat = 1; # Should not be required (redundant)... But kept for security
-
-	
 ## Thermal solar & thermal storage:
 
 # [Eq. 2.27] relation between decentralised thermal solar power and capacity via period capacity factor.
@@ -398,25 +309,6 @@ subject to EV_storage_size {j in V2G, i in EVs_BATT_OF_V2G[j]}:
 # [Eq. 2.31]  Impose EVs to be supplied by their battery.
 subject to EV_storage_for_V2G_demand {j in V2G, i in EVs_BATT_OF_V2G[j], h in HOURS, td in TYPICAL_DAYS}:
 	Storage_out [i,"ELECTRICITY",h,td] >=  - layers_in_out[j,"ELECTRICITY"]* F_t [j, h, td];
-		
-# [Eq. 2.31-bis]  Impose a minimum state of charge at some hours of the day:
-# subject to ev_minimum_state_of_charge {j in V2G, i in EVs_BATT_OF_V2G[j],  t in PERIODS, h in HOUR_OF_PERIOD[t], td in TYPICAL_DAY_OF_PERIOD[t]}:
-# 	Storage_level [i, t] >=  F [i] * state_of_charge_ev [i, h];
-		
-## Peak demand :
-
-# [Eq. 2.32] Peak in decentralized heating
-# subject to peak_lowT_dec {j in TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}, h in HOURS, td in TYPICAL_DAYS}:
-# 	F [j] >= peak_sh_factor * F_t [j, h, td] ; 
-
-# [Eq. 2.33] Calculation of max heat demand in DHN (1st constraint required to linearised the max function)
-# var Max_Heat_Demand >= 0;
-# subject to max_dhn_heat_demand {h in HOURS, td in TYPICAL_DAYS}:
-# 	Max_Heat_Demand >= End_uses ["HEAT_LOW_T_DHN", h, td];
-# # Peak in DHN
-# subject to peak_lowT_dhn:
-# 	sum {j in TECHNOLOGIES_OF_END_USES_TYPE ["HEAT_LOW_T_DHN"], i in STORAGE_OF_END_USES_TYPES["HEAT_LOW_T_DHN"]} (F [j] + F[i]/storage_discharge_time[i]) >= peak_sh_factor * Max_Heat_Demand;
-
 
 ## Adaptation for the case study: Constraints needed for the application to Switzerland (not needed in standard LP formulation)
 #-----------------------------------------------------------------------------------------------------------------------
@@ -425,30 +317,13 @@ subject to EV_storage_for_V2G_demand {j in V2G, i in EVs_BATT_OF_V2G[j], h in HO
 subject to Minimum_GWP_reduction :
 	TotalGWP <= gwp_limit;
 
-# [Eq. 2.35] Minimum share of RE in primary energy supply
-# subject to Minimum_RE_share :
-# 	sum {j in RE_RESOURCES, t in PERIODS, h in HOUR_OF_PERIOD[t], td in TYPICAL_DAY_OF_PERIOD[t]} F_t [j, h, td] * t_op [h, td] 
-# 	>=	re_share_primary *
-# 	sum {j in RESOURCES, t in PERIODS, h in HOUR_OF_PERIOD[t], td in TYPICAL_DAY_OF_PERIOD[t]} F_t [j, h, td] * t_op [h, td]	;
-		
-# [Eq. 2.36] Definition of min/max output of each technology as % of total output in a given layer. 
-# subject to f_max_perc {eut in END_USES_TYPES, j in TECHNOLOGIES_OF_END_USES_TYPE[eut]}:
-# 	sum {t in PERIODS, h in HOUR_OF_PERIOD[t], td in TYPICAL_DAY_OF_PERIOD[t]} (F_t [j,h,td] * t_op[h,td]) <= fmax_perc [j] * sum {j2 in TECHNOLOGIES_OF_END_USES_TYPE[eut], t in PERIODS, h in HOUR_OF_PERIOD[t], td in TYPICAL_DAY_OF_PERIOD[t]} (F_t [j2, h, td] * t_op[h,td]);
-# subject to f_min_perc {eut in END_USES_TYPES, j in TECHNOLOGIES_OF_END_USES_TYPE[eut]}:
-# 	sum {t in PERIODS, h in HOUR_OF_PERIOD[t], td in TYPICAL_DAY_OF_PERIOD[t]} (F_t [j,h,td] * t_op[h,td]) >= fmin_perc [j] * sum {j2 in TECHNOLOGIES_OF_END_USES_TYPE[eut], t in PERIODS, h in HOUR_OF_PERIOD[t], td in TYPICAL_DAY_OF_PERIOD[t]} (F_t [j2, h, td] * t_op[h,td]);
-
 # [Eq. 2.37] Energy efficiency is a fixed cost
 subject to extra_efficiency:
 	F ["EFFICIENCY"] = 1 / (1 + i_rate);	
 
-# [Eq. 2.38] Limit electricity import capacity
-# subject to max_elec_import {h in HOURS, td in TYPICAL_DAYS}:
-# 	F_t ["ELECTRICITY", h, td] * t_op [h, td] <= import_capacity; 
-	
 # [Eq. 2.39] Limit surface area for solar
 subject to solar_area_limited :
 	F["PV"] / power_density_pv + ( F ["DEC_SOLAR"] + F ["DHN_SOLAR"] ) / power_density_solar_thermal <= solar_area;
-
 
 ##########################
 ### OBJECTIVE FUNCTION ###
