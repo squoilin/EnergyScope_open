@@ -36,30 +36,18 @@ class Result:
 
 
 def parse_result(ampl, id_run=None, results_old=None) -> Result: 
-    # def _parse_set(ampl, name, set_) -> dict[str, pd.DataFrame]:
-    #     if set_.is_scalar():
-    #         return {name: set_.to_pandas().reset_index().rename(columns={'index': name})}
-    #     else:
-    #         result={name:{index[0]: index[1].get_values().toList() for index in ampl.get_set(name).instances()}}
-    #         return result
-
     def _parse_set(ampl, name, set_) -> dict[str, pd.DataFrame]:
         if set_.is_scalar():
             return {name: set_.to_pandas().reset_index().rename(columns={'index': name})}
-        else:
-            result = {}
-            set_ampl = ampl.get_set(name)  # Get the set object
+        set_ampl = ampl.get_set(name)
+        result = {}
+        for instance in set_ampl.instances():
+            try:
+                result[instance[0]] = list(instance[1].to_list())
+            except Exception:
+                result[instance[0]] = []
+        return {name: result}
 
-            for instance in set_ampl.instances():
-                index_key = instance[0]  # Extract the index
-                try:
-                    values = list(instance[1].to_list())  # Convert to a list properly
-                except Exception as e:
-                    print(f"Skipping {name}[{index_key}] due to error: {e}")
-                    values = []
-                result[index_key] = values
-
-            return {name: result}
 
         
     objectives = {name: objective.to_pandas().rename(columns=lambda v: v.rstrip('.val'))
