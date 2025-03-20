@@ -66,6 +66,7 @@ theme:
     - search.highlight
     - search.suggest
     - toc.follow
+  custom_dir: "docs/overrides"
 
   palette:
     
@@ -144,6 +145,9 @@ plugins:
       include_source: True
       # no_input: True
       # show_input: False 
+      remove_tag_config:
+        remove_input_tags:
+          - hide_code
   - plotly
   - gen-files:
       scripts:
