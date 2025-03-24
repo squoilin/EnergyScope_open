@@ -36,9 +36,14 @@ def parse_result(ampl, id_run=None, results_old=None) -> Result:
     def _parse_set(ampl, name, set_) -> dict[str, pd.DataFrame]:
         if set_.is_scalar():
             return {name: set_.to_pandas().reset_index().rename(columns={'index': name})}
-        else:
-            result = {name: {index[0]: index[1].get_values().toList() for index in ampl.get_set(name).instances()}}
-            return result
+        set_ampl = ampl.get_set(name)
+        result = {}
+        for instance in set_ampl.instances():
+            try:
+                result[instance[0]] = list(instance[1].to_list())
+            except Exception:
+                result[instance[0]] = []
+        return {name: result}
 
     objectives = {name: objective.to_pandas().rename(columns=lambda v: v.rstrip('.val')) for name, objective in
                   ampl.get_objectives()}

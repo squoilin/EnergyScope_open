@@ -4,7 +4,7 @@
 **EnergyScope** is designed with a modular architecture that allows users to adjust the level of detail and expand the model based on specific needs. While the core model provides a robust foundation for energy system optimization, several complementary modules can be activated to gain additional insights on more specialized topics. These modules enhance the model’s capabilities but may increase computational complexity and time. Below is a brief introduction to each module.
 
 
-## [Temporal Resolution](../modules/module_td.md)
+## [Temporal Resolution](module_td.md)
 
 !!! abstract "Temporal Resolution Module"
     The **Temporal Resolution** module improves the granularity of time-based simulations, allowing for more detailed temporal modeling and better analysis of energy dynamics over different timescales.
@@ -30,7 +30,7 @@ This module breaks down the energy system into specific geographic regions, allo
     - Infrastructure development analysis
 
 
-## [Mobility](../modules/module_mob.md)
+## [Mobility](module_mob.md)
 
 !!! abstract "Mobility Module"
     The **Mobility** module models energy demand from the transportation sector, focusing on the integration of electric vehicles (EVs), hydrogen transport, and biofuels into the energy system.
@@ -44,7 +44,7 @@ With the rise of electric vehicles and other alternative transport technologies,
     - Vehicle-to-Grid
 
 
-## [Grids & Infrastructure](../modules/module_infra.md)
+## [Grids & Infrastructure](module_infra.md)
 
 !!! abstract "Grids & Infrastructure Module"
     The **Grids & Infrastructure** module focuses on modeling the development and capacity of energy infrastructure, such as electricity grids, transmission lines, and storage systems.
@@ -57,7 +57,7 @@ This module adds the capability to analyze grid infrastructure in more detail, i
     - energy storage integration.
 
 
-## [Carbon Flows](../modules/module_co2.md)
+## [Carbon Flows](module_co2.md)
 
 !!! abstract "Carbon Flows Module"
     The **Carbon Flows** module tracks carbon emissions throughout the energy system and can integrate carbon capture, utilization, and storage (CCUS) technologies.
@@ -70,7 +70,7 @@ This module provides detailed insights into the flow of carbon through the energ
     - net-zero energy system planning
 
 
-## [Life Cycle Assessment (LCA)](../modules/module_lca.md)
+## [Life Cycle Assessment (LCA)](module_lca.md)
 
 !!! abstract "LCA Module"
     The **Life Cycle Assessment (LCA)** module allows users to assess the full environmental impacts of technologies and energy flows, from raw material extraction to end-of-life.
