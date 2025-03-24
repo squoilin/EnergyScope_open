@@ -60,7 +60,7 @@ This equation illustrates the balance between electricity supplied to charging s
 
 ## Vehicle-to-Grid
 
-![Illustrative example of a V2G implementation.](../../images/ESTD/model_formulation/v2gAndBatteries.png)
+![Illustrative example of a V2G implementation.](../explanation/images/ESTD/model_formulation/v2gAndBatteries.png)
 
 $$
 \textbf{F} (i) = \frac{\textbf{F} (j)}{ veh_{capa} (j)} ev_{batt,size} (j)  ~~~~~~ \forall  j \in  V2G, i \in \text{EVs BATT OF V2G}(j)
