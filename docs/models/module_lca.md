@@ -23,7 +23,7 @@ This work builds on exploratory research integrating Life Cycle Assessment (LCA)
 
 The *EnergyScope* framework represents a comprehensive multi-energy model evaluated on a monthly averaged basis. It ensures balanced mass and energy conservation between demands and resources. Demand is segmented into sectors such as households, services, industry, and transportation, and further categorized by energy types to create a more precise breakdown. The key decision variables are represented by the installed size \( \mathbf{F} \) and use \( \mathbf{F_t} \) of technologies.
 
-![Graphical representation of the methodology integrating LCIA indicators into ES](../../images/LCA/Methodology.png)
+![Graphical representation of the methodology integrating LCIA indicators into ES](../explanation/images/LCA/Methodology.png)
 
 ## Economic Objective
 
