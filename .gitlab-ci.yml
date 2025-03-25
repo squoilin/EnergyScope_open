@@ -49,7 +49,7 @@ deploy_version:
     - git fetch origin docs:docs
   script:
     - hatch run docs:deploy_version
-    - git push $CI_REPOSITORY docs:docs
+    - git push $CI_REPO_JOAO docs:docs
   only:
     - /^v\d+\.\d+\.\d+([abc]\d*)?$/  # PEP-440 compliant version (tags)
   except:
@@ -63,6 +63,6 @@ deploy_main:
     - git fetch origin docs:docs
   script:
     - hatch run docs:deploy_main
-    - git push $CI_REPOSITORY docs:docs
+    - git push $CI_REPO_JOAO docs:docs
   only:
     - main
