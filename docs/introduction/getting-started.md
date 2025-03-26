@@ -1,6 +1,4 @@
 !!! info "Overview"
-
-!!! info "Overview"
     **[Prerequisites](#prerequisites):**  
     - AMPL must be installed first and be accessible from your system’s PATH.  
     - Python 3.6 or higher is required.  
