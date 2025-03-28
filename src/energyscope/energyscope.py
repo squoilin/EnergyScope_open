@@ -242,10 +242,15 @@ class Energyscope:
 
         # Ensure all 'value' columns have numeric data
         for col in value_columns:
+            # Coerce the column to numeric, converting non-numeric values to NaN
+            data[col] = pd.to_numeric(data[col], errors='coerce')
+            # Check if the column is numeric after coercion
             if not pd.api.types.is_numeric_dtype(data[col]):
-                raise TypeError(
-                    f"Column '{col}' should contain numeric data, but found non-numeric values."
-                )
+                raise TypeError(f"Column '{col}' should contain numeric data, but found non-numeric values.")
+            # Optionally, check for NaN values introduced by coercion
+            if data[col].isnull().any():
+                raise ValueError(f"Column '{col}' contains non-numeric values that could not be converted.")
+        
 
         # If AMPL has not been initialized, do so now
         if self.es_model.getSets().__len__() == 0:
