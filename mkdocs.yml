@@ -181,6 +181,8 @@ extra_javascript:
   - js/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/npm/@widgetbot/crate@3
+  - js/discord.js  
 
 extra:
   version:
