@@ -8,7 +8,7 @@ Energyscope is an open-source whole-energy system model designed to optimize the
 
 - Developed by: EnergyScope Community
 - License: Apache 2.0 License
-- Latest Version: v1.0.0
+- Latest Version: v1.0.1
 
 ---
 
@@ -16,10 +16,11 @@ Energyscope is an open-source whole-energy system model designed to optimize the
 
 - [Get Started](introduction/getting-started.md)
 - [Tutorials](tutorials/index.md)
-- [API Reference](reference/index.md)
+- [Models](Models/index.md)
 - [Model Explanation](explanation/index.md)
 - [Technologies](technologies/index.md)
 - [GitLab Repository](https://gitlab.com/energyscope/energyscope)
+- [API Reference](reference/index.md)
 - [Contact Us](https://join.slack.com/t/energyscopecommunity/shared_invite/zt-235qev7qb-Gx1Jpr3BucKjN1Ny5LlusQ)
 
 ---
@@ -107,6 +108,7 @@ Energyscope is developed by a dedicated team at EPFL, ETHZ, UCLouvain and PolyMT
 -   [Arthur Chuat](mailto:arthur.chuat@epfl.ch) (Library, Plotting, Documentation, Development)  
 -   [Gabriel Wiest](mailto:gwiest@ethz.ch) (Library, Plotting, Documentation, Development)
 -   [Matthieu Souttre](mailto:matthieu.souttre@epfl.ch) (Library, Documentation, Development)
+-   [Nicolas Ghuys](mailto:nicolas.ghuys@ucl.be) (Core Model Development)
 -   [Cyrille Platteau](mailto:cyrille.platteau@epfl.ch) (IT)
 
 If you are interested in a specific topic, have a look at the [modules section](/explanation/model_formulation/modules/) and contact one of the team member related to the development the feature.
@@ -121,6 +123,6 @@ We thank all contributors and the community for their support. For more details,
 
 ## License
 
-© 2024 Energyscope Community. Licensed under the Apache 2.0 License.
+© 2025 Energyscope Community. Licensed under the Apache 2.0 License.
 
 Built with passion by the EnergyScope Team.

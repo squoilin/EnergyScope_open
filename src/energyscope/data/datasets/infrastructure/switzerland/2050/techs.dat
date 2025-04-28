@@ -1926,7 +1926,7 @@ let ref_size['LP_H2_GRID'] := 0.002; # NA
 let c_inv['LP_H2_GRID'] := 557 ; # NA
 let c_maint['LP_H2_GRID'] := 0 ; # NA
 let gwp_constr['LP_H2_GRID'] := 0 ; # NA
-let lifetime['LV_GRID'] := 80 ; # NA
+let lifetime['LP_H2_GRID'] := 80 ; # NA
 let c_p['LP_H2_GRID'] := 1 ; # NA
 let trl['LP_H2_GRID'] := 9 ; # NA
 
