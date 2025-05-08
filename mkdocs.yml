@@ -12,15 +12,13 @@ nav:
       - tutorials/multiple-runs.ipynb
       - tutorials/uncertainty-analysis.ipynb
       - tutorials/add_technology.ipynb
-  #- How-To Guides: 
-  #  - how-to/index.md
-  #  - how-to/add_technology.ipynb
-  - API Reference: reference/
-  - AMPL Reference:
-      - ampl/index.md
-      - ampl/parameters.md
-      - ampl/variables.md
-      - ampl/sets.md
+  - Models:
+      - Models: models/index.md
+      - models/module_td.md
+      - models/module_mob.md
+      - models/module_infra.md
+      - models/module_co2.md
+      - models/module_lca.md
   - Explanation:
       - explanation/index.md
       - explanation/introduction.md
@@ -28,15 +26,19 @@ nav:
       - Model Formulation:
           - explanation/model_formulation/index.md
           - explanation/model_formulation/mathematical_framework.md
-          - Modules:
-              - explanation/model_formulation/modules/index.md
-              - explanation/model_formulation/modules/module_td.md
-              - explanation/model_formulation/modules/module_mob.md
-              - explanation/model_formulation/modules/module_infra.md
-              - explanation/model_formulation/modules/module_co2.md
-              - explanation/model_formulation/modules/module_lca.md
       - explanation/contribution.md
   - Technologies: technologies/
+  #- How-To Guides: 
+  #  - how-to/index.md
+  #  - how-to/add_technology.ipynb
+  - AMPL Reference:
+      - ampl/index.md
+      - ampl/parameters.md
+      - ampl/variables.md
+      - ampl/sets.md
+  - API Reference: reference/
+
+
 
 theme:
   name: material
@@ -179,6 +181,8 @@ extra_javascript:
   - js/mathjax.js
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/npm/@widgetbot/crate@3
+  - js/discord.js  
 
 extra:
   version:
