@@ -41,6 +41,10 @@ transition = Model([('mod', __from_model("transition.mod")), ('dat', __from_data
 
 typical_days = Model([('mod', __from_model("typical_days.mod")), ('dat', __from_data("typical_days.dat")), ])
 
+infrastructure_ch_2050 = Model([('mod', __from_model("core/td/ESTD_model_core.mod")),
+                                ('dat', __from_data("core/td/belgium/ESTD_12TD.dat")),
+                                ('dat', __from_data("core/td/belgium/ESTD_data_core.dat")), ])
+
 infrastructure_ch_2050 = Model([('mod', __from_model("infrastructure/switzerland/ses_main.mod")),
                                 ('dat', __from_data("infrastructure/switzerland/2050/data.dat")),
                                 ('dat', __from_data("infrastructure/switzerland/2050/techs.dat")), ])
