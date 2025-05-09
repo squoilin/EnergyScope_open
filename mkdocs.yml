@@ -4,39 +4,33 @@ watch: [ mkdocs.yml, README.md, src/energyscope ]
 nav:
   - Home:
       - EnergyScope: index.md
-      - introduction/getting-started.md
-  - Tutorials:
-      - Tutorials: tutorials/index.md
-      - tutorials/basic-run.ipynb
-      - tutorials/choose-datasets.ipynb
-      - tutorials/multiple-runs.ipynb
-      - tutorials/uncertainty-analysis.ipynb
-      - tutorials/add_technology.ipynb
-  - Models:
-      - Models: models/index.md
+  - Getting Started:
+      - Getting Started: getting-started/getting-started.md
+  - Conceptual Foundations:
+    - explanation/index.md
+    - explanation/mathematical_framework.md
+  - Model Versions:
+      - models/index.md
       - models/module_td.md
       - models/module_mob.md
       - models/module_infra.md
       - models/module_co2.md
       - models/module_lca.md
-  - Explanation:
-      - explanation/index.md
-      - explanation/introduction.md
-      - explanation/conceptual_foundations.md
-      - Model Formulation:
-          - explanation/model_formulation/index.md
-          - explanation/model_formulation/mathematical_framework.md
-      - explanation/contribution.md
-  - Technologies: technologies/
-  #- How-To Guides: 
-  #  - how-to/index.md
-  #  - how-to/add_technology.ipynb
-  - AMPL Reference:
-      - ampl/index.md
-      - ampl/parameters.md
-      - ampl/variables.md
-      - ampl/sets.md
-  - API Reference: reference/
+  - Community: https://forum.energyscope.net/
+  - Python Library:
+      - library/index.md
+      - library/basic-run.ipynb
+      - library/choose-datasets.ipynb
+      - library/multiple-runs.ipynb
+      - library/uncertainty-analysis.ipynb
+      - library/add_technology.ipynb
+      - Reference Documentation:
+        - Technologies: library/technologies/
+        - AMPL Reference:
+          - library/ampl/index.md
+          - library/ampl/parameters.md
+          - library/ampl/variables.md
+          - library/ampl/sets.md
 
 
 
