@@ -1,83 +1,75 @@
-
 # Overview
 
-**EnergyScope** is designed with a modular architecture that allows users to adjust the level of detail and expand the model based on specific needs. While the core model provides a robust foundation for energy system optimization, several complementary modules can be activated to gain additional insights on more specialized topics. These modules enhance the model’s capabilities but may increase computational complexity and time. Below is a brief introduction to each module.
+**EnergyScope** uses a modular architecture that balances core functionality with optional advanced features. These modules enhance analysis depth but may increase computational demands. Below is a summary of available modules.
 
+---
 
 ## [Temporal Resolution](module_td.md)
 
-!!! abstract "Temporal Resolution Module"
-    The **Temporal Resolution** module improves the granularity of time-based simulations, allowing for more detailed temporal modeling and better analysis of energy dynamics over different timescales.
+**Improves simulation granularity**: Enables high-resolution modeling (e.g. hourly) to better capture demand/supply fluctuations — key for renewable-heavy grids.
 
-This module allows for a finer resolution of time when simulating energy systems, moving beyond the basic annual or typical day structure to incorporate more detailed time slices. This is useful for modeling short-term dynamics such as hourly fluctuations in energy demand or supply, making it especially relevant for grids with a high share of intermittent renewables like solar and wind.
+**Use cases:**
 
-!!! info "Application"
-    - Short-term grid balancing
-    - Demand response strategies
-    - High-resolution electricity market simulations
+- Grid balancing
+- Demand response
+- High-resolution market simulations
 
+---
 
 ## Geographic Decomposition
 
-!!! abstract "Geographic Decomposition Module"
-    The **Geographic Decomposition** module enables spatial resolution, allowing users to model energy flows across different geographic regions, including cross-border energy exchanges.
+**Adds spatial resolution**: Models regional energy dynamics and infrastructure, including cross-border flows.
 
-This module breaks down the energy system into specific geographic regions, allowing users to model regional differences in resource availability, demand profiles, and infrastructure constraints. It can also be used to simulate energy trading between regions or countries and evaluate the impact of decentralized generation and regional grid infrastructure.
+**Use cases:**
 
-!!! info "Application"
-    - National and regional energy planning  
-    - Cross-border electricity trading
-    - Infrastructure development analysis
+- National/regional energy planning  
+- Electricity trading
+- Infrastructure analysis
 
+---
 
 ## [Mobility](module_mob.md)
 
-!!! abstract "Mobility Module"
-    The **Mobility** module models energy demand from the transportation sector, focusing on the integration of electric vehicles (EVs), hydrogen transport, and biofuels into the energy system.
+**Integrates transport energy demand**: Simulates EVs, hydrogen, and biofuels, analyzing their energy needs and infrastructure impact.
 
-With the rise of electric vehicles and other alternative transport technologies, the **Mobility** module allows users to analyze the energy demand of the transportation sector. It models the adoption rates of electric vehicles, hydrogen fuel cells, and biofuel usage, along with the impact on electricity demand and refueling infrastructure.
+**Use cases:**
 
-!!! info "Application"
-    - Transport sector decarbonization
-    - EV infrastructure planning
-    - Mobility pathways
-    - Vehicle-to-Grid
+- Transport decarbonization
+- EV infrastructure planning
+- Mobility pathways (incl. V2G)
 
+---
 
 ## [Grids & Infrastructure](module_infra.md)
 
-!!! abstract "Grids & Infrastructure Module"
-    The **Grids & Infrastructure** module focuses on modeling the development and capacity of energy infrastructure, such as electricity grids, transmission lines, and storage systems.
+**Models grid and storage systems**: Evaluates capacity, expansion, and the role of storage for grid reliability and flexibility.
 
-This module adds the capability to analyze grid infrastructure in more detail, including the capacity and expansion of transmission and distribution networks. It also considers the role of energy storage systems (e.g., batteries and pumped hydro) in balancing supply and demand, and in ensuring grid stability.
+**Use cases:**
 
-!!! info "Application"
-    - Infrastructure investment planning
-    - grid stability analysis
-    - energy storage integration.
+- Investment planning
+- Grid stability
+- Storage integration
 
+---
 
 ## [Carbon Flows](module_co2.md)
 
-!!! abstract "Carbon Flows Module"
-    The **Carbon Flows** module tracks carbon emissions throughout the energy system and can integrate carbon capture, utilization, and storage (CCUS) technologies.
+**Tracks carbon and CCUS**: Monitors emissions across the system and supports integration of capture, utilization, and storage technologies.
 
-This module provides detailed insights into the flow of carbon through the energy system, from emissions generated by fossil fuel consumption to carbon sequestration through CCUS technologies. It is critical for analyzing the pathways toward achieving net-zero emissions targets and evaluating the feasibility of carbon mitigation strategies.
+**Use cases:**
 
-!!! info "Application"
-    - Carbon emissions reduction strategies
-    - CCUS integration,
-    - net-zero energy system planning
+- Emission reduction strategies
+- CCUS integration
+- Net-zero pathway planning
 
+---
 
 ## [Life Cycle Assessment (LCA)](module_lca.md)
 
-!!! abstract "LCA Module"
-    The **Life Cycle Assessment (LCA)** module allows users to assess the full environmental impacts of technologies and energy flows, from raw material extraction to end-of-life.
+**Assesses full environmental impacts**: Evaluates cradle-to-grave effects of technologies, including materials, operation, and end-of-life phases.
 
-This module extends the system boundary to include the full life cycle of energy technologies and systems. It calculates the environmental impact of resource extraction, manufacturing, operation, and disposal, offering a comprehensive understanding of the environmental footprint beyond operational emissions.
+**Use cases:**
 
-!!! info "Application"
-    - Environmental impact assessments
-    - sustainable technology development
-    - circular economy analysis
+- Environmental footprint analysis
+- Sustainable tech design
+- Circular economy evaluation
