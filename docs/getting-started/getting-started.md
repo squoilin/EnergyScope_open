@@ -39,27 +39,13 @@ If you plan to customize the source code or the underlying AMPL models:
 1. **Download the AMPL files**:
 
     <div style="text-align: center;">
-    <button onclick="openMultipleLinks()" 
-            style='padding: 10px 20px; background-color:rgb(58, 113, 223); color: white; 
-                    border: none; border-radius: 4px; cursor: pointer;'>
-        Download AMPL files
-    </button>
+  <a href='https://gitlab.com/energyscope/energyscope/-/raw/main/docs/assets/ES-core.zip?ref_type=heads&inline=false' target="_blank" 
+     style="padding: 10px 20px; background-color:rgb(58, 113, 223); color: white; 
+            text-decoration: none; border-radius: 4px; display: inline-block;">
+    📥 Download AMPL files
+  </a>
+</div>
 
-    <script>
-        function openMultipleLinks() {
-        var urls = [
-            'https://gitlab.com/energyscope/energyscope/-/raw/main/src/energyscope/data/models/core/td/ESTD_model_core.mod?ref_type=heads&inline=false',
-            'https://gitlab.com/energyscope/energyscope/-/raw/main/src/energyscope/data/datasets/core/td/belgium/ESTD_12TD.dat?ref_type=heads&inline=false',
-            'https://gitlab.com/energyscope/energyscope/-/raw/main/src/energyscope/data/datasets/core/td/belgium/ESTD_data_core.dat?ref_type=heads&inline=false'
-        ];
-        for (var i = 0; i < urls.length; i++) {
-            setTimeout(function(url) {
-            window.open(url, '_blank');
-            }, i * 300, urls[i]);
-        }
-        }
-    </script>
-    </div>
 
 2. **Solve AMPL using [AMPLpy](https://amplpy.ampl.com/en/latest/) **:
 
