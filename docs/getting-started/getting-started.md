@@ -42,7 +42,7 @@ If you plan to customize the source code or the underlying AMPL models:
   <a href='https://gitlab.com/energyscope/energyscope/-/raw/main/docs/assets/ES-core.zip?ref_type=heads&inline=false' target="_blank" 
      style="padding: 10px 20px; background-color:rgb(58, 113, 223); color: white; 
             text-decoration: none; border-radius: 4px; display: inline-block;">
-    📥 Download AMPL files
+    Download AMPL files
   </a>
 </div>
 
