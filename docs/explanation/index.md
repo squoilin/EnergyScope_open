@@ -67,7 +67,7 @@ $$
 
 ### Step 1: Defining the Energy System
 
-![Balance Principle: Energy & Mass Balance between resources (and imports), energy service demands, and the technologies](../images/framework/balance.png)
+![Balance Principle: Energy & Mass Balance between resources (and imports), energy service demands, and the technologies](images/framework/balance.png)
   > **Figure**: The energy and mass balance in **EnergyScope**, which ensures that energy input (from resources and imports) matches the output (to meet energy service demands), while factoring in losses from inefficiencies in conversion technologies.
 
 The first implementation step in **EnergyScope** involves setting up the energy system. This requires defining:
@@ -76,7 +76,7 @@ The first implementation step in **EnergyScope** involves setting up the energy 
 - **Energy resources**: The availability of renewable and non-renewable resources, such as solar, wind, nuclear, natural gas, and imports.  
 - **Conversion technologies**: The various technologies available for energy conversion, such as wind turbines, solar panels, gas turbines, heat pumps, and hydrogen electrolysis.
 
-  ![Technology Principle: Black box approach for conversion units and parameters](../images/framework/tech_principle.png)
+  ![Technology Principle: Black box approach for conversion units and parameters](images/framework/tech_principle.png)
   > **Figure**: The black-box approach in **EnergyScope** showing how different technologies convert inputs into useful outputs while tracking efficiency, costs, and environmental impacts.
 
 Once these inputs are defined, **EnergyScope** is configured to reflect the current or future energy system configuration. Users can define the year being modeled, such as 2050, and adjust assumptions about demand growth, technology costs, and resource availability.
@@ -91,7 +91,7 @@ The optimization outputs include:
 - **Energy dispatch**: How energy is generated, consumed, and stored throughout the day or year.  
 - **Emissions and costs**: Total greenhouse gas emissions and overall system costs.  
 
-  ![Optimization Framework](../images/framework/principle.png)
+  ![Optimization Framework](images/framework/principle.png)
   > **Figure**: The optimization principle in **EnergyScope**, showing how energy inputs, technologies, and energy demands are balanced to minimize costs and/or emissions.
 
 This process can be repeated for different scenarios, allowing users to explore various futures, such as increased renewable penetration, carbon pricing policies, or energy storage expansions.

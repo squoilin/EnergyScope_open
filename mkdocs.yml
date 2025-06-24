@@ -9,14 +9,17 @@ nav:
   - Conceptual Foundations:
     - explanation/index.md
     - explanation/mathematical_framework.md
+  - Features:
+      - features/index.md
+      - features/module_td.md
+      - features/module_mob.md
+      - features/module_infra.md
+      - features/module_co2.md
+      - features/module_lca.md
   - Model Versions:
-      - models/index.md
-      - models/module_td.md
-      - models/module_mob.md
-      - models/module_infra.md
-      - models/module_co2.md
-      - models/module_lca.md
-  - Community: https://forum.energyscope.net/
+    - models/index.md
+  - Community: 
+    - community/index.md
   - Python Library:
       - library/index.md
       - library/basic-run.ipynb
