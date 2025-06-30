@@ -7,13 +7,13 @@ This section explains how the **EnergyScope** library is mathematically structur
 ## [Modeling Framework](./mathematical_framework.md)
 
 !!! abstract "Modeling Framework Summary"
-    **EnergyScope** uses a **(Mixed Integer) Linear Programming (MI)LP** formulation to model energy systems. The optimization process involves decision variables and constraints that define energy flows, technology capacities, and resource allocations. The model’s objective function can be customized to minimize costs, emissions, or maximize renewable energy integration.
+    **EnergyScope** uses a **Linear Programming (LP)** formulation to model energy systems. The optimization process involves decision variables and constraints that define energy flows, technology capacities, and resource allocations. The model’s objective function can be customized to minimize costs, emissions, or maximize renewable energy integration, for instance
 
 The mathematical foundation of **EnergyScope** revolves around the **Linear Programming (LP)** approach, which ensures that the energy system is optimized according to specific objectives. The model integrates various decision variables, such as technology capacities and energy flows, and optimizes these variables under a set of system constraints.
 
-### (Mixed Integer) Linear Programming Formulation
+### Linear Programming Formulation
 
-The **(MI)LP formulation** in **EnergyScope** is expressed as:
+The **LP formulation** in **EnergyScope** is expressed as:
 
 $$
 \text{min} \quad f^{obj}(F,F_t) \quad \quad \text{s.t.:}
@@ -46,7 +46,7 @@ The optimization aims to minimize or maximize the objective function while satis
   
 - **Storage Levels** ($Sto^{level}_t$): Energy storage is essential for handling temporal imbalances between supply and demand. Storage variables define how much energy is stored and when it is dispatched to meet demand.  
 
-The constraints are essential to ensure the feasibility of the system design:
+The constraints are essential to ensure the representativeness and the feasibility of the system design:
 
 - **Energy Balance Constraints**: These constraints ensure that the energy supplied by different carriers equals the energy consumed by demand sectors. The energy balance equation is as follows:
 
@@ -88,7 +88,7 @@ In the second step, **EnergyScope** optimizes the energy system using the previo
 The optimization outputs include:
 
 - **Technology sizing**: Optimal capacities for power generation and storage technologies.  
-- **Energy dispatch**: How energy is generated, consumed, and stored throughout the day or year.  
+- **Energy dispatch**: How energy is generated, consumed, and stored throughout the year.  
 - **Emissions and costs**: Total greenhouse gas emissions and overall system costs.  
 
   ![Optimization Framework](images/framework/principle.png)
