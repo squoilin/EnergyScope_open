@@ -24,6 +24,8 @@ nav:
       - library/multiple-runs.ipynb
       - library/uncertainty-analysis.ipynb
       - library/add_technology.ipynb
+      - library/td-generation.ipynb
+
       - Reference Documentation:
         - Technologies: library/technologies/
         - AMPL Reference:
