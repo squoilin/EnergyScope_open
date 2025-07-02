@@ -1,4 +1,4 @@
-# An Open-Source Whole-Energy System Modeling Library for Python
+# EnergyScope: An Open-Source Whole-Energy System Modeling Framework
 
 ## Overview
 
@@ -6,7 +6,7 @@ EnergyScope is an open-source, whole-energy system model that optimizes the desi
 
 
 - Developed by: EnergyScope Community
-- License: Apache 2.0 License
+- License: [Apache 2.0 License](https://gitlab.com/energyscope/energyscope/-/blob/main/LICENSE?ref_type=heads)
 - Latest Version: v1.0.1
 
 ---
@@ -18,24 +18,6 @@ EnergyScope is an open-source, whole-energy system model that optimizes the desi
 - **🖥️ Easy to use:** Features intuitive, text-based input and interactive visualizations.
 - **📚 Trusted and proven:** Backed by peer-reviewed research and leading institutions.
 - **🔓 Open and flexible:** Fully open-source, modular, and supported by a collaborative [GitHub community](https://github.com/energyscope/EnergyScope).
-
----
-
-## Partners and Team
-
-Energyscope is developed by a dedicated team at EPFL, ETHZ, UCLouvain and PolyMTL, with contributions from the global community:
-
--   [Stefano Moret](mailto:morets@ethz.ch) (EnergyScope Creator)  
--   [Gauthier Limpens](mailto:gauthier.limpens@uclouvain.be) (EnergyScope Improver)  
--   [Jonas Schnidrig](mailto:jonas.schnidrig@hevs.ch) (Library, Plotting, Documentation, Development)  
--   [Xavier Rixhon](mailto:xavier.rixhon@uclouvain.be) (EnergyScope Developer, Documentation)  
--   [Arthur Chuat](mailto:arthur.chuat@epfl.ch) (Library, Plotting, Documentation, Development)  
--   [Gabriel Wiest](mailto:gwiest@ethz.ch) (Library, Plotting, Documentation, Development)
--   [Matthieu Souttre](mailto:matthieu.souttre@epfl.ch) (Library, Documentation, Development)
--   [Nicolas Ghuys](mailto:nicolas.ghuys@ucl.be) (Core Model Development)
--   [Cyrille Platteau](mailto:cyrille.platteau@epfl.ch) (IT)
-
-If you are interested in a specific topic, have a look at the [modules section](/explanation/model_formulation/modules/) and contact one of the team member related to the development the feature.
 
 ---
 

@@ -12,7 +12,7 @@
         - Install EnergyScope via `pip install energyscope`.  
         - Ideal for users who want a simple setup without modifying the source code.  
 
-Welcome to the EnergyScope library! This guide will help you set up and start using EnergyScope, whether you’re a beginner looking to run optimizations or an expert aiming to modify the source code.
+Welcome to the EnergyScope library! This guide will help you set up and start using a basic version of EnergyScope, which we call "core" version. The same procedure can be used to run the different [model versions](../models/index.md) of EnergyScope, which includes additional features or your own version.
 
 ## Prerequisites
 
@@ -20,7 +20,7 @@ Before you begin, please ensure you have the following:
 
 1. **Install AMPL**
 
-    - EnergyScope relies on AMPL (A Mathematical Programming Language) for optimization modeling. AMPL must be installed first and be accessible from your system’s PATH.
+    - EnergyScope relies on AMPL (A Mathematical Programming Language, see documentation [here](https://dev.ampl.com/ampl/index.html#ampl-index)) for optimization modeling. AMPL must be installed first and be accessible from your system’s PATH.
     - See the [Installing AMPL section](#installing-ampl) below for detailed instructions.
 
 2. **Install Python**
@@ -117,7 +117,7 @@ EnergyScope uses AMPL for optimization modeling. Follow these steps to install A
 
 1. **Download AMPL**
 
-    - Visit the [AMPL Community Edition](https://ampl.com/ce/) page to download the appropriate version for your operating system.
+    - Visit the [AMPL](https://ampl.com/) page to download the appropriate version for your operating system. Note that academics have access to an unrestricted free version.
 
 2. **Install AMPL**
 
