@@ -1,13 +1,9 @@
 # EnergyScope: An Open-Source Whole-Energy System Modeling Framework
 
-## Overview
+EnergyScope is an open-source, whole-energy system modeling framework that optimizes the design and operation of national or regional energy systems. It captures the major energy sectors of electricity, heating, mobility, and industry while accounting for both technological and environmental constraints. Developed for strategic planning, it supports policy and investment decisions by providing cost-optimal energy system configurations.
 
-EnergyScope is an open-source, whole-energy system model that optimizes the design and operation of national or regional energy systems for a given target year with a hourly resolution. It captures all major energy sectors—including electricity, heating, mobility, and industry—and accounts for both technological and environmental constraints. Developed for strategic planning, it supports policy and investment decisions by providing cost-optimal energy system configurations. For details, see [Limpens et al., 2019](https://doi.org/10.1016/j.apenergy.2019.113729).
+If you are new to EnergyScope and want to learn more check out the [Getting Started page](./getting-started/getting-started.md). If you'd like an overview of what EnergyScope has been used for, you can start from the [model version page](./models/index.md). We invite to join our [Community](./community/index.md)!
 
-
-- Developed by: EnergyScope Community
-- License: [Apache 2.0 License](https://gitlab.com/energyscope/energyscope/-/blob/main/LICENSE?ref_type=heads)
-- Latest Version: v1.0.1
 
 ---
 
@@ -20,8 +16,16 @@ EnergyScope is an open-source, whole-energy system model that optimizes the desi
 
 ---
 
+## How to cite
+
+For general reference to the EnergyScope project and the EnergyScope modeling framework, please cite [Limpens et al., 2019](https://doi.org/10.1016/j.apenergy.2019.113729).
+
+For reference to specific model versions you can refer to the associated publications and [model version page](./models/index.md).
+
+---
+
 ## License
 
-© 2025 Energyscope Community. Licensed under the Apache 2.0 License.
+Originally licensed under the Apache 2.0 License: [Apache 2.0 License](https://www.apache.org/licenses/LICENSE-2.0)
 
-Built with passion by the EnergyScope Team.
+Built with passion by the EnergyScope Community.
