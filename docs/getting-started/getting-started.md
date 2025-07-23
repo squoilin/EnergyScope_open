@@ -1,4 +1,4 @@
-This guide will help you set up and start using a basic version of EnergyScope, which we call the "core" version. EnergyScope is written in AMPL (A Mathematical Programming Language, see documentation [here](https://dev.ampl.com/ampl/books/index.html#ampl-a-modeling-language-for-mathematical-programming)). Once you have familiarized yourself with AMPL and the core version, you can adapt these instructions to run other [model versions](../models/index.md) of EnergyScope.
+This guide will help you set up and start using a basic version of EnergyScope, which we call the "core" version, which is documented [here](../explanation/mathematical_framework.md). EnergyScope is written in AMPL (A Mathematical Programming Language, see documentation [here](https://dev.ampl.com/ampl/books/index.html#ampl-a-modeling-language-for-mathematical-programming)). Once you have familiarized yourself with AMPL and the core version, you can adapt these instructions to run other [model versions](../models/index.md) of EnergyScope.
 
 ## Prerequisites
 
@@ -84,7 +84,7 @@ Move the files into your working folder.
     ```
 
 
-### Option B: Python package
+### Option B: Using the Python package
 
 
 1. **Install the energyscope package and core version via `pip`**:
