@@ -9,17 +9,17 @@ nav:
   - Conceptual Foundations:
     - explanation/index.md
     - explanation/mathematical_framework.md
-  - Features:
+  - Model Versions:
+    - Publications:
+      - models/index.md
+    - Features:
       - features/index.md
-      - features/module_td.md
+      - features/module_td.md  
+      - library/td-generation.ipynb
       - features/module_mob.md
       - features/module_infra.md
       - features/module_co2.md
       - features/module_lca.md
-  - Model Versions:
-    - models/index.md
-  - Community: 
-    - community/index.md
   - Python Library:
       - library/index.md
       - library/basic-run.ipynb
@@ -27,7 +27,6 @@ nav:
       - library/multiple-runs.ipynb
       - library/uncertainty-analysis.ipynb
       - library/add_technology.ipynb
-      - library/td-generation.ipynb
 
       - Reference Documentation:
         - Technologies: library/technologies/
@@ -36,6 +35,8 @@ nav:
           - library/ampl/parameters.md
           - library/ampl/variables.md
           - library/ampl/sets.md
+  - Community: 
+    - community/index.md
 
 
 

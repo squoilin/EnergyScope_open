@@ -2,6 +2,8 @@
 
 EnergyScope is an open-source, whole-energy system modeling framework that optimizes the design and operation of national or regional energy systems. It captures the major energy sectors of electricity, heating, mobility, and industry while accounting for both technological and environmental constraints. Developed for strategic planning, it supports policy and investment decisions by providing cost-optimal energy system configurations.
 
+![The EnergyScope Model.](./explanation/images/framework/conceptualization.png)
+
 If you are new to EnergyScope and want to learn more check out the [Getting Started page](./getting-started/getting-started.md). If you'd like an overview of what EnergyScope has been used for, you can start from the [model version page](./models/index.md). We invite to join our [Community](./community/index.md)!
 
 

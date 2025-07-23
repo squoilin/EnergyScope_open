@@ -1,4 +1,4 @@
-# Overview
+# Model versions
 
 **EnergyScope** uses a modular architecture that balances core functionality with optional advanced features. These modules enhance analysis depth but may increase computational demands. Below is a summary of available modules.
 

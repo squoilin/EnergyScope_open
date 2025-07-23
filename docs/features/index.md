@@ -1,10 +1,10 @@
-# Overview
+# Features
 
-**EnergyScope** uses a modular architecture that balances core functionality with optional advanced features. These modules enhance analysis depth but may increase computational demands. Below is a summary of available modules.
+**EnergyScope** uses a modular architecture to balance core functionality with optional advanced [Features](../features/index.md). These modules enhance analysis depth but may increase computational time. Below is a summary of available modules.
 
 ---
 
-## [Temporal Resolution](module_td.md)
+## [Typical Days](module_td.md)
 
 **Improves simulation granularity**: Enables high-resolution modeling (e.g. hourly) to better capture demand/supply fluctuations — key for renewable-heavy grids.
 
