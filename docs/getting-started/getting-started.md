@@ -1,42 +1,38 @@
-!!! info "Overview"
-    **Prerequisites:**  
-    - AMPL must be installed first and be accessible from your system’s PATH.  
-    - Python 3.6 or higher is required.  
-
-    **Utilisation methods:**  
-
-    - **Option A:** AMPL files
-        - Download the AMPL files of the model.  
-        - Suitable for users who plan to modify the source code or AMPL models.
-    - **Option B:** Python library
-        - Install EnergyScope via `pip install energyscope`.  
-        - Ideal for users who want a simple setup without modifying the source code.  
-
-Welcome to the EnergyScope library! This guide will help you set up and start using a basic version of EnergyScope, which we call "core" version. The same procedure can be used to run the different [model versions](../models/index.md) of EnergyScope, which includes additional features or your own version.
+This guide will help you set up and start using a basic version of EnergyScope, which we call the "core" version. EnergyScope is written in AMPL (A Mathematical Programming Language, see documentation [here](https://dev.ampl.com/ampl/books/index.html#ampl-a-modeling-language-for-mathematical-programming)). Once you have familiarized yourself with AMPL and the core version, you can adapt these instructions to run other [model versions](../models/index.md) of EnergyScope.
 
 ## Prerequisites
 
-Before you begin, please ensure you have the following:
+To start with, please:
 
 1. **Install AMPL**
 
-    - EnergyScope relies on AMPL (A Mathematical Programming Language, see documentation [here](https://dev.ampl.com/ampl/index.html#ampl-index)) for optimization modeling. AMPL must be installed first and be accessible from your system’s PATH.
-    - See the [Installing AMPL section](#installing-ampl) below for detailed instructions.
+    - AMPL is free for academics and students, and includes licences for commercial solvers (e.g., Gurobi). 
+    - Visit the [AMPL](https://ampl.com/) webpage to download the appropriate version for your operating system. 
+    - To install AMPL, follow the instructions on the [AMPL webpage](https://dev.ampl.com/ampl/install.html) for your operating system. 
+    - For MacOS and Linux users, make sure to add AMPL to your system PATH.
 
 2. **Install Python**
 
     - Version: Python 3.6 or higher.
     - Environment: We recommend using a virtual environment to manage package dependencies.
 
----
 
-## Choose Your Path
+!!! info "Options for using EnergyScope"
 
-### Option A: AMPL files
+	There are two options for using EnergyScope. 
 
-If you plan to customize the source code or the underlying AMPL models:
+    - **Option A:** Direcly using AMPL and amplpy
+     	- Allows to run any version of EnergyScope. However, does not include functions for preprocessing or postprocessing models and data. 
+    - **Option B:** Using the energyscope Python package
+    	- The energyscope python package makes it easier to run EnergyScope models and includes tools for postprocessing and data visualization. However, it may not be compatible with all versions of EnergyScope.
 
-1. **Download the AMPL files**:
+	If you are not sure about which option to choose, don't worry! Both options will allow you to get your first results in a few minutes.
+
+## Running your first model
+
+### Option A: Using AMPL and amplpy
+
+1. **Download the core version AMPL files**:
 
     <div style="text-align: center;">
   <a href='https://gitlab.com/energyscope/energyscope/-/raw/main/docs/assets/ES-core.zip?ref_type=heads&inline=false' target="_blank" 
@@ -46,16 +42,17 @@ If you plan to customize the source code or the underlying AMPL models:
   </a>
 </div>
 
+Move the files into your working folder. 
 
-2. **Solve AMPL using [AMPLpy](https://amplpy.ampl.com/en/latest/) **:
-
-    - Make sure you have installed the AMPLpy package. You can do this using pip: 
+2. **Run the core model**:
+    
+    - Make sure you have installed the [amplpy package](https://amplpy.ampl.com/en/latest/). You can do this using pip: 
 
     ```bash
     pip install amplpy
     ```
 
-    - Load and solve the model using the following code:
+    - Load and solve the model using the following python code. The following code reads in the model and data files and solves them using the open-source solver Highs. 
 
     ```python
     import amplpy
@@ -76,19 +73,21 @@ If you plan to customize the source code or the underlying AMPL models:
 
     # Solve the model
     ampl.solve()
-
+    ```
+    
+    - After having solved the model you can print, export and manipulate the solution using amplpy commands. 
+    
+    ```python
     # Get results (example: TotalCost)
     TotalCost = ampl.getVariable("TotalCost")
     print("Total cost:", TotalCost.get().value())
-
     ```
 
 
-### Option B: Python library
+### Option B: Python package
 
-If you’re new to EnergyScope and want a quick setup without delving into the source code:
 
-1. **Install EnergyScope via `pip`**:
+1. **Install the energyscope package and core version via `pip`**:
 
     ```bash
     pip install energyscope
@@ -96,6 +95,8 @@ If you’re new to EnergyScope and want a quick setup without delving into the s
 
 2. **Run the core model**:
 
+    - Load and solve the model using the following python code. The following code reads in the model and data files and solves them. 
+    
     ```python
     # Import necessary libraries
     from energyscope.energyscope import Energyscope
@@ -106,79 +107,14 @@ If you’re new to EnergyScope and want a quick setup without delving into the s
 
     # Solve the model
     results_core = es_core.calc()
+    ```
+    
+    - After having solved the model you can print, export and manipulate the solution using commands of the package. 
 
+    ```python
     # Access results
     results_core.variables['TotalCost']
     ```
-
-## Installing AMPL
-
-EnergyScope uses AMPL for optimization modeling. Follow these steps to install AMPL on your system:
-
-1. **Download AMPL**
-
-    - Visit the [AMPL](https://ampl.com/) page to download the appropriate version for your operating system. Note that academics have access to an unrestricted free version.
-
-2. **Install AMPL**
-
-    - **Windows**:
-    
-        - Run the installer and follow the on-screen instructions.
-    
-    - **Linux and macOS**:
-    
-        - Extract the downloaded archive to a directory where you have read and write permissions (e.g., your home directory).
-
-3. **Activate Your License**
-
-    - AMPL Community Edition requires a free license.
-    - During installation, you’ll receive a license UUID.
-    - Activate your license by running the following command in the AMPL command prompt:
-
-        ```bash
-        shell "amplkey activate --uuid <license-uuid>";
-        ```
-
-      Replace `<license-uuid>` with your actual license UUID.
-
-    !!! warning 
-        Restart AMPL after activation to start using the new license.
-
-4. **Add AMPL to PATH**
-
-    - **Windows**:
-    
-        - Add the AMPL installation directory (e.g., `C:\AMPL`) to your system’s PATH environment variable.
-    
-    - **Linux and macOS**:
-    
-        - Open your terminal and add the following line to your `.bashrc` or `.bash_profile`:
-
-        ```bash
-        export PATH="/path/to/ampl:$PATH"
-        ```
-
-      Replace `/path/to/ampl` with the actual path to your AMPL directory.
-
-5. **Verify AMPL Installation**
-
-    To confirm that AMPL is correctly installed:
-
-    - Open Command Prompt or Terminal:
-    
-        - Open a new command prompt (Windows) or terminal window (Linux/macOS).
-    
-    - Run AMPL:
-
-        ```bash
-        ampl
-        ```
-
-    - If installed correctly, you should see the `ampl:` prompt. You can quit with the command:
-
-        ```
-        quit;
-        ```
 
 ---
 
@@ -186,4 +122,5 @@ EnergyScope uses AMPL for optimization modeling. Follow these steps to install A
 
 - **Basic Documentation:** Check out the [EnergyScope Conceptual Formulation](../explanation/index.md).
 - **Community Support:** Find the FAQ on the [forum page](https://forum.energyscope.net/).
-- **EnergyScope Models:** Explore the various developement on the [model page](../models/index.md).
+- **EnergyScope Models:** Explore the various developement on the [model versions page](../models/index.md).
+- **Python Library:** Check out the tutorials for the [energyscope python package](../library/index.md).
