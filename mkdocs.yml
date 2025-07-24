@@ -6,9 +6,10 @@ nav:
       - EnergyScope: index.md
   - Getting Started:
       - getting-started/index.md
-  - Conceptual Foundations:
+  - Documentation:
       - explanation/index.md
-      - explanation/mathematical_framework.md
+      - explanation/background.md
+      - explanation/core_version_documentation.md
   - Model Versions:
     - Publications:
       - models/index.md

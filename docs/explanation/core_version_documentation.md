@@ -1,11 +1,17 @@
-# Modeling Framework (core-version)
-## Linear Programming Formulation
+# Documentation (core version)
 
-The model is mathematically formulated as an LP problem ([fourer1990modeling](https://www.ampl.com/_archive/first-website/REFS/amplmod.pdf)). The following figure represents - in a simple manner - what an LP problem is and the nomenclature used.
+This section documents the models and data files that are part of the "core" version of EnergyScope, which can be downloaded from the [Getting Started](../getting-started/index.md) page. 
+
+The core version is includes three files, which we document in the following:
+- A model file (ESTD_model_core_.mod) containing the equations
+- A data file (ESTD_model_core.dat) containing non-time-dependent data
+- A Typical Day (ESTD_12TD.dat) data file (.dat) containing time-dependent data
+
+## Preliminaries
+
+The model is mathematically formulated as a linear programming (LP) problem. The following figure represents, in a simple manner, what an LP problem is and the associated nomenclature.
 
 ![Conceptual illustration of an LP problem.](images/ESTD/model_formulation/chp_estd_lp_conceptual.png)
-
-## Conceptual Modeling Framework
 
 The proposed modeling framework is a simplified representation of an energy system accounting for the energy flows within its boundaries. Its primary objective is to satisfy the energy balance constraints, meaning that the demand is known and the supply has to meet it. In energy modeling practice, the energy demand is often expressed in terms of final energy consumed (FEC). According to the definition of the European Commission, FEC is defined as "the energy which reaches the final consumer’s door" ([EU_FEC](https://www.eea.europa.eu/en/analysis/indicators/primary-and-final-energy-consumption)). In other words, the FEC is the amount of input energy needed to satisfy the end-use demand (EUD) in energy services. As an example, in the case of decentralized heat production with an NG boiler, the FEC is the amount of NG consumed by the boiler; the EUD is the amount of heat produced by the boiler, i.e., the heating service needed by the final user.
 
@@ -81,7 +87,7 @@ The figure gives a visual representation of the sets with their relative indices
 | $density_{pv}$            | [GW/km$^2$]                   | Peak power density of PV |
 | $density_{solar,thermal}$ | [GW/km$^2$]                   | Peak power density of solar thermal |
 
-## Energy Model Formulation
+## Model Formulation (mod file)
 
 In the following, the overall LP formulation is proposed through the figure and equations, the constraints are grouped in paragraphs. It starts with the calculation of the EUD. Then, the cost, the GWP, and the objective functions are introduced. Then, it follows with more specific paragraphs, such as *storage* implementations.
 
@@ -345,7 +351,7 @@ $$
 
 Finally, the equations constrain the installed capacity of low-temperature heat supply. Based on the selected TDs, the ratio between the yearly peak demand and the TDs peak demand is defined for space heating ($\%_{Peak_{sh}}$). The equation imposes that the installed capacity for decentralized technologies covers the real peak over the year. Similarly, the equation forces the centralized heating system to have a supply capacity (production plus storage) higher than the peak demand. These equations force the installed capacity to meet the peak heating demand, which represents, somehow, the network adequacy.
 
-## Adaptations for the Case Study
+### Adaptations for the Case Study
 
 Additional constraints are required to implement scenarios. Scenarios require six additional constraints to impose a limit on the GWP emissions, the minimum share of RE primary energy, the relative shares of technologies, such as gasoline cars in private mobility, the cost of energy efficiency measures, the electricity import power capacity, and the available surface area for solar technologies.
 
@@ -424,3 +430,7 @@ The formulation of the LP problem has been implemented using an algebraic modeli
 [^a]: [Mpkm] (millions of passenger-km) for passenger, [Mtkm] (millions of ton-km) for freight mobility end-uses
 [^b]: [GWh] if ${{tech}} \in {{STO}}$
 [^c]: [Mpkm/h] for passenger, [Mtkm/h] for freight mobility end-uses
+
+## Typical Days
+
+The core version of EnergyScope uses Typical Days, a clustering technique used to reduce the model time resolution and computational time. A conceptual explanation of what typical days are and how they are used in EnergyScope is provided [here](../features/module_td.md). A python script to generate the ESTD_12TD.dat file can be found in [this section](../library/td-generation.ipynb).
