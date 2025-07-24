@@ -5,10 +5,10 @@ nav:
   - Home:
       - EnergyScope: index.md
   - Getting Started:
-      - Getting Started: getting-started/getting-started.md
+      - getting-started/index.md
   - Conceptual Foundations:
-    - explanation/index.md
-    - explanation/mathematical_framework.md
+      - explanation/index.md
+      - explanation/mathematical_framework.md
   - Model Versions:
     - Publications:
       - models/index.md

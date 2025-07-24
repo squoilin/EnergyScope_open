@@ -4,17 +4,21 @@ EnergyScope is an open-source, whole-energy system modeling framework that optim
 
 ![The EnergyScope Model.](./explanation/images/framework/conceptualization.png)
 
-If you are new to EnergyScope and want to learn more check out the [Getting Started page](./getting-started/getting-started.md). If you'd like an overview of what EnergyScope has been used for, you can start from the [model version page](./models/index.md). We invite to join our [Community](./community/index.md)!
+If you are new to EnergyScope and want to learn more check out the [Getting Started](./getting-started/index.md) page. If you'd like an overview of what EnergyScope has been used for, you can start from the [Model Versions](./models/index.md) page. We invite to join our [Community](./community/index.md)!
 
 
 ---
 
 ## Why Choose EnergyScope?
-- **⚡ Blazing fast:** Solves complex energy models in seconds to minutes.
-- **🌍 Comprehensive:** Covers all sectors (households, industry, transport, etc.) and energy types (electricity, heat, mobility).
-- **🖥️ Easy to use:** Features intuitive, text-based input and interactive visualizations.
-- **📚 Trusted and proven:** Backed by peer-reviewed research and leading institutions.
-- **🔓 Open, accessible and flexible:** Fully open-source, modular, and supported by a collaborative [GitHub community](https://github.com/energyscope/EnergyScope).
+
+EnergyScope is a fast and concise energy model, particularly suitable for uncertainty quantification, scenario exploration, and what-if analyses.
+
+- **⚡ Fast:** Solves complex energy models in seconds to minutes.
+- **📦 Comprehensive:** Covers all major sectors (households, industry, transport, etc.) and energy carriers (electricity, heat, mobility, etc.).
+- **🛠️ Easily Modifiable:** Direct access to model and data files makes it simple to add constraints, tweak parameters, or plug in custom features.
+- **🚀 Quick to start:** Run your first model in minutes by visiting the [Getting Started](./getting-started/index.md) page.
+- **📚 Peer-reviewed and validated:** Developed and used in published research at leading institutions.
+- **🌍 Open, accessible and flexible:** 100% open-source, modular, and backed by a vibrant [GitHub community](https://github.com/energyscope/EnergyScope).
 
 ---
 
@@ -22,7 +26,7 @@ If you are new to EnergyScope and want to learn more check out the [Getting Star
 
 For general reference to the EnergyScope project and the EnergyScope modeling framework, please cite [Limpens et al., 2019](https://doi.org/10.1016/j.apenergy.2019.113729).
 
-For reference to specific model versions you can refer to the associated publications and [model version page](./models/index.md).
+For reference to specific model versions you can refer to the associated publications and [Model Versions](./models/index.md) page.
 
 ---
 

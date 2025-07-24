@@ -1,4 +1,6 @@
-This guide will help you set up and start using a basic version of EnergyScope, which we call the "core" version, which is documented [here](../explanation/mathematical_framework.md). EnergyScope is written in AMPL (A Mathematical Programming Language, see documentation [here](https://dev.ampl.com/ampl/books/index.html#ampl-a-modeling-language-for-mathematical-programming)). Once you have familiarized yourself with AMPL and the core version, you can adapt these instructions to run other [model versions](../models/index.md) of EnergyScope.
+# Getting Started
+
+This guide will help you set up and start using a basic version of EnergyScope, which we call the "core" version and which is documented [here](../explanation/mathematical_framework.md). EnergyScope is written in AMPL (A Mathematical Programming Language, see the documentation [here](https://dev.ampl.com/ampl/books/index.html#ampl-a-modeling-language-for-mathematical-programming)). AMPL is free for academics and students, and includes licences for commercial solvers (e.g., Gurobi). Once you have familiarized yourself with AMPL and the core version, you can adapt these instructions to run other [model versions](../models/index.md) of EnergyScope.
 
 ---
 
@@ -8,9 +10,7 @@ To start with, please:
 
 1. **Install AMPL**
 
-    - AMPL is free for academics and students, and includes licences for commercial solvers (e.g., Gurobi). 
-    - Visit the [AMPL](https://ampl.com/) webpage to download the appropriate version for your operating system. 
-    - To install AMPL, follow the instructions on the [AMPL webpage](https://dev.ampl.com/ampl/install.html) for your operating system. 
+    - Visit the [AMPL webpage](https://dev.ampl.com/ampl/install.html) to download and install the appropriate version for your operating system. 
     - For MacOS and Linux users, make sure to add AMPL to your system PATH.
 
 2. **Install Python**
@@ -24,9 +24,11 @@ To start with, please:
 	There are two options for using EnergyScope. 
 
     - **Option A:** Direcly using AMPL and amplpy
-     	- Allows to run any version of EnergyScope. However, does not include functions for preprocessing or postprocessing models and data. 
+     	- Allows running any version of EnergyScope and offers full flexibility to customize inputs, constraints, or model structure. 
+     	- Does **not** include built-in tools for preprocessing or postprocessing.. 
     - **Option B:** Using the energyscope Python package
-    	- The energyscope python package makes it easier to run EnergyScope models and includes tools for postprocessing and data visualization. However, it may not be compatible with all versions of EnergyScope.
+    	- The energyscope python package makes it easier to run EnergyScope models and includes helpers for postprocessing results and visualizing outputs. 
+    	- May be less flexible and not compatible with all EnergyScope versions.
 
 	If you are not sure about which option to choose, don't worry! Both options will allow you to get your first results in a few minutes.
 
@@ -46,7 +48,7 @@ To start with, please:
   </a>
 </div>
 
-Move the files into your working folder. 
+	Move the files into your working folder. 
 
 2. **Run the core model**:
     
@@ -122,9 +124,9 @@ Move the files into your working folder.
 
 ---
 
-## Want to Learn More?
+## Want to learn more?
 
-- **Basic Documentation:** Check out the [EnergyScope Conceptual Formulation](../explanation/index.md).
+- **Documentation:** Check out the EnergyScope [Documentation](../explanation/index.md) to understand the model formulation.
 - **Community Support:** Find the FAQ on the [forum page](https://forum.energyscope.net/).
-- **EnergyScope Models:** Explore the various developement on the [model versions page](../models/index.md).
+- **EnergyScope Model Versions:** Explore the various developments on the [Model Versions](../models/index.md) page.
 - **Python Library:** Check out the tutorials for the [energyscope python package](../library/index.md).
