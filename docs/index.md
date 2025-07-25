@@ -26,7 +26,7 @@ EnergyScope is a fast and concise energy model, particularly suitable for uncert
 
 For general reference to the EnergyScope project and the EnergyScope modeling framework, please cite [Limpens et al., 2019](https://doi.org/10.1016/j.apenergy.2019.113729).
 
-For reference to specific model versions you can refer to the associated publications and [Model Versions](./models/index.md) page.
+For reference to specific model versions you can refer to the associated publications listed in the [Model Versions](./models/index.md) page.
 
 ---
 

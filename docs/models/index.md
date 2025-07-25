@@ -1,8 +1,17 @@
 # Model versions
 
-**EnergyScope** uses a modular architecture that balances core functionality with optional advanced features. These modules enhance analysis depth but may increase computational demands. Below is a summary of available modules.
+**There are many versions of EnergyScope, and that's by design!**
 
-You will find below a table summarizing the publications that have used the **EnergyScope** model. 
+EnergyScope is built to be flexible and easily modifiable, allowing users to tailor the model to their specific needs. A given "version" of EnergyScope typically corresponds to a  research publication, with its own data, assumptions, or model modifications.
+
+If you're new to EnergyScope, we recommend starting with the core version, which is available for download in the [Getting Started](../getting-started/index.md) guide and is fully described in the [Documentation](../explanation/index.md). 
+
+If you want to explore other model versions, a table listing selected publications that have used EnergyScope is provided below. Please note that it is the responsibility of the individual authors to provide instructions and documentation for their specific versions.
+
+!!! Tip "Share your models!"
+    The closer your work aligns with the structure and conventions of the core version, the easier it will be to share and collaborate with others in the community. Have you developed a new version of EnergyScope? Share it with the community!
+
+---
 
 # Publications Table
 

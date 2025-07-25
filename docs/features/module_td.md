@@ -1,13 +1,11 @@
-# Typical Days
-
-## Module Overview
-
+# Typical Days (introduction)
 
 !!! abstract
-    This section provides an overview of how the **EnergyScope** model integrates the **Typical Days** approach into the energy system analysis. The **Typical Days (TD)** module reduces the computational complexity by selecting representative days from the 8760 hours of a year, enabling faster simulations while maintaining accuracy in energy system optimization, based on the following works:
+    This section provides an overview of how the **EnergyScope** model integrates the **Typical Days** approach into the energy system analysis. The **Typical Days (TD)** module reduces the computational complexity by selecting representative days from the 8760 hours of a year, enabling faster simulations while maintaining accuracy in energy system optimization, based on the following work:
 
-!!! quote
     - EnergyScope TD: A novel open-source model for regional energy systems, [Limpens 2019](https://doi.org/10.1016/j.apenergy.2019.113729)
+    
+    Python code to generate typical days is available [here](../library/td-generation.ipynb).
 
 !!! info "Key Aspects of Typical Days Modeling"
     - Selection of representative days to reduce computational time while maintaining system accuracy.  
