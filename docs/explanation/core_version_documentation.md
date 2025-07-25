@@ -2,8 +2,9 @@
 
 This section documents the models and data files that are part of the "core" version of EnergyScope, which can be downloaded from the [Getting Started](../getting-started/index.md) page. 
 
-The core version is includes three files, which we document in the following:
-- A model file (ESTD_model_core_.mod) containing the equations
+The core version includes three files, which we document in the following:
+
+- A model file (ESTD_model_core.mod) containing the equations
 - A data file (ESTD_model_core.dat) containing non-time-dependent data
 - A Typical Day (ESTD_12TD.dat) data file (.dat) containing time-dependent data
 
@@ -27,7 +28,9 @@ As an illustrative example of the concept of *layer*, the following figure gives
 
 The energy system is formulated as an LP problem. It optimizes the design by computing the installed capacity of each technology, as well as the operation in each time period, to meet the energy demand and minimize the total annual cost of the system. In the following, we present the complete formulation of the model in two parts. First, all the terms used are summarized in a figure and tables: the figure for sets, tables for parameters, and tables for independent and dependent variables. On this basis, the equations representing the constraints and the objective function are formulated in the figure and equations and described in the following paragraphs.
 
-#### Sets, Parameters, and Variables
+## Model Formulation (mod file)
+
+### Sets, Parameters, and Variables
 
 The figure gives a visual representation of the sets with their relative indices used in the following. The tables list and describe the model parameters. Tables list and describe the independent and dependent variables, respectively.
 
@@ -87,7 +90,7 @@ The figure gives a visual representation of the sets with their relative indices
 | $density_{pv}$            | [GW/km$^2$]                   | Peak power density of PV |
 | $density_{solar,thermal}$ | [GW/km$^2$]                   | Peak power density of solar thermal |
 
-## Model Formulation (mod file)
+### Constraints
 
 In the following, the overall LP formulation is proposed through the figure and equations, the constraints are grouped in paragraphs. It starts with the calculation of the EUD. Then, the cost, the GWP, and the objective functions are introduced. Then, it follows with more specific paragraphs, such as *storage* implementations.
 
