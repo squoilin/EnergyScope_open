@@ -18,8 +18,8 @@ The tutorials are provided as Jupyter notebooks and cover essential tasks such a
 
 ## 📚 Reference Documentation
 
-- [Parameters, variables, sets](../library/ampl/)
-- [Technologies](../library/technologies/)
+- [Parameters, variables, sets](ampl/index.md)
+- [Technologies](technologies/index.md)
 
 
 These resources provide detailed descriptions of the mathematical and data structures that drive the EnergyScope model.
