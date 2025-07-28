@@ -102,6 +102,8 @@ These parameters are finalized when the typical day data file (ESTD_12TD.dat) is
 
 These parameters are finalized when the core data file (ESTD_model_core.dat) is read in.
 
+### Variables
+
 Independent variables. All variables are continuous and non-negative, unless otherwise indicated.
 
 | **Variable**             | **Units**                     | **Description**            |
