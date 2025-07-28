@@ -56,6 +56,8 @@ The figure gives a visual representation of the sets with their relative indices
 | $\%_{mob}(h,td)$          | [-]       | Yearly time series (adding up to 1) of passenger mobility end-uses|
 | $\%_{fr}(h,td)$           | [-]       | Yearly time series (adding up to 1) of freight mobility end-uses |
 | $c_{p,t}(tech,h,td)$      | [-]       | Hourly maximum capacity factor for each technology (default 1)   |
+
+
 These parameters are finalized when the typical day data file (ESTD_12TD.dat) is read in.
 
 
