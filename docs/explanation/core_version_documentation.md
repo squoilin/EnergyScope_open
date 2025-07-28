@@ -398,6 +398,11 @@ In this model version, the upper limit for solar-based technologies is calculate
 [^b]: [GWh] if ${{tech}} \in {{STO}}$
 [^c]: [Mpkm/h] for passenger, [Mtkm/h] for freight mobility end-uses
 
+### Data file
+
+The data file has parameters for the greenfield design of the Beglian energy system in the year 2050. Technologies or sets can be altered by directly edditing this file, or loading it and then altering the loaded data using ampl/amplpy commands. 
+For further reference on reading the data file see the parameter reference material of the [EnergyScope package interface](../library/ampl/parameters.md).
+
 ## Typical Days
 
 The core version of EnergyScope uses Typical Days, a clustering technique used to reduce the model time resolution and computational time. A conceptual explanation of what typical days are and how they are used in EnergyScope is provided [here](../features/module_td.md). A python script to generate the ESTD_12TD.dat file can be found in [this section](../library/td-generation.ipynb).
