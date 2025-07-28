@@ -20,40 +20,40 @@ The core version includes three files, which we document in the following:
 
 The model is mathematically formulated as a linear programming (LP) problem. The following figure represents, in a simple manner, what an LP problem is and the associated nomenclature.
 
-<div style="text-align: center;">
-  <img src="images/ESTD/model_formulation/chp_estd_lp_conceptual.png" alt="Conceptual illustration of an LP problem.">
-</div>
+<center>
+  ![Conceptual illustration of an LP problem.](images/ESTD/model_formulation/chp_estd_lp_conceptual.png)
+</center>
 
 The proposed modeling framework is a simplified representation of an energy system accounting for the energy flows within its boundaries. Its primary objective is to satisfy the energy balance constraints, meaning that the demand is known and the supply has to meet it. In energy modeling practice, the energy demand is often expressed in terms of final energy consumed (FEC). According to the definition of the European Commission, FEC is defined as "the energy which reaches the final consumer’s door" ([EU_FEC](https://www.eea.europa.eu/en/analysis/indicators/primary-and-final-energy-consumption)). In other words, the FEC is the amount of input energy needed to satisfy the end-use demand (EUD) in energy services. As an example, in the case of decentralized heat production with an NG boiler, the FEC is the amount of NG consumed by the boiler; the EUD is the amount of heat produced by the boiler, i.e., the heating service needed by the final user.
 
 The input for the proposed modeling framework is the EUD in energy services, represented as the sum of four energy sectors: electricity, heating, mobility, and non-energy demand. This replaces the classical economic-sector-based representation of energy demand. Heat is divided into three EUDs: high-temperature heat for industry, low temperature for space heating, and low temperature for hot water. Mobility is divided into two EUDs: passenger and freight mobility. Non-energy demand is, based on the IEA definition, “fuels that are used as raw materials in the different sectors and are not consumed as a fuel or transformed into another fuel” ([IEA_websiteDefinition](https://www.iea.org/statistics/resources/balancedefinitions/)). As examples, the European Commission includes as non-energy the following materials: “chemical feed-stocks, lubricants, and asphalt for road construction” ([EuropeanCommission2016](https://doi.org/10.2833/9127)).
 
 
-<div style="text-align: center;">
-  <img src="images/ESTD/model_formulation/chp_estd_conceptual_framework.png" alt="Conceptual example of an energy system.">
-</div>
+<center>
+  ![Conceptual example of an energy system.](images/ESTD/model_formulation/chp_estd_conceptual_framework.png)
+</center>
 
 A simplified conceptual example of the energy system structure is proposed in the following figure. The system is split into three parts: resources, energy conversion, and demand. In this illustrative example, resources are solar energy, electricity, and NG. The EUD are electricity, space heating, and passenger mobility. The energy system encompasses all the energy conversion technologies needed to transform resources and supply the EUD. In this example, Solar and NG resources cannot be directly used to supply heat. Thus, they use technologies, such as boilers or CHP for NG, to supply the end-use type (EUT) layer (e.g., the high-temperature industrial heat layer). Layers are defined as all the elements in the system that need to be balanced in each time period; they include resources and EUTs. As an example, the electricity layer must be balanced at any time, meaning that the production and storage must equal the consumption and losses. These layers are connected to each other by technologies. We define three types of technologies: technologies of end-use type, storage technologies, and infrastructure technologies. A technology of end-use type can convert the energy (e.g., a fuel resource) from one layer to an EUT layer, such as a CHP unit that converts NG into heat and electricity. A storage technology converts energy from a layer to the same one, such as thermal storage (TS) that stores heat to provide heat. In this example, there are two storage technologies: TS for heat and pumped-hydro storage (PHS) for electricity. An infrastructure technology gathers the remaining technologies, including the networks, such as the power grid and district heating networks (DHNs), but also technologies linking non end-use layers, such as methane production from wood gasification or hydrogen production from methane reforming.
 
 As an illustrative example of the concept of *layer*, the following figure gives a perspective of the electricity layer which is the most complex one, since the electrification of other sectors is foreseen as a key of the energy transition ([Sugiyama2012](https://doi.org/10.1016/j.enpol.2012.01.028)). In the proposed version, 42 technologies are related to the electricity layer. Nine technologies produce exclusively electricity, such as CCGT, PV, or wind. Twelve cogenerations of heat and power (CHPs) produce heat and electricity, such as industrial waste CHP. Six technologies are related to the production of synthetic fuels and CCS. One infrastructure represents the grid. Four storage technologies are implemented, such as PHS, batteries, or V2G. The remains are consumers regrouped in the electrification of heat and mobility. Electrification of the heating sector is supported by direct electric heating but also by the more expensive but more efficient electrical heat pumps for low temperature heat demand. Electrification of mobility is achieved via electric public transportation (train, trolley, metro, and electrical/hybrid buses), electric private transportation, and trains for freight.
 
 
-<div style="text-align: center;">
-  <img src="images/ESTD/model_formulation/Layer_Elec.png" alt="Representation of the Electricity layer.">
-</div>
+<center>
+  ![Representation of the Electricity layer.](images/ESTD/model_formulation/Layer_Elec.png)
+</center>
 
 The energy system is formulated as an LP problem. It optimizes the design by computing the installed capacity of each technology, as well as the operation in each time period, to meet the energy demand and minimize the total annual cost of the system. In the following, we present the complete formulation of the model in two parts. First, all the terms used are summarized in a figure and tables: the figure for sets, tables for parameters, and tables for independent and dependent variables. On this basis, the equations representing the constraints and the objective function are formulated in the figure and equations and described in the following paragraphs.
 
 ## Model Formulation (mod file)
-
+An ampl model begins by declaring the sets and parameters that will be used in the rest of the model file. Default values and bounds on the parameters are set in the .mod file, and will be overwritten when the corresponding input file is read. 
 ### Sets, Parameters, and Variables
 
 The figure gives a visual representation of the sets with their relative indices used in the following. The tables list and describe the model parameters. Tables list and describe the independent and dependent variables, respectively.
 
 
-<div style="text-align: center;">
-  <img src="images/ESTD/model_formulation/ses_sets_v2.png" alt="Visual representation of the sets and indices used.">
-</div>
+<center>
+  ![Visual representation of the sets and indices used.](images/ESTD/model_formulation/ses_sets_v2.png)
+</center>
 
 ##### Time Series Parameters
 
@@ -64,63 +64,63 @@ The figure gives a visual representation of the sets with their relative indices
 | $\%_{mob}(h,td)$          | [-]       | Yearly time series (adding up to 1) of passenger mobility end-uses|
 | $\%_{fr}(h,td)$           | [-]       | Yearly time series (adding up to 1) of freight mobility end-uses |
 | $c_{p,t}(tech,h,td)$      | [-]       | Hourly maximum capacity factor for each technology (default 1)   |
+These parameters are finalized when the typical day data file (ESTD_12TD.dat) is read in.
+
 
 ##### List of Parameters (except time series)
 
 | **Parameter**             | **Units**                     | **Description**            |
 |---------------------------|-------------------------------|----------------------------|
-| $\tau(tech)$              | [-]                           | Investment cost annualization factor |
-| $i_{rate}$                | [-]                           | Real discount rate          |
-| $endUses_{year}$          | [GWh/y] [^a]_                  | Annual end-uses in energy services per sector |
-| $endUsesInput(eui)$       | [GWh/y] [^a]_                  | Total annual end-uses in energy services |
-| $re_{share}$              | [-]                           | Minimum share [0;1] of primary RE |
-| $gwp_{limit}$             | [ktCO$_{2-eq}$/y]             | Higher CO$_{2-eq}$ emissions limit |
-| $\%_{public,min}, \%_{public,max}$ | [-]           | Lower and upper limit to $\textbf{\%}_{\textbf{Public}}$ |
-| $\%_{fr,rail,min}, \%_{fr,rail,max}$ | [-]         | Lower and upper limit to $\textbf{\%}_{\textbf{Fr,Rail}}$ |
-| $\%_{fr,boat,min}, \%_{fr,boat,max}$ | [-]         | Lower and upper limit to $\textbf{\%}_{\textbf{Fr,Boat}}$ |
-| $\%_{fr,truck,min}, \%_{fr,truck,max}$ | [-]        | Lower and upper limit to $\textbf{\%}_{\textbf{Fr,Truck}}$ |
-| $\%_{dhn,min}, \%_{dhn,max}$ | [-]                  | Lower and upper limit to $\textbf{\%}_{\textbf{Dhn}}$ |
-| $\%_{ned}(EUT\_OF\_EUC(NON\_ENERGY))$ | [-]        | Share of non-energy demand per type of feedstocks |
-| $t_{op}(h,td)$            | [h]                           | Time period duration (default 1h) |
-| $f_{min}, f_{max}(tech)$  | [GW] [^a]_ [^b]_                | Min./max. installed size of the technology |
-| $f_{min,\%}, f_{max,\%}(tech)$ | [-]                | Min./max. relative share of a technology in a layer |
-| $avail(res)$              | [GWh/y]                       | Resource yearly total availability |
-| $c_{op}(res)$             | [M€$_{2015}$/GWh]             | Specific cost of resources |
-| $veh_{capa}$              | [km-pass/h/veh.] [^a]_         | Mobility capacity per vehicle (veh.) |
-| $\%_{Peak_{sh}}$          | [-]                           | Ratio peak/max. space heating demand in typical days |
-| $f(res \cup tech \setminus sto, l)$ | [GW] [^c]_     | Input from (<0) or output to (>0) layers. f(i,j) = 1 if j is the main output layer for technology/resource i. |
-| $c_{inv}(tech)$           | [M€$_{2015}$/GW] [^c]_ [^b]_    | Technology specific investment cost |
-| $c_{maint}(tech)$         | [M€$_{2015}$/GW/y] [^c]_ [^b]_  | Technology specific yearly maintenance cost |
-| $lifetime(tech)$          | [y]                           | Technology lifetime |
-| $gwp_{constr}(tech)$      | [ktCO$_2$-eq./GW] [^a]_ [^b]_   | Technology construction specific GHG emissions |
-| $gwp_{op}(res)$           | [ktCO$_2$-eq./GWh]            | Specific GHG emissions of resources |
-| $c_{p}(tech)$             | [-]                           | Yearly capacity factor |
-| $\eta_{sto,in},\eta_{sto,out}(sto,l)$ | [-]         | Efficiency [0;1] of storage input from/output to layer. Set to 0 if storage is not related to the layer |
-| $\%_{sto_{loss}}(sto)$    | [1/h]                         | Losses in storage (self discharge) |
-| $t_{sto_{in}}(sto)$       | [-]                           | Time to charge storage (Energy to power ratio) |
-| $t_{sto_{out}}(sto)$      | [-]                           | Time to discharge storage (Energy to power ratio) |
-| $\%_{sto_{avail}}(sto)$   | [-]                           | Storage technology availability to charge/discharge |
-| $\%_{net_{loss}}(eut)$    | [-]                           | Losses coefficient [0;1] in the networks (grid and DHN) |
-| $ev_{batt,size}(v2g)$     | [GWh]                         | Battery size per V2G car technology |
-| $soc_{min,ev}(v2g,h)$     | [GWh]                         | Minimum state of charge for electric vehicles |
-| $c_{grid,extra}$          | [M€$_2015$/GW]                | Cost to reinforce the grid per GW of intermittent renewable |
-| $elec_{import,max}$       | [GW]                          | Maximum net transfer capacity |
-| $solar_{area}$            | [km$^2$]                      | Available area for solar panels |
-| $density_{pv}$            | [GW/km$^2$]                   | Peak power density of PV |
-| $density_{solar,thermal}$ | [GW/km$^2$]                   | Peak power density of solar thermal |
+| $endUses_{year}$          | [GWh/y] [^a]_                  | End-uses demand vs sectors (input to the model). Yearly values. |
+| $endUsesInput(eui)$       | [GWh/y] [^a]_                  | Total demand for each type of end-uses across sectors (yearly energy) as input from the demand-side model. |
+| $i_{rate}$                | [-]                           | Real discount rate |
+| $gwp_{limit}$             | [ktCO$_{2-eq}$/y]             | Maximum gwp emissions allowed. |
+| $\%_{public,min}, \%_{public,max}$ | [-]           | Min/max limit for penetration of public mobility over total mobility |
+| $\%_{fr,rail,min}, \%_{fr,rail,max}$ | [-]         | Min/max limit for penetration of train in freight transportation |
+| $\%_{fr,boat,min}, \%_{fr,boat,max}$ | [-]         | Min/max limit for penetration of boat in freight transportation |
+| $\%_{fr,truck,min}, \%_{fr,truck,max}$ | [-]        | Min/max limit for penetration of truck in freight transportation |
+| $\%_{dhn,min}, \%_{dhn,max}$ | [-]                  | Min/max limit for penetration of dhn in low-T heating |
+| $t_{op}(h,td)$            | [h]                           | Operating time |
+| $f_{max}(tech), f_{min}(tech)$  | [GW] [^a]_ [^b]_                | Maximum/minimum feasible installed capacity [GW], refers to main output. storage level [GWh] for STORAGE_TECH |
+| $f_{max,\%}(tech), f_{min,\%}(tech)$ | [-]                | Max/min % of sector output per technology |
+| $avail(res)$              | [GWh/y]                       | Yearly availability of resources |
+| $c_{op}(res)$             | [M€$_{2015}$/GWh]             | Cost of resources in the different periods |
+| $veh_{capa}$              | [km-pass/h/veh.] [^a]_         | Average capacity (pass-km/h or t-km/h) per vehicle. It makes the link between F and the number of vehicles |
+| $f(res \cup tech \setminus sto, l)$ | [GW] [^c]_     | Input/output Resources/Technologies to Layers. Reference is one unit ([GW] or [Mpkm/h] or [Mtkm/h]) of (main) output of the resource/technology. input to layer (output of technology) > 0. |
+| $c_{inv}(tech)$           | [M€$_{2015}$/GW] [^c]_ [^b]_    | Specific investment cost [Meuros/GW].[Meuros/GWh] for STORAGE_TECH |
+| $c_{maint}(tech)$         | [M€$_{2015}$/GW/y] [^c]_ [^b]_  | O&M cost [Meuros/GW/year]: O&M cost does not include resource (fuel) cost. [Meuros/GWh/year] for STORAGE_TECH |
+| $lifetime(tech)$          | [y]                           | Lifetime [years] |
+| $\tau(tech)$              | [-]                           | Annualisation factor ([-]) for each different technology [Eq. 2.2] |
+| $gwp_{constr}(tech)$      | [ktCO$_2$-eq./GW] [^a]_ [^b]_   | GWP emissions associated to the construction of technologies [ktCO2-eq./GW]. Refers to [GW] of main output |
+| $gwp_{op}(res)$           | [ktCO$_2$-eq./GWh]            | GWP emissions associated to the use of resources [ktCO2-eq./GWh]. Includes extraction/production/transportation and combustion |
+| $c_{p}(tech)$             | [-]                           | Yearly capacity factor of each technology [-], defined on annual basis. Different than 1 if sum {t in PERIODS} F_t (t) <= c_p * F |
+| $\eta_{sto,in}(sto,l),\eta_{sto,out}(sto,l)$ | [-]         | Efficiency of input to storage from layers/efficiency of output from storage to layers. If 0 storage_tech/layer are incompatible |
+| $\%_{sto_{loss}}(sto)$    | [1/h]                         | Self losses in storage (required for Li-ion batteries). Value = self discharge in 1 hour. |
+| $t_{sto_{in}}(sto)$       | [h]                           | Time to charge storage (Energy to Power ratio). If value =  5 <=>  5h for a full charge. |
+| $t_{sto_{out}}(sto)$      | [h]                           | Time to discharge storage (Energy to Power ratio). If value =  5 <=>  5h for a full discharge. |
+| $\%_{sto_{avail}}(sto)$   | [-]                           | Storage technology availability to charge/discharge. Used for EVs |
+| $\%_{net_{loss}}(eut)$    | [-]                           | Losses coefficient [0; 1] in the networks (grid and DHN) |
+| $ev_{batt,size}(v2g)$     | [GWh]                         | Battery size per EVs car technology |
+| $c_{grid,extra}$          | [M€$_{2015}$/GW]                | Cost to reinforce the grid due to IRE penetration [Meuros/GW of (PV + Wind)]. |
+| $solar_{area}$            | [km$^2$]                      | Maximum land available for PV deployment [km2] |
+| $density_{pv}$            | [GW/km$^2$]                   | Maximum power irradiance for PV. |
+| $density_{solar,thermal}$ | [GW/km$^2$]                   | Maximum power irradiance for solar thermal. |
+
+
+These parameters are finalized when the core data file (ESTD_model_core.dat) is read in.
 
 ### Constraints
 
-In the following, the overall LP formulation is proposed through the figure and equations, the constraints are grouped in paragraphs. It starts with the calculation of the EUD. Then, the cost, the GWP, and the objective functions are introduced. Then, it follows with more specific paragraphs, such as *storage* implementations.
+In the following, the overall LP formulation is proposed through the figure and equations, the constraints are grouped in paragraphs. It starts with the calculation of the end-use demand. Then, the cost, the global warming potential, and the objective functions are introduced. Then, it follows with more technology/resource specific constraints, such as the implementation of *storage*.
 
 ### End-use Demand
 
-Imposing the EUD instead of the FEC has two advantages. First, it introduces a clear distinction between demand and supply. On the one hand, the demand concerns the definition of the end-uses, i.e., the requirements in energy services (e.g., the mobility needs). On the other hand, the supply concerns the choice of the energy conversion technologies to supply these services (e.g., the types of vehicles used to satisfy the mobility needs). Based on the technology choice, the same EUD can be satisfied with different FEC, depending on the efficiency of the chosen energy conversion technology. Second, it facilitates the inclusion in the model of electric technologies for heating and transportation.
+Imposing the EUD instead of the  final energy consumed (FEC) has two advantages. First, it introduces a clear distinction between demand and supply. On the one hand, the demand concerns the definition of the end-uses, i.e., the requirements in energy services (e.g., the mobility needs). On the other hand, the supply concerns the choice of the energy conversion technologies to supply these services (e.g., the types of vehicles used to satisfy the mobility needs). Based on the technology choice, the same EUD can be satisfied with different FEC, depending on the efficiency of the chosen energy conversion technology. Second, it facilitates the inclusion in the model of electric technologies for heating and transportation.
 
 
-<div style="text-align: center;">
-  <img src="images/ESTD/model_formulation/EndUseDemand.png" alt="Hourly EndUses demands calculation.">
-</div>
+<center>
+  ![Hourly EndUses demands calculation.](images/ESTD/model_formulation/EndUseDemand.png)
+</center>
 
 The hourly end-use demands (**EndUses**) are computed based on the yearly end-use demand (*endUsesInput*), distributed according to its time series (listed in the table). The figure graphically presents the constraints associated with the hourly end-use demand (**EndUses**), e.g., the public mobility demand at time $t$ is equal to the hourly passenger mobility demand times the public mobility share (**%\ Public**).
 
@@ -345,9 +345,9 @@ i \in \text{TS OF DEC TECH}(j)  , \forall h\in H, \forall td \in TD
 $$
 
 
-<div style="text-align: center;">
-  <img src="images/ESTD/model_formulation/ts_and_Fsolv2.png" alt="Illustrative example of a decentralized heating layer.">
-</div>
+<center>
+  ![Illustrative example of a decentralized heating layer.](images/ESTD/model_formulation/ts_and_Fsolv2.png)
+</center>
 
 A thermal storage $i$ is defined for each decentralized heating technology $j$, to which it is related via the set *TS OF DEC TECH*, i.e., $i$\ =\ *TS OF DEC TECH(j)*. Each thermal storage $i$ can store heat from its technology $j$ and the associated thermal solar $\textbf{F}_{\textbf{sol}}$ ($j$). Similarly to the passenger mobility, the equation makes the model more realistic by defining the operating strategy for decentralized heating. In fact, in the model, we represent decentralized heat in an aggregated form; however, in a real case, residential heat cannot be aggregated. A house heated by a decentralized gas boiler and solar thermal panels should not be able to be heated by the electrical heat pump and thermal storage of the neighbors, and vice-versa. Hence, the equation imposes that the use of each technology ($\textbf{F}_{\textbf{t}}(j,h,td)$), plus its associated thermal solar ($\textbf{F}_{\textbf{t}_\textbf{sol}}(j,h,td)$) plus its associated storage outputs ($\textbf{Sto}_{\textbf{out}}(i,l,h,td)$) minus its associated storage inputs ($\textbf{Sto}_{\textbf{in}}(i,l,h,td)$) should be a constant share ($\textbf{%}_{\textbf{HeatDec}}(j)$) of the decentralized heat demand ($\textbf{EndUses}(HeatLowT,h,td)$). The figure shows, through an example with two technologies (a gas boiler and an HP), how decentralized thermal storage and thermal solar are implemented.
 
@@ -452,12 +452,12 @@ In this model version, the upper limit for solar-based technologies is calculate
 The formulation of the LP problem has been implemented using an algebraic modeling language. Its syntax is similar to AMPL, which is, according to the NEOS-statistics, the most popular format for representing mathematical programming problems. The formulation enables the use of different solvers as open-source ones, such as GLPK, or commercial ones, such as CPLEX or Gurobi. In the code, each of the equations defined above is found as it is with the corresponding numbering. SETS, Variables, and parameters have the same names (unless explicitly stated in the definition of the term). The figure illustrates, for the balance constraint, the mathematical formulation presented in this work and its implementation in the code. Colors highlight the same elements. In the implementation, each constraint has a comment (starting with #) and has a name (colored in black), in this case *layer_balance*. In addition, most of the SETS, Variables, and parameters are more explicitly named, as a first example the set layers is named *L* in the paper and *LAYERS* in the implementation; or as another example, the input efficiency who is named *f* in the paper and *layers_in_out* in the implementation.
 
 
-<div style="text-align: center;">
-  <img src="images/ESTD/model_formulation/eqs_color.png" alt="Comparison of equation formulation and code.">
-</div>
-<div style="text-align: center;">
-  <img src="images/ESTD/model_formulation/ch_estd_code_screenshot.png" alt="Comparison of equation formulation and code.">
-</div>
+<center>
+  ![Comparison of equation formulation and code.](images/ESTD/model_formulation/eqs_color.png)
+</center>
+<center>
+  ![Comparison of equation formulation and code.](images/ESTD/model_formulation/ch_estd_code_screenshot.png)
+</center>
 
 
 [^a]: [Mpkm] (millions of passenger-km) for passenger, [Mtkm] (millions of ton-km) for freight mobility end-uses
