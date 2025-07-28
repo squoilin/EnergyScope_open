@@ -224,7 +224,7 @@ subject to gwp_op_calc {i in RESOURCES}:
 	GWP_op [i] = gwp_op [i] * sum {t in PERIODS, h in HOUR_OF_PERIOD [t], td in TYPICAL_DAY_OF_PERIOD [t]} ( F_t [i, h, td] * t_op [h, td] );	
 
 	
-## Multiplication factor
+## Capacity limits
 #-----------------------
 	
 # [Eq. 2.9] min & max limit to the size of each technology
