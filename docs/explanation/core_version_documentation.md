@@ -102,6 +102,40 @@ These parameters are finalized when the typical day data file (ESTD_12TD.dat) is
 
 These parameters are finalized when the core data file (ESTD_model_core.dat) is read in.
 
+Independent variables. All variables are continuous and non-negative, unless otherwise indicated.
+
+| **Variable**             | **Units**                     | **Description**            |
+|----------|-------|-------------|
+| $\%\_\text{Public}$ | [-] | Ratio $[0;1]$ public mobility over total passenger mobility |
+| $\%\_\text{Fr,Rail}$ | [-] | Ratio $[0;1]$ rail transport over total freight transport |
+| $\%\_\text{Fr,Boat}$ | [-] | Ratio $[0;1]$ boat transport over total freight transport |
+| $\%\_\text{Fr,road}$ | [-] | Ratio $[0;1]$ road transport over total freight transport |
+| $\%\_\text{Dhn}$ | [-] | Ratio $[0;1]$ centralized over total low-temperature heat |
+| $F(\text{tech})$ | [GW] | Installed capacity with respect to main output |
+| $F_t(\text{tech} \cup \text{res}, h, td)$ | [GW]| Operation in each period |
+| $\text{Sto}_\text{in}, \text{Sto}_\text{out} (\text{sto}, l, h, td)$ | [GW] | Input to/output from storage units |
+| $\%\_\text{PassMob}(\text{TECH OF EUC(PassMob)})$ | [-] | Constant share of passenger mobility |
+| $\%\_\text{FreightMob}(\text{TECH OF EUC(FreightMob)})$ | [-] | Constant share of freight mobility |
+| $\%\_\text{HeatLowTDEC}(\text{TECH OF EUT(HeatLowTDec)} \setminus \{\text{Dec}_{\text{Solar}}\})$ | [-] | Constant share of low temperature heat decentralised supplied by a technology plus its associated thermal solar and storage |
+| $F_\text{sol}(\text{TECH OF EUT(HeatLowTDec)} \setminus \{\text{Dec}_{\text{Solar}}\})$ | [-] | Solar thermal installed capacity associated to a decentralised heating technology |
+| $F_{t_\text{sol}}(\text{TECH OF EUT(HeatLowTDec)} \setminus \{\text{Dec}_{\text{Solar}}\})$ | [-] | Solar thermal operation in each period |
+
+Dependent variable. All variables are continuous and non-negative, unless otherwise indicated.
+
+| **Variable**             | **Units**                     | **Description**            |
+|----------|-------|-------------|
+| $\text{EndUses}(l,h,td)$ | [GW] | End-uses demand. Set to 0 if $l \notin$ EUT |
+| $C_\text{tot}$ | [M€$_{2015}$/y] | Total annual cost of the energy system |
+| $C_\text{inv}(\text{tech})$ | [M€$_{2015}$] | Technology total investment cost |
+| $C_\text{maint}(\text{tech})$ | [M€$_{2015}$/y] | Technology yearly maintenance cost |
+| $C_\text{op}(\text{res})$ | [M€$_{2015}$/y] | Total cost of resources |
+| $\text{GWP}_\text{tot}$ | [ktCO$_2$-eq./y] | Total yearly GHG emissions of the energy system |
+| $\text{GWP}_\text{constr}(\text{tech})$ | [ktCO$_2$-eq.] | Technology construction GHG emissions |
+| $\text{GWP}_\text{po}(\text{res})$ | [ktCO$_2$-eq./y] | Total GHG emissions of resources |
+| $\text{Net}_\text{losses}(\text{eut},h,td)$ | [GW] | Losses in the networks (grid and DHN) |
+| $\text{Sto}_\text{level}(\text{sto},t)$ | [GWh] | Energy stored over the year |
+
+
 ### Constraints
 
 In the following, the equations that make up the core version of EnergyScope are described. The structure corresponds to different sections in the code. It begins with the calculation of the end-use demand, followed by the cost, the global warming potential, and the objective functions. It then continues with more technology- and resource-specific constraints, such as the implementation of *storage*.
