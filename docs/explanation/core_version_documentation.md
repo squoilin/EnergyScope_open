@@ -1,4 +1,4 @@
-# Documentation (core version)
+data# Documentation (core version)
 
 This section documents the models and data files that are part of the "core" version of EnergyScope, which can be set-up by following the [Getting Started](../getting-started/index.md) page. Alternatively you can download the model and data files using this button:
 <div style="text-align: center;">
@@ -443,7 +443,7 @@ In this model version, the upper limit for solar-based technologies is calculate
 
 ### Data file
 
-The data file has parameters for the greenfield design of the Beglian energy system in the year 2050. Technologies or sets can be altered by directly edditing this file, or loading it and then altering the loaded data using ampl/amplpy commands. 
+The data file has parameters for the greenfield design of the Belgian energy system in the year 2050. Technologies or sets can be altered by directly edditing this file, or loading it and then altering the loaded data using ampl/amplpy commands. 
 For further reference on reading the data file see the parameter reference material of the [EnergyScope package interface](../library/ampl/parameters.md).
 
 ## Typical Days

@@ -1,15 +1,25 @@
 # Community
+!!! abstract "News"  
+    - The **EnergyScope Symposium** this year will take place from **October 16-17** in **Sion, Switzerland**. 
+    - Further information for the registration process will follow soon.
 
 ## Join the Discussion
 
-Join the [EnergyScope Forum](https://forum.energyscope.net/), where you find FAQs, can ask you own questions, share ideas, and discuss features with the community.
+Use the EnergyScope Forum, to find FAQs, ask your own questions, share ideas, and discuss features with the community:
+<div style="text-align: center;">
+  <a href='https://forum.energyscope.net/' target="_blank" 
+     style="padding: 10px 20px; background-color:rgb(58, 113, 223); color: white; 
+            text-decoration: none; border-radius: 4px; display: inline-block;">
+    Join the EnergyScope Forum.
+  </a>
+</div>
 
 ---
 
 ## Who is using EnergyScope?
 
 ![The EnergyScope Community.](./EnergyScope_Users.png)
-
+![The EnergyScope Symposium.](./Symposium.png)
 ---
 
 ## Partners and Team
