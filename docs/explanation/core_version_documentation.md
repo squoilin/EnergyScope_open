@@ -370,8 +370,8 @@ A thermal storage $i$ is defined for each decentralized heating technology $j$, 
 
 
 $$
-F(i) = \frac{F(j)}{\text{vehicle\_capacity}(j)} \cdot \text{batt\_per\_car}(j)
-\qquad \forall j \in \text{V2G},\ i \in \text{EVs\_BATT\_OF\_V2G}(j)
+F(i) = \frac{F(j)}{\text{vehicle_capacity}(j)} \cdot \text{batt_per_car}(j)
+\qquad \forall j \in \text{V2G},\ i \in \text{EVs_BATT_OF_V2G}(j)
 $$
 
 The above equations describe the modeling of electric vehicle (EV) battery storage and its integration with vehicle-to-grid (V2G) technologies. The total battery storage capacity associated with V2G technologies is proportional to the number of vehicles and the battery capacity per vehicle. 
@@ -381,9 +381,9 @@ $$
 -\, \text{layers_in_out}(j,\, \text{ELECTRICITY}) \cdot F_t(j,\, h,\, td)
 \qquad
 \forall\, j \in \text{V2G},\;
-i \in \text{EVs\_BATT\_OF\_V2G}(j),\;
+i \in \text{EVs_BATT_OF_V2G}(j),\;
 h \in \text{HOURS},\;
-td \in \text{TYPICAL\_DAYS}
+td \in \text{TYPICAL_DAYS}
 $$
 
 
