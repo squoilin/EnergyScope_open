@@ -1,5 +1,3 @@
-data# Documentation (core version)
-
 This section documents the models and data files that are part of the "core" version of EnergyScope, which can be set-up by following the [Getting Started](../getting-started/index.md) page. Alternatively you can download the model and data files using this button:
 <div style="text-align: center;">
   <a href='https://gitlab.com/energyscope/energyscope/-/raw/main/docs/assets/ES-core.zip?ref_type=heads&inline=false' target="_blank" 

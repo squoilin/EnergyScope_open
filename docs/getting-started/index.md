@@ -25,9 +25,9 @@ To start with, please:
 
     - **Option A:** Direcly using AMPL and amplpy
      	- Allows running any version of EnergyScope and offers full flexibility to customize inputs, constraints, or model structure. 
-     	- Does **not** include built-in tools for preprocessing or postprocessing.. 
-    - **Option B:** Using the energyscope Python package
-    	- The energyscope python package makes it easier to run EnergyScope models and includes helpers for postprocessing results and visualizing outputs. 
+     	- Does **not** include built-in tools for preprocessing or postprocessing. 
+    - **Option B:** Using the energyscope Python Library
+    	- The energyscope Python Library makes it easier to run EnergyScope models and includes helpers for postprocessing results and visualizing outputs. 
     	- May be less flexible and not compatible with all EnergyScope versions.
 
 	If you are not sure about which option to choose, don't worry! Both options will allow you to get your first results in a few minutes.
@@ -90,10 +90,10 @@ To start with, please:
     ```
 
 
-### Option B: Using the Python package
+### Option B: Using the Python Library
 
 
-1. **Install the energyscope package and core version via `pip`**:
+1. **Install the energyscope library and core version via `pip`**:
 
     ```bash
     pip install energyscope
@@ -115,7 +115,7 @@ To start with, please:
     results_core = es_core.calc()
     ```
     
-    - After having solved the model you can print, export and manipulate the solution using commands of the package. 
+    - After having solved the model you can print, export and manipulate the solution using commands of the library. 
 
     ```python
     # Access results
@@ -129,4 +129,4 @@ To start with, please:
 - **Documentation:** Check out the EnergyScope [Documentation](../explanation/index.md) to understand the model formulation.
 - **Community Support:** Find the FAQ on the [forum page](https://forum.energyscope.net/).
 - **EnergyScope Model Versions:** Explore the various developments on the [Model Versions](../models/index.md) page.
-- **Python Library:** Check out the tutorials for the [energyscope python package](../library/index.md).
+- **Python Library:** Check out the tutorials for the [energyscope Python Library](../library/index.md).

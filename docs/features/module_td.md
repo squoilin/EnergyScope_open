@@ -50,21 +50,3 @@ To address this, **EnergyScope** implements a method proposed by [Gabrielli2018]
 ![Illustration of the typical days reconstruction method](../explanation/images/ESTD/model_formulation/gabrielli.png)
 
 With 12 Typical Days, key performance indicators (KPIs) such as cost, emissions, installed capacity, and primary energy usage are well captured. However, long-term storage capacities may be slightly underestimated, with a maximum deviation factor of two, as demonstrated in previous work ([Limpens2019](https://doi.org/10.1016/j.apenergy.2019.113729)).
-
----
-
-## Implementation
-
-The **EnergyScope TD** module is implemented in a structured repository containing four main components:
-
-1. **Documentation**: Guides and manuals to help users navigate the model.
-2. **Data Management**: The datasets used for the simulations, including weather data, technology costs, and energy demands.
-3. **STEP_1_TD_selection**: The first step, which involves selecting the **Typical Days** by solving a **MILP** problem.
-4. **STEP_2_Energy_Model**: The second step, which uses the selected Typical Days in the energy model for system optimization.
-
-For each step, the terms (sets, variables, and parameters), constraints, and the objective function are detailed in the corresponding `.mod` files. Numerical parameters are stored separately in `.dat` files, and the output data is saved as `.out` files or in a designated output folder.
-
-An Excel interface is provided to visualize and manage the data. Users can generate and manipulate input and output data files using the provided Excel templates (`STEP_1_in.xlsx`, `STEP_1_out.xlsx`, and `STEP_2_in.xlsx`), and a user guide is included in the documentation to assist new users.
-
-![EnergyScope TD repository structure](../explanation/images/ESTD/model_formulation/ch_estd_repo_structure.png)
-
