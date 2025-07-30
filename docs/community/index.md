@@ -36,6 +36,6 @@ Energyscope is developed by a dedicated team at EPFL, ETHZ, UCLouvain and PolyMT
 -   [Nicolas Ghuys](mailto:nicolas.ghuys@ucl.be) (Core Model Development)
 -   [Cyrille Platteau](mailto:cyrille.platteau@epfl.ch) (IT)
 
-If you are interested in a specific topic, have a look at the [Publications](../models/index.md) and [Features](../features/index.md) or contact one of the team members related to the development of the feature.
+If you are interested in a specific topic, have a look at the [Publications](../models/index.md#publications-table) and [Features](../features/index.md) or contact one of the team members related to the development of the feature.
 
 ---

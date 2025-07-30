@@ -17,7 +17,7 @@ EnergyScope is a fast and concise energy model, particularly suitable for uncert
 - **📦 Comprehensive:** Covers all major sectors (households, industry, transport, etc.) and energy carriers (electricity, heat, mobility, etc.).
 - **🛠️ Easily Modifiable:** Direct access to model and data files makes it simple to add constraints, tweak parameters, or plug in custom features.
 - **🚀 Quick to start:** Run your first model in minutes by visiting the [Getting Started](./getting-started/index.md) page.
-- **📚 Peer-reviewed and validated:** Developed and used in [published research](./models/index.md) at leading institutions.
+- **📚 Peer-reviewed and validated:** Developed and used in [published research](./models/index.md#publications-table) at leading institutions.
 - **🌍 Open, accessible and flexible:** 100% open-source, modular, and backed by a vibrant [GitHub community](https://github.com/energyscope/EnergyScope).
 
 ---
