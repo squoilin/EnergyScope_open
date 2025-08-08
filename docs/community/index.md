@@ -21,20 +21,148 @@ Use the EnergyScope Forum, to find FAQs, ask your own questions, share ideas, an
 ![The EnergyScope Community.](./EnergyScope_Users.png)
 ![The EnergyScope Symposium.](./Symposium.png)
 ---
-
 ## Partners and Team
 
-Energyscope is developed by a dedicated team at EPFL, ETHZ, UCLouvain and PolyMTL, with contributions from the global community:
+Energyscope is developed by a dedicated international committee structure:
 
--   [Stefano Moret](mailto:morets@ethz.ch) (EnergyScope Creator)  
--   [Gauthier Limpens](mailto:gauthier.limpens@uclouvain.be) (EnergyScope Improver)  
--   [Jonas Schnidrig](mailto:jonas.schnidrig@hevs.ch) (Library, Plotting, Documentation, Development)  
--   [Xavier Rixhon](mailto:xavier.rixhon@uclouvain.be) (EnergyScope Developer, Documentation)  
--   [Arthur Chuat](mailto:arthur.chuat@epfl.ch) (Library, Plotting, Documentation, Development)  
--   [Gabriel Wiest](mailto:gwiest@ethz.ch) (Library, Plotting, Documentation, Development)
--   [Matthieu Souttre](mailto:matthieu.souttre@epfl.ch) (Library, Documentation, Development)
--   [Nicolas Ghuys](mailto:nicolas.ghuys@ucl.be) (Core Model Development)
--   [Cyrille Platteau](mailto:cyrille.platteau@epfl.ch) (IT)
+### Steering Committee
+
+<table style="border:none;">
+  <tr>
+    <td style="border:none;">
+      <img src="photos/russo.png" width="120"><br>
+      <a href="https://ciraig.org/index.php/team/sara-russo-garrido/">
+        <b>Sara Russo Garrido</b><br>
+        CIRAIG (UQAM)<br>
+        <i>SC President</i>
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/margni.png" width="120"><br>
+      <a href="https://ciraig.org/index.php/team/manuele-margni/">
+        <b>Manuele Margni</b><br>
+        CIRAIG (HES-So)
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/boissonnet.png" width="120"><br>
+      <a href="https://www.cea.fr/energies/i-tese/Pages/Qui-sommes-nous/Notre-equipe/BOISSONNET-Guillaume.aspx">
+        <b>Guillaume Boissonnet</b><br>
+        CEA
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/marechal.png" width="120"><br>
+      <a href="https://people.epfl.ch/francois.marechal">
+        <b>François Maréchal</b><br>
+        EPFL
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td style="border:none;">
+      <img src="photos/guidati.png" width="120"><br>
+      <a href="https://esc.ethz.ch/people/person-detail.guidati.html">
+        <b>Gianfranco Guidati</b><br>
+        ETHZ
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/quoilin.png" width="120"><br>
+      <a href="https://www.squoilin.eu/">
+        <b>Sylvain Quoilin</b><br>
+        U Liège
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/moret.png" width="120"><br>
+      <a href="https://www.stefanomoret.com/">
+        <b>Stefano Moret</b><br>
+        ETHZ
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/rixhon.png" width="120"><br>
+      <a href="">
+        <b>Xavier Rixhon</b><br>
+        UC Louvain
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td style="border:none;">
+      <img src="photos/schnidrig.png" width="120"><br>
+      <a href="https://people.epfl.ch/jonas.schnidrig">
+        <b>Jonas Schnidrig</b><br>
+        CIRAIG (HES-So & EPFL)
+      </a>
+    </td>
+    <td style="border:none;"></td>
+    <td style="border:none;"></td>
+    <td style="border:none;"></td>
+  </tr>
+</table>
+
+### Technical Committee
+
+<table border="0" style="border:none;">
+  <tr>
+    <td style="border:none;">
+      <img src="photos/moret.png" width="120"><br>
+      <a href="https://www.stefanomoret.com/">
+        <b>Stefano Moret</b><br>
+        ETHZ
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/rixhon.png" width="120"><br>
+      <a href="">
+        <b>Xavier Rixhon</b><br>
+        UC Louvain
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/schnidrig.png" width="120"><br>
+      <a href="https://people.epfl.ch/jonas.schnidrigh">
+        <b>Jonas Schnidrig</b><br>
+        CIRAIG (HES-So & EPFL)<br>
+        <i>TC Coordinator</i>
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/chuat.png" width="120"><br>
+      <a href="https://people.epfl.ch/arthur.chuat/?lang=en">
+        <b>Arthur Chuat</b><br>
+        CIRAIG (EPFL)
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td style="border:none;">
+      <img src="photos/wiest.png" width="120"><br>
+      <a href="https://epse.ethz.ch/the-group/people/wiest-gabriel.html">
+        <b>Gabriel Wiest</b><br>
+        ETHZ
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/turan.png" width="120"><br>
+      <a href="https://mavt.ethz.ch/people/person-detail.MzQ5MDI2.TGlzdC81NTksLTE3MDY5NzgwMTc=.html">
+        <b>Evren Turan Mert</b><br>
+        ETHZ
+      </a>
+    </td>
+    <td style="border:none;">
+      <img src="photos/you.png" width="120"><br>
+      <a href="mailto:infot@energyscope.net">
+        <b>You?</b><br>
+        <i>Get in touch!</i>
+      </a>
+    </td>
+    <td style="border:none;"></td>
+  </tr>
+</table>
+
 
 If you are interested in a specific topic, have a look at the [Publications](../models/index.md#publications-table) and [Features](../features/index.md) or contact one of the team members related to the development of the feature.
 
