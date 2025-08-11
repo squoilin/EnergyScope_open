@@ -15,8 +15,9 @@ nav:
       - models/index.md
     - Features:
       - features/index.md
-      - features/module_td.md  
-      - library/td-generation.ipynb
+      - Typical Days:
+          - features/module_td.md
+          - library/td-generation.ipynb
       - features/module_mob.md
       - features/module_infra.md
       - features/module_co2.md
@@ -28,6 +29,7 @@ nav:
       - library/multiple-runs.ipynb
       - library/uncertainty-analysis.ipynb
       - library/add_technology.ipynb
+      - library/td-generation.ipynb
 
       - Reference Documentation:
         - Technologies: library/technologies/
