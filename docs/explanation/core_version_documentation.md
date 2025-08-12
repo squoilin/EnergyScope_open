@@ -22,7 +22,7 @@ The model is mathematically formulated as a linear programming (LP) problem. The
 
 The proposed modeling framework is a simplified representation of an energy system accounting for the energy flows within its boundaries. Its primary objective is to satisfy the energy balance constraints, meaning that the demand is known and the supply has to meet it. In energy modeling practice, the energy demand is often expressed in terms of final energy consumed (FEC). According to the definition of the European Commission, FEC is defined as "the energy which reaches the final consumer’s door" ([EU_FEC](https://www.eea.europa.eu/en/analysis/indicators/primary-and-final-energy-consumption)). In other words, the FEC is the amount of input energy needed to satisfy the end-use demand (EUD) in energy services. As an example, in the case of decentralized heat production with an NG boiler, the FEC is the amount of NG consumed by the boiler; the EUD is the amount of heat produced by the boiler, i.e., the heating service needed by the final user.
 
-The input for the proposed modeling framework is the EUD in energy services, represented as the sum of four energy sectors: electricity, heating, mobility, and non-energy demand. This replaces the classical economic-sector-based representation of energy demand. Heat is divided into three EUDs: high-temperature heat for industry, low temperature for space heating, and low temperature for hot water. Mobility is divided into two EUDs: passenger and freight mobility. Non-energy demand is, based on the IEA definition, “fuels that are used as raw materials in the different sectors and are not consumed as a fuel or transformed into another fuel” ([IEA_websiteDefinition](https://www.iea.org/statistics/resources/balancedefinitions/)). As examples, the European Commission includes as non-energy the following materials: “chemical feed-stocks, lubricants, and asphalt for road construction” ([EuropeanCommission2016](https://doi.org/10.2833/9127)).
+The input for the proposed modeling framework is the EUD in energy services, represented as the sum of three energy sectors: electricity, heating, and mobility. This replaces the classical economic-sector-based representation of energy demand. Heat is divided into three EUDs: high-temperature heat for industry, low temperature for space heating, and low temperature for hot water. Mobility is divided into two EUDs: passenger and freight mobility.
 
 
 ![Conceptual example of an energy system.](images/ESTD/model_formulation/chp_estd_conceptual_framework.png)
@@ -43,7 +43,7 @@ An ampl model begins by declaring the sets and parameters that will be used in t
 
 The figure gives a visual representation of the sets with their relative indices used in the following. The tables list and describe the model parameters. Tables list and describe the independent and dependent variables, respectively.
 
-![Visual representation of the sets and indices used.](images/ESTD/model_formulation/ses_sets_v2.png)
+![Visual representation of the sets and indices used.](images/ESTD/model_formulation/ses_sets_v3.png)
 
 ##### Time Series Parameters
 
