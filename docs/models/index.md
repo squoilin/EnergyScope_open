@@ -5,6 +5,7 @@
 EnergyScope is built to be flexible and easily modifiable, allowing users to tailor the model to their specific needs. A given "version" of EnergyScope typically corresponds to a  research publication, with its own data, assumptions, or model modifications.
 
 If you're new to EnergyScope, we recommend starting with the core version, which is available for download in the [Getting Started](../getting-started/index.md) guide and is fully described in the [Documentation](../explanation/index.md). 
+Versions of EnergyScope are also hosted as [branches on the github](https://github.com/energyscope/EnergyScope). If you would like to add your version as a branch, open a pull request!
 
 If you want to explore other model versions, a table listing selected publications that have used EnergyScope is provided below. Please note that it is the responsibility of the individual authors to provide instructions and documentation for their specific versions.
 
