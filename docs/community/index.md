@@ -1,7 +1,7 @@
 # Community
 !!! abstract "News"  
     - The **EnergyScope Symposium** this year will take place from **October 16-17** in **Sion, Switzerland**. 
-    - Further information for the registration process will follow soon.
+    - If you plan to join, please **[register here](https://docs.google.com/forms/d/e/1FAIpQLSeX9KpgItTzHaW1_Ou8IxO0bGC48mQK-W2T7tMFodIFljGAsQ/viewform?usp=dialog)**.
 
 ## Join the Discussion
 
