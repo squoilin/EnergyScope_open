@@ -5,18 +5,23 @@ nav:
   - Home:
       - EnergyScope: index.md
   - Getting Started:
-      - Getting Started: getting-started/getting-started.md
-  - Conceptual Foundations:
-    - explanation/index.md
-    - explanation/mathematical_framework.md
+      - getting-started/index.md
+  - Documentation:
+      - explanation/index.md
+      - explanation/background.md
+      - explanation/core_version_documentation.md
   - Model Versions:
+    - Publications:
       - models/index.md
-      - models/module_td.md
-      - models/module_mob.md
-      - models/module_infra.md
-      - models/module_co2.md
-      - models/module_lca.md
-  - Community: https://forum.energyscope.net/
+    - Features:
+      - features/index.md
+      - Typical Days:
+          - features/module_td.md
+          - library/td-generation.ipynb
+      - features/module_mob.md
+      - features/module_infra.md
+      - features/module_co2.md
+      - features/module_lca.md
   - Python Library:
       - library/index.md
       - library/basic-run.ipynb
@@ -24,6 +29,8 @@ nav:
       - library/multiple-runs.ipynb
       - library/uncertainty-analysis.ipynb
       - library/add_technology.ipynb
+      - library/td-generation.ipynb
+
       - Reference Documentation:
         - Technologies: library/technologies/
         - AMPL Reference:
@@ -31,6 +38,8 @@ nav:
           - library/ampl/parameters.md
           - library/ampl/variables.md
           - library/ampl/sets.md
+  - Community: 
+    - community/index.md
 
 
 
@@ -135,7 +144,7 @@ plugins:
       deploy_prefix: 'public'
   - mkdocs-jupyter:
       execute: false
-      # include_requirejs: true
+      include_requirejs: true
       include_source: True
       # no_input: True
       # show_input: False 

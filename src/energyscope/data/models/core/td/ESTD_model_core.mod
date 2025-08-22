@@ -95,7 +95,7 @@ param fmax_perc {TECHNOLOGIES} >= 0, <= 1 default 1; # value in [0,1]: this is t
 param fmin_perc {TECHNOLOGIES} >= 0, <= 1 default 0; # value in [0,1]: this is to fix that a technology can at min produce a certain % of the total output of its sector over the entire year
 param avail {RESOURCES} >= 0; # Yearly availability of resources [GWh/y]
 param c_op {RESOURCES} >= 0; # cost of resources in the different periods [Meuros/GWh]
-param vehicule_capacity {TECHNOLOGIES} >=0, default 0; #  veh_capa [capacity/vehicles] Average capacity (pass-km/h or t-km/h) per vehicle. It makes the link between F and the number of vehicles
+param vehicle_capacity {TECHNOLOGIES} >=0, default 0; #  veh_capa [capacity/vehicles] Average capacity (pass-km/h or t-km/h) per vehicle. It makes the link between F and the number of vehicles
 param layers_in_out {RESOURCES union TECHNOLOGIES diff STORAGE_TECH , LAYERS}; # f: input/output Resources/Technologies to Layers. Reference is one unit ([GW] or [Mpkm/h] or [Mtkm/h]) of (main) output of the resource/technology. input to layer (output of technology) > 0.
 param c_inv {TECHNOLOGIES} >= 0; # Specific investment cost [Meuros/GW].[Meuros/GWh] for STORAGE_TECH
 param c_maint {TECHNOLOGIES} >= 0; # O&M cost [Meuros/GW/year]: O&M cost does not include resource (fuel) cost. [Meuros/GWh/year] for STORAGE_TECH
@@ -190,7 +190,7 @@ subject to end_uses_t {l in LAYERS, h in HOURS, td in TYPICAL_DAYS}:
 ## Cost
 #------
 
-# [Eq. 2.1]	
+# [Eq. 2.1]	Total yearly cost of the whole system
 subject to totalcost_cal:
 	TotalCost = sum {j in TECHNOLOGIES} (tau [j]  * C_inv [j] + C_maint [j]) + sum {i in RESOURCES} C_op [i];
 	
@@ -209,33 +209,33 @@ subject to op_cost_calc {i in RESOURCES}:
 ## Emissions
 #-----------
 
-# [Eq. 2.6]
+# [Eq. 2.6] Total yearly emissions of the system
 subject to totalGWP_calc:
 	TotalGWP =  sum {i in RESOURCES} GWP_op [i];
 	#JUST RESOURCES :          TotalGWP = sum {i in RESOURCES} GWP_op [i];
 	#INCLUDING GREY EMISSIONS: TotalGWP = sum {j in TECHNOLOGIES} (GWP_constr [j] / lifetime [j]) + sum {i in RESOURCES} GWP_op [i];
 	
-# [Eq. 2.7]
+# [Eq. 2.7] Total emissions related to the construction of technologies 
 subject to gwp_constr_calc {j in TECHNOLOGIES}:
 	GWP_constr [j] = gwp_constr [j] * F [j];
 
-# [Eq. 2.8]
+# [Eq. 2.8] Total emissions of resources 
 subject to gwp_op_calc {i in RESOURCES}:
 	GWP_op [i] = gwp_op [i] * sum {t in PERIODS, h in HOUR_OF_PERIOD [t], td in TYPICAL_DAY_OF_PERIOD [t]} ( F_t [i, h, td] * t_op [h, td] );	
 
 	
-## Multiplication factor
+## Capacity limits
 #-----------------------
 	
 # [Eq. 2.9] min & max limit to the size of each technology
 subject to size_limit {j in TECHNOLOGIES}:
 	f_min [j] <= F [j] <= f_max [j];
 	
-# [Eq. 2.10] relation between power and capacity via period capacity factor. This forces max hourly output (e.g. renewables)
+# [Eq. 2.10] relation between hourly output and installed capacity via period capacity factor. This limits max hourly output (e.g. renewables)
 subject to capacity_factor_t {j in TECHNOLOGIES, h in HOURS, td in TYPICAL_DAYS}:
 	F_t [j, h, td] <= F [j] * c_p_t [j, h, td];
 	
-# [Eq. 2.11] relation between mult_t and mult via yearly capacity factor. This one forces total annual output
+# [Eq. 2.11] relation between yearly output and installed capacity via yearly capacity factor. This one limits total annual output to account for downtime and maintenance
 subject to capacity_factor {j in TECHNOLOGIES}:
 	sum {t in PERIODS, h in HOUR_OF_PERIOD [t], td in TYPICAL_DAY_OF_PERIOD [t]} (F_t [j, h, td] * t_op [h, td]) <= F [j] * c_p [j] * total_time;	
 		
@@ -267,6 +267,11 @@ subject to layer_balance {l in LAYERS, h in HOURS, td in TYPICAL_DAYS}:
 #---------
 	
 # [Eq. 2.14] The level of the storage represents the amount of energy stored at a certain time.
+# The level of storage level at a time step t is equal to the storage level at t-1, accounting for the losses
+# in t-1, plus the inputs to the storage, minus the output from the storage, accounting for input/output efficiencies. 
+# For the first period of the year, this equation is slightly modified to set the storage level at the beginning 
+# of the year according to the one at the end of the year. 
+
 subject to storage_level {j in STORAGE_TECH, t in PERIODS, h in HOUR_OF_PERIOD[t], td in TYPICAL_DAY_OF_PERIOD[t]}:
 	Storage_level [j, t] = (if t == 1 then
 	 			Storage_level [j, card(PERIODS)] * (1.0 -  storage_losses[j])
@@ -279,6 +284,8 @@ subject to storage_level {j in STORAGE_TECH, t in PERIODS, h in HOUR_OF_PERIOD[t
 				);
 
 # [Eq. 2.15] Bounding daily storage
+# The storage systems which can only be used for short-term (daily) applications are included in the daily storage set (STO DAILY). 
+# For these units, the equation imposes that the storage level be the same at the end of each typical day.
 subject to impose_daily_storage {j in STORAGE_DAILY, t in PERIODS, h in HOUR_OF_PERIOD[t], td in TYPICAL_DAY_OF_PERIOD[t]}:
 	Storage_level [j, t] = F_t [j, h, td];
 	
@@ -298,7 +305,7 @@ subject to limit_energy_to_power_ratio {j in STORAGE_TECH diff {"BEV_BATT","PHEV
 	
 # [Eq. 2.19-bis] limit the Energy to power ratio for EV batteries
 subject to limit_energy_to_power_ratio_bis {i in V2G, j in EVs_BATT_OF_V2G[i], l in LAYERS, h in HOURS, td in TYPICAL_DAYS}:
-	Storage_in [j, l, h, td] * storage_charge_time[j] + (Storage_out [j, l, h, td] + layers_in_out[i,"ELECTRICITY"]* F_t [i, h, td]) * storage_discharge_time[j]  <= ( F [j] - F_t [i,h,td] / vehicule_capacity [i] * batt_per_car[i] ) * storage_availability[j];
+	Storage_in [j, l, h, td] * storage_charge_time[j] + (Storage_out [j, l, h, td] + layers_in_out[i,"ELECTRICITY"]* F_t [i, h, td]) * storage_discharge_time[j]  <= ( F [j] - F_t [i,h,td] / vehicle_capacity [i] * batt_per_car[i] ) * storage_availability[j];
 
 ## Networks
 #----------------
@@ -307,7 +314,7 @@ subject to limit_energy_to_power_ratio_bis {i in V2G, j in EVs_BATT_OF_V2G[i], l
 subject to network_losses {eut in END_USES_TYPES, h in HOURS, td in TYPICAL_DAYS}:
 	Network_losses [eut,h,td] = (sum {j in RESOURCES union TECHNOLOGIES diff STORAGE_TECH: layers_in_out [j, eut] > 0} ((layers_in_out[j, eut]) * F_t [j, h, td])) * loss_network [eut];
 
-# [Eq. 2.21]  Extra grid cost for integrating 1 GW of RE is estimated to 367.8Meuros per GW of intermittent renewable (27beuros to integrate the overall potential) 
+# [Eq. 2.21]  Extra grid cost for integrating 1 GW of RE is estimated to 367.8Meuros per GW of intermittent renewable
 subject to extra_grid:
 	F ["GRID"] = 1 +  (c_grid_extra / c_inv["GRID"]) *(    (F ["WIND_ONSHORE"]     + F ["WIND_OFFSHORE"]     + F ["PV"]      )
 					                                     - (f_min ["WIND_ONSHORE"] + f_min ["WIND_OFFSHORE"] + f_min ["PV"]) );
@@ -331,12 +338,12 @@ subject to operating_strategy_mobility_freight{j in TECHNOLOGIES_OF_END_USES_CAT
 
 # [Eq. 2.26] To impose a constant share in the mobility
 subject to Freight_shares :
-	Share_freight_train + Share_freight_road + Share_freight_boat = 1; # Should not be required (redundant)... But kept for security
+	Share_freight_train + Share_freight_road + Share_freight_boat = 1;
 
 	
 ## Thermal solar & thermal storage:
 
-# [Eq. 2.27] relation between decentralised thermal solar power and capacity via period capacity factor.
+# [Eq. 2.27] Relation between decentralised thermal solar power and capacity via period capacity factor.
 subject to thermal_solar_capacity_factor {j in TECHNOLOGIES_OF_END_USES_TYPE["HEAT_LOW_T_DECEN"] diff {"DEC_SOLAR"}, h in HOURS, td in TYPICAL_DAYS}:
 	F_t_solar [j, h, td] <= F_solar[j] * c_p_t["DEC_SOLAR", h, td];
 	
@@ -353,7 +360,7 @@ subject to decentralised_heating_balance  {j in TECHNOLOGIES_OF_END_USES_TYPE["H
 
 # [Eq. 2.30] Compute the equivalent size of V2G batteries based on the installed capacity, the capacity per vehicles and the battery capacity per EVs technology
 subject to EV_storage_size {j in V2G, i in EVs_BATT_OF_V2G[j]}:
-	F [i] = F[j] / vehicule_capacity [j] * batt_per_car[j];# Battery size proportional to the number of cars
+	F [i] = F[j] / vehicle_capacity [j] * batt_per_car[j];# Battery size proportional to the number of cars
 	
 # [Eq. 2.31]  Impose EVs to be supplied by their battery.
 subject to EV_storage_for_V2G_demand {j in V2G, i in EVs_BATT_OF_V2G[j], h in HOURS, td in TYPICAL_DAYS}:

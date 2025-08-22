@@ -111,9 +111,7 @@ application to the case of Switzerland. <https://doi.org/10.1016/j.apenergy.2019
 
 \[6\] T.-V. Nguyen, J. Schnidrig, An analysis of the impacts of green mobility strategies and technologies on different European energy system F. Maréchal (2021). https://infoscience.epfl.ch/entities/publication/bf57ffc4-51fb-4f31-822c-ee51ceb79e39
 
-\[7\] G. Limpens (2021). Generating energy transition
-pathways: application to Belgium. PhD thesis Université Catholique de
-Louvain. <http://hdl.handle.net/2078.1/249196>
+\[7\] Limpens, G., Rixhon, X., Contino, F., & Jeanmart, H. (2024). EnergyScope Pathway: An open-source model to optimise the energy transition pathways of a regional whole-energy system. Applied Energy, 358, 122501, https://doi.org/10.1016/j.apenergy.2023.122501.
 
 \[8\] X. Li, J. Schnidrig, M. Souttre, F. Maréchal (2022). A dynamic methodology for analyzing energy transitional pathways. IEEE PESGM <https://doi.org/10.1109/PESGM48719.2022.9916902>
 
