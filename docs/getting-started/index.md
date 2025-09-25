@@ -11,7 +11,7 @@ To start with, please:
 1. **Install AMPL**
 
     - Visit the [AMPL webpage](https://dev.ampl.com/ampl/install.html) to download and install the appropriate version for your operating system. 
-    - For MacOS and Linux users, make sure to add AMPL to your system PATH.
+    - For MacOS and Linux users, make sure to add AMPL to your system PATH. You can provide the path to your license file in a .env file located at the root of your project, and containing the following line: AMPL_PATH="path_to_your_license"
 
 2. **Install Python**
 
