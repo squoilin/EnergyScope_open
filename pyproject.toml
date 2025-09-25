@@ -28,6 +28,8 @@ dependencies = [
     "seaborn>=0.13.0,<1.0.0",
     "nbformat>=5.10.0,<6.0.0",
     "amplpy>=0.14.0,<1.0.0",
+    "ampl_module_base",
+    "ampl_module_highs",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
