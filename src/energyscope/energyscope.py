@@ -3,7 +3,7 @@ import re
 from typing import Callable
 
 import pandas as pd
-from amplpy import AMPL
+from amplpy import AMPL, Environment, ampl_notebook
 
 from energyscope.datasets import Dataset
 from energyscope.models import Model, monthly
@@ -13,18 +13,24 @@ from energyscope.result import parse_result, Result
 class Energyscope:
     __es_model = None
 
-    def __init__(self, model: Model = monthly, solver_options: dict = {'solver': 'gurobi'}):
+    def __init__(self, model: Model = monthly, solver_options: dict = {'solver': 'gurobi'}, notebook: bool = False, license_uuid: str = None, modules: list = []):
         self.model = model
         self.solver_options = solver_options
+        self.notebook = notebook
+        self.license_uuid = license_uuid
+        self.modules = modules
 
     @property
     def es_model(self) -> AMPL:
         if self.__es_model is None:
-            try:
-                self.__es_model = AMPL()
-            except SystemError:
-                # Try to create the object a second time to prevent errors when starting `ampl_lic`
-                self.__es_model = AMPL()
+            if self.notebook:
+                self.__es_model = ampl_notebook(license_uuid=self.license_uuid, modules=self.modules)
+            else:
+                try:
+                    self.__es_model = AMPL(Environment(os.environ["AMPL_PATH"]))
+                except SystemError:
+                    # Try to create the object a second time to prevent errors when starting `ampl_lic`
+                    self.__es_model = AMPL()
         return self.__es_model
 
     def _load_model_files(self, ds: Dataset = None):
