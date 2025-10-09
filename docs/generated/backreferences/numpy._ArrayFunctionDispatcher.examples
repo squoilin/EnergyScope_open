@@ -1,0 +1,18 @@
+
+
+Examples using ``numpy._ArrayFunctionDispatcher``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+<div class="mkd-glr-thumbcontainer" tooltip="This is a general example.">
+    <!--div class="figure align-default" id="id1"-->
+        <img alt="Cost attribution" src="00_snapshot\images\thumb\mkd_glr_plot_cost_attribution_thumb.png" />
+        <p class="caption">
+            <span class="caption-text">
+                <a class="reference internal" href="00_snapshot\plot_cost_attribution">
+                    <span class="std std-ref">Cost attribution</span>
+                </a>
+            </span>
+            <!--a class="headerlink" href="#id1" title="Permalink to this image"></a-->
+        </p>
+    <!--/div-->
+</div>
