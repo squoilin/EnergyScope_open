@@ -1,9 +1,9 @@
 # Energyscope Gallery
 
 !!! warning
-     The Gallery documentation is under construction
+     This documentation is a work in progress.
 
-The **Gallery** section provides ... 
+Welcome to the **Gallery**! Explore these examples for inspiration on how to visualize your EnergyScope results.
 
 
 
@@ -14,15 +14,15 @@ The **Gallery** section provides ...
 
 ## Typical Day
 
-This section contains plotting examples for a snapshot model.
+This section contains plotting examples for an hourly resolved typical day model.
 
 
-<div class="mkd-glr-thumbcontainer" tooltip="This is a general example .">
+<div class="mkd-glr-thumbcontainer" tooltip="This text shows when hovering over the thumbnail.">
     <!--div class="figure align-default" id="id1"-->
-        <img alt="Thumbnail name" src="00_snapshot\images\thumb\mkd_glr_plot_00_test_thumb.png" />
+        <img alt="Thumbnail name" src="00_hourly\images\thumb\mkd_glr_plot_general_example_thumb.png" />
         <p class="caption">
             <span class="caption-text">
-                <a class="reference internal" href="00_snapshot\plot_00_test">
+                <a class="reference internal" href="00_hourly\plot_general_example">
                     <span class="std std-ref">Thumbnail name</span>
                 </a>
             </span>
@@ -31,13 +31,13 @@ This section contains plotting examples for a snapshot model.
     <!--/div-->
 </div>
 
-<div class="mkd-glr-thumbcontainer" tooltip="This is a general example.">
+<div class="mkd-glr-thumbcontainer" tooltip="This is an example using plotly.">
     <!--div class="figure align-default" id="id1"-->
-        <img alt="Cost attribution" src="00_snapshot\images\thumb\mkd_glr_plot_cost_attribution_thumb.png" />
+        <img alt="Plotly example" src="00_hourly\images\thumb\mkd_glr_plot_using_plotly_thumb.png" />
         <p class="caption">
             <span class="caption-text">
-                <a class="reference internal" href="00_snapshot\plot_cost_attribution">
-                    <span class="std std-ref">Cost attribution</span>
+                <a class="reference internal" href="00_hourly\plot_using_plotly">
+                    <span class="std std-ref">Plotly example</span>
                 </a>
             </span>
             <!--a class="headerlink" href="#id1" title="Permalink to this image"></a-->
@@ -45,12 +45,12 @@ This section contains plotting examples for a snapshot model.
     <!--/div-->
 </div>
 
-<div class="mkd-glr-thumbcontainer" tooltip="This is a general example.">
+<div class="mkd-glr-thumbcontainer" tooltip="This is an example using the core model.">
     <!--div class="figure align-default" id="id1"-->
-        <img alt="Installed  Capacity" src="00_snapshot\images\thumb\mkd_glr_plot_installed_capacity_thumb.png" />
+        <img alt="Installed  Capacity" src="00_hourly\images\thumb\mkd_glr_plot_installed_capacity_thumb.png" />
         <p class="caption">
             <span class="caption-text">
-                <a class="reference internal" href="00_snapshot\plot_installed_capacity">
+                <a class="reference internal" href="00_hourly\plot_installed_capacity">
                     <span class="std std-ref">Installed  Capacity</span>
                 </a>
             </span>
@@ -61,18 +61,19 @@ This section contains plotting examples for a snapshot model.
 
 <div class="mkd-glr-clear"></div>
 
-<!-- docs_es_gallery_generated_gallery_00_snapshot -->
+<!-- docs_es_gallery_generated_gallery_00_hourly -->
 
-## Scenario Analysis
+## Monthly Resolution
+This section contains plotting examples for a monthly resolved model.
 
 
-<div class="mkd-glr-thumbcontainer" tooltip="This is a general example.">
+<div class="mkd-glr-thumbcontainer" tooltip="This could be an example for the monthly version of EnergyScope.">
     <!--div class="figure align-default" id="id1"-->
-        <img alt="Example 2" src="01_scenarios\images\thumb\mkd_glr_plot_01_test_thumb.png" />
+        <img alt="Monthly example" src="01_monthly\images\thumb\mkd_glr_plot_01_test_thumb.png" />
         <p class="caption">
             <span class="caption-text">
-                <a class="reference internal" href="01_scenarios\plot_01_test">
-                    <span class="std std-ref">Example 2</span>
+                <a class="reference internal" href="01_monthly\plot_01_test">
+                    <span class="std std-ref">Monthly example</span>
                 </a>
             </span>
             <!--a class="headerlink" href="#id1" title="Permalink to this image"></a-->
@@ -82,35 +83,15 @@ This section contains plotting examples for a snapshot model.
 
 <div class="mkd-glr-clear"></div>
 
-<!-- docs_es_gallery_generated_gallery_01_scenarios -->
+<!-- docs_es_gallery_generated_gallery_01_monthly -->
 
 ## Pathway 
+This section could contain plotting examples for a transition pathway model.
 
-
-<div class="mkd-glr-thumbcontainer" tooltip="This is a general example.">
-    <!--div class="figure align-default" id="id1"-->
-        <img alt="Example 3" src="02_pathway\images\thumb\mkd_glr_plot_02_test_thumb.png" />
-        <p class="caption">
-            <span class="caption-text">
-                <a class="reference internal" href="02_pathway\plot_02_test">
-                    <span class="std std-ref">Example 3</span>
-                </a>
-            </span>
-            <!--a class="headerlink" href="#id1" title="Permalink to this image"></a-->
-        </p>
-    <!--/div-->
-</div>
 
 <div class="mkd-glr-clear"></div>
 
 <!-- docs_es_gallery_generated_gallery_02_pathway -->
-
-## Multi-Cell 
-
-
-<div class="mkd-glr-clear"></div>
-
-<!-- docs_es_gallery_generated_gallery_03_multi-cell -->
 
 
 <div id="download_links"></div>

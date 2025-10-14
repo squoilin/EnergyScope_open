@@ -21,5 +21,5 @@ fig = px.sunburst(df, path=['continent', 'country'], values='pop',
                          color_continuous_scale='RdBu',
                          color_continuous_midpoint=np.average(df['lifeExp'], weights=df['pop']))
 
-fig.update_layout(title_text='Life expectancy of countries and continents')
+#fig.update_layout(title_text='Life expectancy of countries and continents')
 fig.show(renderer="notebook")

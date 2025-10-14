@@ -1,7 +1,7 @@
 # Energyscope Gallery
 
 !!! warning
-     The Gallery documentation is under construction
+     This documentation is a work in progress.
 
-The **Gallery** section provides ... 
+Welcome to the **Gallery**! Explore these examples for inspiration on how to visualize your EnergyScope results.
 
