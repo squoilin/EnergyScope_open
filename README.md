@@ -72,7 +72,7 @@ Full documentation, including a model overview, releases, publications, model fo
 ## Bug Reporting and Support
 
 -   For bug reports or feature requests, please use the GitLab issue tracker.
--   For general inquiries or simple questions, join our [Slack community](https://join.slack.com/t/energyscopecommunity/shared_invite/zt-2qvzddo04-FaSMPFpiE88xbXEgpnSmdA).
+-   For general inquiries or simple questions, join our [Discourse forum](https://forum.energyscope.net/).
 
 ------------------------------------------------------------------------
 
