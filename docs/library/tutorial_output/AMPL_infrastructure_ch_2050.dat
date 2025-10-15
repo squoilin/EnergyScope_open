@@ -1,9 +1,4 @@
-###snapshot-version: 0.1.4
-###current-problem/environment-start
-problem Initial;
-environ Initial;
-###current-problem/environment-end
-
+###snapshot-version: 0.1.5
 ###data-start
 data;
 set PERIODS :=
@@ -1962,6 +1957,7 @@ param lifetime :=
      ['EHP_H2_GRID'] 80
      ['HP_H2_GRID'] 80
      ['MP_H2_GRID'] 80
+     ['LP_H2_GRID'] 80
      ['EHP_NG_GRID'] 80
      ['HP_NG_GRID'] 80
      ['MP_NG_GRID'] 80
@@ -3934,14 +3930,4 @@ param fossil_vec_share_min := 0;
 param bus_share_max := 0.2;
 model;
 ###data-end
-
-###objectives-start
-objective obj;
-###objectives-end
-
-###fixes-start
-###fixes-end
-
-###drop-restore-start
-###drop-restore-end
 

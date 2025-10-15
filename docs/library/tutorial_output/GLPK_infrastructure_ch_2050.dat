@@ -1955,6 +1955,7 @@ param lifetime :=
      ['EHP_H2_GRID'] 80
      ['HP_H2_GRID'] 80
      ['MP_H2_GRID'] 80
+     ['LP_H2_GRID'] 80
      ['EHP_NG_GRID'] 80
      ['HP_NG_GRID'] 80
      ['MP_NG_GRID'] 80

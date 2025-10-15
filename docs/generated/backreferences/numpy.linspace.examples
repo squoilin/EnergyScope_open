@@ -1,0 +1,18 @@
+
+
+Examples using ``numpy.linspace``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+<div class="mkd-glr-thumbcontainer" tooltip="This could be an example for the monthly version of EnergyScope.">
+    <!--div class="figure align-default" id="id1"-->
+        <img alt="Monthly example" src="01_monthly\images\thumb\mkd_glr_plot_01_test_thumb.png" />
+        <p class="caption">
+            <span class="caption-text">
+                <a class="reference internal" href="01_monthly\plot_01_test">
+                    <span class="std std-ref">Monthly example</span>
+                </a>
+            </span>
+            <!--a class="headerlink" href="#id1" title="Permalink to this image"></a-->
+        </p>
+    <!--/div-->
+</div>

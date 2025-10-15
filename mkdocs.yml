@@ -38,6 +38,7 @@ nav:
           - library/ampl/parameters.md
           - library/ampl/variables.md
           - library/ampl/sets.md
+  - Gallery: es_gallery/generated/gallery
   - Community: 
     - community/index.md
 
@@ -134,6 +135,17 @@ markdown_extensions:
 
 plugins:
   - search
+  - gallery:
+      conf_script: docs/gallery_conf.py
+      examples_dirs: docs/es_gallery/scripts
+      gallery_dirs: docs/es_gallery/generated/gallery
+      backreferences_dir: docs/generated/backreferences  # where to generate the back references summary
+      doc_module: ['mkdocs_gallery', 'numpy']
+      # reference_url: {sphinx_gallery: None},
+      image_scrapers:
+        - matplotlib
+        
+      compress_images: ['images', 'thumbnails']
   - autorefs
   - open-in-new-tab
   - include-markdown
@@ -143,7 +155,7 @@ plugins:
   - mike:
       deploy_prefix: 'public'
   - mkdocs-jupyter:
-      execute: false
+      execute: true #false
       include_requirejs: true
       include_source: True
       # no_input: True
