@@ -8,35 +8,41 @@ This guide will help you set up and start using a basic version of EnergyScope, 
 
 To start with, please:
 
-1. **Install AMPL**
-
-    - Visit the [AMPL webpage](https://dev.ampl.com/ampl/install.html) to download and install the appropriate version for your operating system. 
-    - For MacOS and Linux users, make sure to add AMPL to your system PATH. You can provide the path to your license file in a .env file located at the root of your project, and containing the following line: AMPL_PATH="path_to_your_license"
-
-2. **Install Python**
+1. **Install Python**
 
     - Version: Python 3.6 or higher.
     - Environment: We recommend using a virtual environment to manage package dependencies.
 
+2. **(Optional) Install AMPL manually**
+
+    - This step is **only required if you plan to use EnergyScope directly with AMPL (Option A)**.
+    - Visit the [AMPL webpage](https://dev.ampl.com/ampl/install.html) to download and install the appropriate version for your operating system. 
+    - For MacOS and Linux users, make sure to add AMPL to your system PATH. You can provide the path to your license file in a `.env` file located at the root of your project, containing the following line:  
+      `AMPL_PATH="path_to_your_license"`
+
+---
 
 !!! info "Options for using EnergyScope"
 
-	There are two options for using EnergyScope. 
+	There are two options for using EnergyScope: 
 
-    - **Option A:** Direcly using AMPL and amplpy
-     	- Allows running any version of EnergyScope and offers full flexibility to customize inputs, constraints, or model structure. 
-     	- Does **not** include built-in tools for preprocessing or postprocessing. 
-    - **Option B:** Using the energyscope Python Library
-    	- The energyscope Python Library makes it easier to run EnergyScope models and includes helpers for postprocessing results and visualizing outputs. 
-    	- May be less flexible and not compatible with all EnergyScope versions.
+    - **Option A:** Directly using AMPL and `amplpy`
+    	  - Allows running any version of EnergyScope and offers full flexibility to customize inputs, constraints, or model structure. 
+    	  - Does **not** include built-in tools for preprocessing or postprocessing. 
+    	  - Requires a manual AMPL installation.
 
-	If you are not sure about which option to choose, don't worry! Both options will allow you to get your first results in a few minutes.
+    - **Option B:** Using the `energyscope` Python Library
+    	  - The `energyscope` Python Library makes it easier to run EnergyScope models and includes helpers for postprocessing results and visualizing outputs.  
+    	  - AMPL is **automatically installed and configured** when installing the library — no manual AMPL setup is required.  
+    	  - May be less flexible and not compatible with all EnergyScope versions.
+
+	If you are not sure which option to choose, don't worry! Both options will allow you to get your first results in a few minutes.
 
 ---
 
 ## Running your first model
 
-### Option A: Using AMPL and amplpy
+### Option A: Using AMPL and `amplpy`
 
 1. **Download the core version AMPL files**:
 
@@ -58,7 +64,7 @@ To start with, please:
     pip install amplpy
     ```
 
-    - Load and solve the model using the following python code. The following code reads in the model and data files and solves them using the open-source solver Highs. 
+    - Load and solve the model using the following python code. The code reads in the model and data files and solves them using the open-source solver Highs. 
 
     ```python
     import amplpy
@@ -71,7 +77,7 @@ To start with, please:
 
     # Load model and data files
     ampl.read(model_path + "ESTD_model_core.mod")  # The main AMPL model
-    ampl.readData(model_path + "ESTD_12TD.dat")  # The corresponding timeseries file
+    ampl.readData(model_path + "ESTD_12TD.dat")    # The corresponding timeseries file
     ampl.readData(model_path + "ESTD_data_core.dat")  # The corresponding data file
 
     # Optionally set solver
@@ -81,7 +87,7 @@ To start with, please:
     ampl.solve()
     ```
     
-    - After having solved the model you can print, export and manipulate the solution using amplpy commands. 
+    - After solving the model, you can print, export and manipulate the solution using `amplpy` commands. 
     
     ```python
     # Get results (example: TotalCost)
@@ -92,30 +98,35 @@ To start with, please:
 
 ### Option B: Using the Python Library
 
-
-1. **Install the energyscope library and core version via `pip`**:
+1. **Install the `energyscope` library (AMPL included automatically)**:
 
     ```bash
     pip install energyscope
     ```
 
+    > 📝 *This installation will automatically install and configure AMPL, so you don’t need to install it separately.*
+
 2. **Run the core model**:
 
-    - Load and solve the model using the following python code. The following code reads in the model and data files and solves them. 
+    - Load and solve the core version using library. Make sure to replace the license UUID with your own, you can access it directly from the [AMPL portal](https://portal.ampl.com/user/ampl/license/list). If you don't have an account please create one, and favor your academic address to get access to the free academic license.
     
     ```python
-    # Import necessary libraries
     from energyscope.energyscope import Energyscope
     from energyscope.models import core
 
-    # Load the model
-    es_core = Energyscope(model=core)
+    # Import necessary libraries
+    PRIVATE_LICENSE_UUID = "<REPLACE_WITH_PRIVATE_LICENSE_UUID>"
+
+    es_core = Energyscope(model=core,   # here we select the core version
+                            solver_options={'solver':'gurobi'}, modules=['gurobi'],
+                            license_uuid=PRIVATE_LICENSE_UUID,
+                            notebook=True)
 
     # Solve the model
     results_core = es_core.calc()
     ```
     
-    - After having solved the model you can print, export and manipulate the solution using commands of the library. 
+    - After solving the model, you can print, export and manipulate the solution using library commands. 
 
     ```python
     # Access results
