@@ -1,12 +1,14 @@
-:root {
-    --md-primary-fg-color:        #90030C;
-    --md-primary-fg-color--light: #ECB7B7;
-    --md-primary-fg-color--dark:  #9f000b;
-  }
+/* Light mode (default) */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #003366;  /* main blue */
+  --md-primary-fg-color--light: #4c80b3;  /* lighter shade */
+  --md-primary-fg-color--dark:  #002244;  /* darker shade */
+}
 
-
-  [data-md-color-scheme="slate"] {
-    --md-hue: 0; 
-  
-  
-  }
+/* Dark mode (slate) – keep as is */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #90030C;
+  --md-primary-fg-color--light: #ECB7B7;
+  --md-primary-fg-color--dark:  #9f000b;
+  --md-hue: 0;
+}

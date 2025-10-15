@@ -1,4 +1,24 @@
+from plotly import graph_objects as go
+import numpy as np
+import pandas as pd
+import os
+import seaborn as sns
+import matplotlib.dates as mdates
+import pandas as pd
 
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from matplotlib.ticker import FuncFormatter
+import pandas as pd
+import numpy as np
+from pandas.api.types import (
+    is_integer_dtype,
+    is_datetime64_any_dtype,
+    is_period_dtype,
+)
+from ipywidgets import Dropdown, HBox, VBox, Button, Output
+from ipywidgets import Dropdown, HBox, VBox, Button, Output
+import matplotlib.pyplot as plt
 from typing import Union
 
 import numpy as np
@@ -537,4 +557,249 @@ def plot_comparison(results, variable, category, labels=None, run1=None, run2=No
         barmode='relative'  # Use 'relative' to ensure stacking works for both positive and negative values
     )
 
+
+
+
+
     return fig
+
+def plot_widget_annual_profile_td(
+    df,
+    day_col="DayOfYear",
+    value_col="value",
+    rolling_window=7,
+    year_for_axis=2024,
+    band_k=1.0
+):
+    """
+    Widget to select two technologies and plot their annual profiles.
+    """
+    def plot_annual_profile(df, tech):
+        dsub = df[df["tech_name"] == tech].copy()
+        if dsub.empty:
+            print(f"No data found for technology '{tech}'.")
+            return
+
+        # Aggregate per day and sort
+        dplot = (
+            dsub.groupby(day_col, as_index=False)[value_col]
+                .sum()
+                .sort_values(day_col)
+                .reset_index(drop=True)
+        )
+
+        # Build a proper date axis, robust to dtype of `day_col`
+        if is_integer_dtype(dplot[day_col]):
+            start = pd.Timestamp(year_for_axis, 1, 1)
+            days = dplot[day_col].astype(int).clip(lower=1)
+            dplot["date"] = start + pd.to_timedelta(days - 1, unit="D")
+        elif is_datetime64_any_dtype(dplot[day_col]) or is_period_dtype(dplot[day_col]):
+            if is_period_dtype(dplot[day_col]):
+                dplot["date"] = dplot[day_col].dt.to_timestamp().dt.normalize()
+            else:
+                dplot["date"] = pd.to_datetime(dplot[day_col]).dt.normalize()
+            dplot[day_col] = dplot["date"].dt.dayofyear
+        else:
+            coerced_dt = pd.to_datetime(dplot[day_col], errors="coerce")
+            if coerced_dt.notna().all():
+                dplot["date"] = coerced_dt.dt.normalize()
+                dplot[day_col] = dplot["date"].dt.dayofyear
+            else:
+                days = pd.to_numeric(dplot[day_col], errors="raise").astype(int)
+                start = pd.Timestamp(year_for_axis, 1, 1)
+                dplot["date"] = start + pd.to_timedelta(days - 1, unit="D")
+
+        # Rolling stats
+        roll = dplot[value_col].rolling(rolling_window, center=True, min_periods=1)
+        dplot["rolling_mean"] = roll.mean()
+        dplot["rolling_std"]  = roll.std(ddof=1).fillna(0)
+
+        # Variability band
+        lo = dplot["rolling_mean"] - band_k * dplot["rolling_std"]
+        hi = dplot["rolling_mean"] + band_k * dplot["rolling_std"]
+
+        # Plot
+        fig, ax = plt.subplots(figsize=(12, 5))
+        ax.fill_between(dplot["date"], lo, hi, alpha=0.15, label=f"±{band_k:g} rolling std")
+        ax.plot(dplot["date"], dplot["rolling_mean"], linewidth=2, label=f"Rolling {rolling_window}d mean")
+        ax.scatter(dplot["date"], dplot[value_col], s=12, alpha=0.5, label="Daily")
+
+        ax.set_title(f"Annual profile — {tech}")
+        ax.set_xlabel("Month")
+        ax.set_ylabel("Daily production")
+        xmin = pd.Timestamp(dplot["date"].min().year, 1, 1)
+        xmax = pd.Timestamp(dplot["date"].max().year, 12, 31)
+        ax.set_xlim(xmin, xmax)
+        ax.xaxis.set_major_locator(mdates.MonthLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+        ax.tick_params(axis="x", rotation=0)
+        ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:,.0f}"))
+        ax.grid(True, alpha=0.3)
+        for spine in ("top", "right"):
+            ax.spines[spine].set_visible(False)
+        ax.legend(frameon=False)
+        fig.tight_layout()
+        plt.show()
+
+    all_techs = sorted(pd.unique(df['tech_name']))
+    pick1 = Dropdown(options=all_techs, description='Tech A:', layout={'width': '45%'})
+    pick2 = Dropdown(options=all_techs, description='Tech B:', layout={'width': '45%'})
+    btn = Button(description='Plot technologies operation', button_style='primary')
+    out = Output()
+
+    def on_click(_):
+        out.clear_output(wait=True)
+        with out:
+            plot_annual_profile(df, pick1.value)
+            plot_annual_profile(df, pick2.value)
+
+    btn.on_click(on_click)
+    display(VBox([HBox([pick1, pick2]), btn, out]))
+
+
+
+
+def plot_sankey_td(ampl):
+    """Plot annual energy Sankey diagram
+    Parameters
+    ----------
+    Returns
+    -------
+    """
+
+    F_t = ampl.get_variable("F_t").get_values().to_pandas(multi_index=True).reset_index().rename(
+        columns={"index0": "tech_name", "index1": "h", "index2": "td", "F_t.val": "value"})
+    lyrio = ampl.get_parameter("layers_in_out").get_values().to_pandas().reset_index().rename(
+        columns={"index0": "tech_name", "index1": "flow_name", "layers_in_out": "value"})
+    HOUR_OF_PERIOD = pd.DataFrame(ampl.get_entity("T_H_TD").get_values().to_list(), columns=['i', 'h', 'td']).set_index(
+        'i')
+    MOB_list = sorted(['MOB_PRIVATE', 'MOB_AVIATION', 'MOB_PUBLIC', 'MOB_FREIGHT_RAIL', 'MOB_FREIGHT_ROAD', 'MOB_FREIGHT_BOAT'])
+    list_storage = ampl.get_set("STORAGE_TECH").get_values().to_pandas().index.values
+
+    df_flow = F_t.groupby(['tech_name', 'td']).sum().drop(['h'], axis=1).join(HOUR_OF_PERIOD.groupby('td').count() / 24,
+                                                                              on='td')  # Sum hourly profile for each TD + Merge occurence of TD per year
+    df_flow = df_flow[df_flow['value'] != 0]  # Keep only non zero flow
+    df_flow['value'] = df_flow['value'] * df_flow['h']  # kW * h per td
+
+    df_flow = df_flow.merge(lyrio.rename(columns={'value': 'value_lyrio'}), on='tech_name')  # Merge lyrio flow
+    df_flow = df_flow[df_flow['value_lyrio'] != 0]  # Keep only non zero flow
+    df_flow['value'] = (df_flow['value_lyrio'] * df_flow['value'])  # kW of demand and supply * h per td
+
+    df_flow.drop(['h', 'value_lyrio'], axis=1, inplace=True)  # Cleaning
+
+    df_flow.rename(columns={'tech_name': 'target', 'flow_name': 'source'}, inplace=True)  # Rename
+    df_flow.loc[df_flow['value'] > 0, ['target', 'source']] = df_flow.loc[
+        df_flow['value'] > 0, ['source', 'target']].to_numpy()  # Transform negative flow as source
+    df_flow['value'] = abs(df_flow['value'])  # Transform source flow to be positive
+
+    df_flow = df_flow.groupby(['target', 'source']).sum().reset_index()  # Aggregate to yearly value
+    df_flow.loc[df_flow['target'] == df_flow['source'], 'source'] = 'IMP_' + df_flow.loc[
+        df_flow['target'] == df_flow['source'], 'source'].astype(str)  # Transform name imported resources
+    df_flow = df_flow[~df_flow.loc[:, 'source'].str.startswith('IMP_RES').values]  # Remove node with IMP_RES
+
+    # Drop CO2 flow
+    df_flow = df_flow[~df_flow['source'].str.contains("CO2_")]
+    df_flow = df_flow[~df_flow['target'].str.contains("CO2_")]
+
+    df_flow.sort_values('source', inplace=True)
+
+    # Transform pkm & tkm into GWh
+    df_flow.loc[df_flow[df_flow['target'].isin(MOB_list)].index, 'value'] = \
+    df_flow.loc[df_flow['target'].isin(df_flow.loc[df_flow['target'].isin(MOB_list), 'source']), :].sort_values(
+        'target')['value'].values
+
+    # check if there is HVC in the df_flow['target']
+    if 'HVC' in df_flow['target'].values:
+        # Transform kt into GWh
+        df_flow.loc[df_flow['target'] == 'HVC', 'value'] = df_flow.loc[df_flow['target'].isin(
+            df_flow.loc[df_flow['target'] == 'HVC', 'source']), :].groupby('target').sum().values
+
+
+    df_flow = df_flow[df_flow['value'] > 1]  # Remove small flows
+
+    node = np.unique(np.concatenate((df_flow['source'].unique(), df_flow['target'].unique())))  # Get the list of nodes
+
+
+    # techno_color = pd.read_excel(os.getcwd()+'/ColorSankey.xlsx', index_col=False)
+    # df_flow = df_flow.merge(techno_color,on=('target','source'))
+
+    df_sankey = df_flow.replace(node, range(len(node))).infer_objects(copy=False)  # Rename techno into numbers
+
+    opacity = 0.5
+
+    fig = go.Figure(data=[go.Sankey(
+        valueformat=".0f",
+        valuesuffix="",  # "TWh",
+        # Define nodes
+        node=dict(
+            pad=15,
+            thickness=15,
+            line=dict(color="black", width=0.5),
+            label=node,
+            color="cornflowerblue"
+        ),
+        # Add links
+        link=dict(
+            source=df_sankey['source'],
+            target=df_sankey['target'],
+            value=df_sankey['value'],
+            label=df_sankey['target'],
+            # color =  df_sankey['color'].apply(lambda h: hexToRGB(h,opacity))
+        ))])
+
+    fig.update_layout(title_text="Sankey", font_size=10, font_color="black", paper_bgcolor="white")
+    fig.write_html(os.getcwd() + "/Sankey.html")
+    fig.show()
+
+
+def hexToRGB(hex, alpha):
+    hex = hex.lstrip('#')
+    r = int(hex[0:2], 16)
+    g = int(hex[2:4], 16)
+    b = int(hex[4:6], 16)
+
+    if (alpha):
+        return "rgba(%d, %d, %d, %.2f)" % (r, g, b, alpha)
+    else:
+        return "rgba(%d, %d, %d)" % (r, g, b)
+
+
+
+
+def plot_widget_hourly_profile_td(df_ft, hour_col='h', td_col='td', value_col='value'):
+    """
+    Widget to select two technologies and plot their hourly profiles by Typical Day.
+    """
+    def plot_hourly_profile_by_td(df_ft, tech):
+        dsub = df_ft[df_ft['tech_name'] == tech].copy()
+        dplot = dsub.groupby([hour_col, td_col], as_index=False)[value_col].sum()
+        tds = sorted(dplot[td_col].unique())
+
+        plt.figure(figsize=(10, 5))
+        for td in tds:
+            dtd = dplot[dplot[td_col] == td].sort_values(hour_col)
+            plt.plot(dtd[hour_col], dtd[value_col], label=f"TD {td}")
+
+        plt.title(f"Hourly profile by Typical Day — {tech}")
+        plt.xlabel("Hour of day")
+        plt.ylabel(value_col)
+        plt.xticks(range(0, 24, 2))
+        plt.grid(True, alpha=0.3)
+        plt.legend(title="Typical Day", ncols=2, fontsize='small')
+        plt.tight_layout()
+        plt.show()
+
+    all_techs = sorted(df_ft['tech_name'].unique())
+    pick1 = Dropdown(options=all_techs, description='Tech A:', layout={'width': '45%'})
+    pick2 = Dropdown(options=all_techs, description='Tech B:', layout={'width': '45%'})
+    btn = Button(description='Plot both', button_style='primary')
+    out = Output()
+
+    def on_click(_):
+        out.clear_output(wait=True)
+        with out:
+            plot_hourly_profile_by_td(df_ft, pick1.value)
+            plot_hourly_profile_by_td(df_ft, pick2.value)
+
+    btn.on_click(on_click)
+    return display(VBox([HBox([pick1, pick2]), btn, out]))
