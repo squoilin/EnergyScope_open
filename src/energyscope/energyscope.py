@@ -31,6 +31,11 @@ class Energyscope:
                     if ampl_path and os.path.exists(ampl_path):
                         self.__es_model = AMPL(Environment(ampl_path))
                     else:
+                        ampl_uuid = os.getenv("AMPL_UUID")
+                        if ampl_uuid:
+                            modules.install("gurobi")
+                            print(f"[INFO] Activating AMPL license with UUID {ampl_uuid}")
+                            modules.activate(ampl_uuid)
                         self.__es_model = AMPL()
                 except SystemError:
                     # Try to create the object a second time to prevent errors when starting `ampl_lic`
