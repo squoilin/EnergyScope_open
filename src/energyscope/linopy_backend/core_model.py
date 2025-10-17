@@ -116,11 +116,13 @@ def build_core_model_partial(data: Dict[str, Any], constraint_groups: List[str] 
         name="F"
     )
     
-    # F_t: Operation of technology at each time step [GW]
-    # Indexed by: TECHNOLOGIES x HOURS x TYPICAL_DAYS
+    # F_t: Operation of technology/resource at each time step [GW]
+    # In AMPL: F_t {RESOURCES union TECHNOLOGIES, HOURS, TYPICAL_DAYS}
+    # Indexed by: (RESOURCES + TECHNOLOGIES_NOSTORAGE) x HOURS x TYPICAL_DAYS
+    ENTITIES_WITH_F_T = RESOURCES + TECH_NOSTORAGE
     F_t = m.add_variables(
         lower=0,
-        coords=[TECH_NOSTORAGE, HOURS, TYPICAL_DAYS],
+        coords=[ENTITIES_WITH_F_T, HOURS, TYPICAL_DAYS],
         name="F_t"
     )
     
@@ -144,13 +146,13 @@ def build_core_model_partial(data: Dict[str, Any], constraint_groups: List[str] 
             name="Storage_level"
         )
     
-    # Resource consumption variables (if resource constraints included)
-    if 'resources' in constraint_groups:
-        R_t = m.add_variables(
-            lower=0,
-            coords=[RESOURCES, HOURS, TYPICAL_DAYS],
-            name="R_t"
-        )
+    # Resource consumption variables
+    # In AMPL, resources also use F_t variable
+    # For simplicity, we create separate R_t only if needed
+    if RESOURCES and 'resources' in constraint_groups:
+        # Note: In full AMPL model, resources use the same F_t variable
+        # For now, we'll model resources through layers_in_out
+        pass
     
     # Cost variables (if cost constraints included)
     if 'costs' in constraint_groups:
@@ -193,27 +195,28 @@ def build_core_model_partial(data: Dict[str, Any], constraint_groups: List[str] 
         # ----------------------------------------------------------------
         # Constraint 1.2: layer_balance
         # [Eq. 2.13] sum(layers_in_out * F_t) + sum(Storage_out - Storage_in) - End_uses = 0
+        # sum over RESOURCES union TECHNOLOGIES (excluding STORAGE_TECH)
         # ----------------------------------------------------------------
         print("  Adding layer_balance constraints...")
         constraint_count = 0
         for l in LAYERS:
             for h in HOURS:
                 for td in TYPICAL_DAYS:
-                    # Get technologies that interact with this layer
-                    tech_layer_pairs = []
-                    for j in TECH_NOSTORAGE:
+                    # Get resources and technologies that interact with this layer
+                    entity_layer_pairs = []
+                    for entity in ENTITIES_WITH_F_T:
                         try:
-                            coef = layers_in_out.loc[j, l]
+                            coef = layers_in_out.loc[entity, l]
                             if abs(coef) > 1e-10:  # Non-zero
-                                tech_layer_pairs.append((j, coef))
+                                entity_layer_pairs.append((entity, coef))
                         except (KeyError, IndexError):
                             pass
                     
-                    # Sum: layers_in_out[j,l] * F_t[j,h,td]
+                    # Sum: layers_in_out[entity,l] * F_t[entity,h,td]
                     balance_expr = sum(
-                        F_t.loc[j, h, td] * coef 
-                        for j, coef in tech_layer_pairs
-                    ) if tech_layer_pairs else 0
+                        F_t.loc[entity, h, td] * coef 
+                        for entity, coef in entity_layer_pairs
+                    ) if entity_layer_pairs else 0
                     
                     # Add storage flows if storage exists
                     if STORAGE_TECH:
@@ -274,10 +277,12 @@ def build_core_model_partial(data: Dict[str, Any], constraint_groups: List[str] 
         
         avail = data['parameters'].get('avail', {})
         RES_IMPORT_CONSTANT = data['sets'].get('RES_IMPORT_CONSTANT', [])
+        t_op = data['parameters']['t_op']
         
         # ----------------------------------------------------------------
         # Constraint 2.1: resource_availability
         # [Eq. 2.12] sum(F_t[i,h,td] * t_op[h,td]) <= avail[i]
+        # Annual resource consumption cannot exceed availability
         # ----------------------------------------------------------------
         if avail:
             print("  Adding resource_availability constraints...")
@@ -293,30 +298,21 @@ def build_core_model_partial(data: Dict[str, Any], constraint_groups: List[str] 
                             except (KeyError, IndexError):
                                 t_op_val = 1.0
                             
-                            # Note: F_t for resources might not exist in our simplified model
-                            # Skip if not present
-                            try:
-                                annual_consumption += R_t.loc[i, h, td] * t_op_val
-                            except:
-                                pass
+                            # Resources use F_t variable (same as technologies)
+                            annual_consumption += F_t.loc[i, h, td] * t_op_val
                     
-                    if annual_consumption != 0:
-                        m.add_constraints(
-                            annual_consumption <= avail[i],
-                            name=f"resource_availability_{i}"
-                        )
-                        constraint_count += 1
+                    m.add_constraints(
+                        annual_consumption <= avail[i],
+                        name=f"resource_availability_{i}"
+                    )
+                    constraint_count += 1
             print(f"    Added {constraint_count} resource_availability constraints")
         
         # ----------------------------------------------------------------
-        # Constraint 2.2: resource_constant_import
-        # [Eq. 2.12-bis] F_t[i,h,td] * t_op[h,td] = Import_constant[i]
+        # Constraint 2.2: resource_constant_import (skip for now)
+        # [Eq. 2.12-bis] For constant imports
         # ----------------------------------------------------------------
-        if RES_IMPORT_CONSTANT:
-            print("  Adding resource_constant_import constraints...")
-            # TODO: Implement when needed
-            # Requires Import_constant variable
-            pass
+        # Not needed for minimal model - will implement when needed
     
     # ====================================================================
     # CONSTRAINT GROUP 3: STORAGE
@@ -539,6 +535,7 @@ def build_core_model_partial(data: Dict[str, Any], constraint_groups: List[str] 
         # [Eq. 2.5] C_op[i] = sum(c_op[i] * F_t[i,h,td] * t_op[h,td])
         # ----------------------------------------------------------------
         print("  Adding op_cost_calc constraints...")
+        constraint_count = 0
         for i in RESOURCES:
             if i in c_op:
                 # Sum over all periods
@@ -550,17 +547,15 @@ def build_core_model_partial(data: Dict[str, Any], constraint_groups: List[str] 
                         except (KeyError, IndexError):
                             t_op_val = 1.0
                         
-                        # Resources use R_t variable if available
-                        try:
-                            annual_cost += c_op[i] * R_t.loc[i, h, td] * t_op_val
-                        except:
-                            pass
+                        # Resources use F_t variable (RESOURCES are in ENTITIES_WITH_F_T)
+                        annual_cost += c_op[i] * F_t.loc[i, h, td] * t_op_val
                 
-                if annual_cost != 0:
-                    m.add_constraints(
-                        C_op_resources.loc[i] == annual_cost,
-                        name=f"op_cost_calc_{i}"
-                    )
+                m.add_constraints(
+                    C_op_resources.loc[i] == annual_cost,
+                    name=f"op_cost_calc_{i}"
+                )
+                constraint_count += 1
+        print(f"    Added {constraint_count} op_cost_calc constraints")
         
         # ----------------------------------------------------------------
         # Constraint 4.4: totalcost_cal

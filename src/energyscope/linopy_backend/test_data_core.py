@@ -134,17 +134,25 @@ def create_minimal_core_data():
     t_op = pd.DataFrame(t_op_data).set_index(['hour', 'td'])['t_op']
     total_time = t_op.sum()  # Should be ~8760
     
-    # Layers in/out matrix
+    # Layers in/out matrix (for resources and technologies)
     # Positive = output, Negative = input
     layers_in_out_data = {
+        # Technologies
         'WIND': {'ELECTRICITY': 1.0, 'GAS': 0.0, 'END_USE': 0.0},
         'GAS_PLANT': {'ELECTRICITY': 0.4, 'GAS': -1.0, 'END_USE': 0.0},  # 40% efficient
         'GRID': {'ELECTRICITY': -1.0, 'GAS': 0.0, 'END_USE': 1.0},  # Converts elec to end-use
-        'GAS': {'ELECTRICITY': 0.0, 'GAS': 1.0, 'END_USE': 0.0},  # Gas resource
-        'ELECTRICITY_IMPORT': {'ELECTRICITY': 1.0, 'GAS': 0.0, 'END_USE': 0.0},
+        # Resources
+        'GAS': {'ELECTRICITY': 0.0, 'GAS': 1.0, 'END_USE': 0.0},  # Gas resource supplies GAS layer
+        'ELECTRICITY_IMPORT': {'ELECTRICITY': 1.0, 'GAS': 0.0, 'END_USE': 0.0},  # Imports supply electricity
     }
     
     layers_in_out = pd.DataFrame(layers_in_out_data).T
+    
+    # Resource availability (annual limits)
+    avail = {
+        'GAS': 10000.0,  # 10,000 GWh/year available
+        'ELECTRICITY_IMPORT': 20000.0,  # 20,000 GWh/year import limit
+    }
     
     # Demand profile (simplified)
     # End-use demand varies by hour and typical day
@@ -248,6 +256,7 @@ def create_minimal_core_data():
             't_op': t_op,
             'total_time': total_time,
             'layers_in_out': layers_in_out,
+            'avail': avail,  # Resource availability
             'storage_eff_in': storage_eff_in,
             'storage_eff_out': storage_eff_out,
             'storage_losses': storage_losses,
