@@ -3,7 +3,7 @@ import re
 from typing import Callable
 
 import pandas as pd
-from amplpy import AMPL, Environment, ampl_notebook
+from amplpy import AMPL, Environment, ampl_notebook, models
 
 from energyscope.datasets import Dataset
 from energyscope.models import Model, monthly
