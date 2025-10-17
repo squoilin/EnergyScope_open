@@ -59,7 +59,6 @@ deploy_main:
   stage: deploy
   dependencies: []
   before_script:
-    - ls /etc/ampl
     - git branch -D docs || true
     - git fetch origin docs:docs
   script:
