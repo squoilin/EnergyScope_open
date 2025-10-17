@@ -23,8 +23,10 @@ def parse_linopy_result(linopy_model, data, id_run=None) -> Result:
         Result instance compatible with EnergyScope analysis tools
     """
     # Check if model has been solved
-    if linopy_model.solution is None or linopy_model.solution.empty:
+    if linopy_model.solution is None:
         raise ValueError("Model has not been solved or solution is empty")
+    if hasattr(linopy_model.solution, '__len__') and len(linopy_model.solution) == 0:
+        raise ValueError("Solution is empty")
     
     # Extract variables
     variables = {}

@@ -62,8 +62,8 @@ def build_toy_model(data: ModelData) -> linopy.Model:
     
     # F: Installed capacity [GW] or storage capacity [GWh]
     F = m.add_variables(
-        lower={tech: f_min[tech] for tech in TECHNOLOGIES},
-        upper={tech: f_max[tech] for tech in TECHNOLOGIES},
+        lower=pd.Series([f_min[tech] for tech in TECHNOLOGIES], index=TECHNOLOGIES),
+        upper=pd.Series([f_max[tech] for tech in TECHNOLOGIES], index=TECHNOLOGIES),
         coords=[TECHNOLOGIES],
         name="F"
     )
@@ -246,7 +246,13 @@ def solve_toy_model(data: ModelData, solver='gurobi', solver_options=None):
     
     try:
         result = model.solve(solver_name=solver, **solver_options)
-        return model, result
+        # In linopy 0.5.x, solve() returns (status, condition)
+        # We return the model (which now has solution attached) and status
+        if isinstance(result, tuple):
+            status = result[0]
+        else:
+            status = result
+        return model, status
     except Exception as e:
         print(f"Solver error: {e}")
         raise

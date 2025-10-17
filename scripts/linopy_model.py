@@ -23,12 +23,12 @@ print(f"  Storage technologies: {data.sets['STORAGE_TECH']}")
 
 # Build and solve model
 print("\nBuilding and solving linopy model...")
-print("Solver: gurobi")
+print("Solver: highs")
 
 try:
-    model, solution = solve_toy_model(data, solver='gurobi')
+    model, status = solve_toy_model(data, solver='highs')
     
-    print(f"\nSolution status: {solution.status}")
+    print(f"\nSolution status: {status}")
     print(f"Objective value: {model.objective.value:.2f} M€")
     
     # Parse results
