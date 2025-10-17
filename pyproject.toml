@@ -21,14 +21,13 @@ requires-python = ">=3.9"
 dependencies = [
     "pandas>=2.0.0,<3.0.0",
     "amplpy>=0.14.0,<1.0.0",
-    "numpy>=2.0.0,<3.0.0",
-    "pandas>=2.0.0,<3.0.0",
+    "numpy>=1.26.4,<3.0.0",
     "plotly>=5.24.0,<7.0.0",
     "SALib>=1.5.0,<2.0.0",
     "seaborn>=0.13.0,<1.0.0",
     "nbformat>=5.10.0,<6.0.0",
-    "amplpy>=0.14.0,<1.0.0",
 ]
+
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -38,7 +37,17 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
+linopy = [
+    "linopy>=0.3.0",
+    "xarray>=2023.0.0",
+]
 ampl_modules = [
+    "ampl_module_base",
+    "ampl_module_highs",
+]
+all = [
+    "linopy>=0.3.0",
+    "xarray>=2023.0.0",
     "ampl_module_base",
     "ampl_module_highs",
 ]

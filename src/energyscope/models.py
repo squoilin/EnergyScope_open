@@ -2,7 +2,7 @@ import pathlib
 from dataclasses import dataclass
 from importlib.resources import files as resources_files
 from os import PathLike
-from typing import Union
+from typing import Union, Callable
 
 from energyscope import data  # Ensure 'data' is correctly imported
 
@@ -20,9 +20,33 @@ class Model:
                 and the file path.
         """
         self.files = files
+        self.backend = 'ampl'
 
     def __add__(self, other):
         return Model(self.files + other.files)
+
+
+@dataclass
+class LinopyModel:
+    """
+    Model definition for linopy-based optimization.
+    
+    Attributes:
+        builder: Function that takes ModelData and returns a linopy.Model
+        data_loader: Function that returns ModelData (or takes Dataset and returns ModelData)
+        backend: Always 'linopy' to distinguish from AMPL models
+    """
+    def __init__(self, builder: Callable, data_loader: Callable):
+        """
+        Initializes a LinopyModel.
+        
+        Parameters:
+            builder: Callable that takes ModelData and returns linopy.Model
+            data_loader: Callable that returns ModelData instance
+        """
+        self.builder = builder
+        self.data_loader = data_loader
+        self.backend = 'linopy'
 
 
 def __from_data(path) -> pathlib.Path:
@@ -67,3 +91,16 @@ lca_ch_2020 = Model([('mod', __from_model("lca/ch/ses_main.mod")), ('dat', __fro
                      ('dat', __from_data("lca/ch/techs.dat")), ('dat', __from_data("lca/ch/techs_mob.dat")),
                      ('dat', __from_data("lca/ch/techs_pv.dat")), ('dat', __from_data("lca/ch/techs_lcia_JS.dat")),
                      ('mod', __from_model("lca/ch/scenarios.mod")), ('mod', __from_model("lca/ch/objectives.mod")), ])
+
+# Linopy models
+try:
+    from energyscope.linopy_backend import build_toy_model
+    from energyscope.linopy_backend.data_loader import create_toy_data
+    
+    core_toy_linopy = LinopyModel(
+        builder=build_toy_model,
+        data_loader=create_toy_data
+    )
+except ImportError:
+    # Linopy not installed, skip linopy models
+    pass
