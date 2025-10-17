@@ -43,13 +43,29 @@ except Exception as e:
     exit(1)
 
 # Solve
-print("\n3. Solving with HiGHS...")
+print("\n3. Solving model...")
+
+# Try Gurobi first, fall back to HiGHS if needed
+solver_used = None
+try:
+    print("   Attempting Gurobi...")
+    result = model.solve(solver_name='gurobi', io_api='direct')
+    status = result[0] if isinstance(result, tuple) else result
+    solver_used = 'Gurobi'
+except Exception as e:
+    print(f"   Gurobi failed ({str(e)[:50]}...), trying HiGHS...")
+    try:
+        result = model.solve(solver_name='highs')
+        status = result[0] if isinstance(result, tuple) else result
+        solver_used = 'HiGHS'
+    except Exception as e2:
+        print(f"   ✗ Both solvers failed: {e2}")
+        raise
 
 try:
-    result = model.solve(solver_name='highs')
-    status = result[0] if isinstance(result, tuple) else result
     
     print(f"\n   ✓ SOLVED!")
+    print(f"   Solver: {solver_used}")
     print(f"   Status: {status}")
     print(f"   Objective: {model.objective.value:.2f} M€")
     
