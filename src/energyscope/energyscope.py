@@ -27,7 +27,11 @@ class Energyscope:
                 self.__es_model = ampl_notebook(license_uuid=self.license_uuid, modules=self.modules)
             else:
                 try:
-                    self.__es_model = AMPL(Environment(os.environ["AMPL_PATH"]))
+                    ampl_path = os.getenv("AMPL_PATH")
+                    if ampl_path and os.path.exists(ampl_path):
+                        self.__es_model = AMPL(Environment(ampl_path))
+                    else:
+                        self.__es_model = AMPL()
                 except SystemError:
                     # Try to create the object a second time to prevent errors when starting `ampl_lic`
                     self.__es_model = AMPL()
