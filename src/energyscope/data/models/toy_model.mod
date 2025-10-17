@@ -46,7 +46,7 @@ param c_op_grid >= 0 default 100;  # M€/GWh
 #########################
 
 # Installed capacity
-var F {TECHNOLOGIES} >= f_min, <= f_max;
+var F {j in TECHNOLOGIES} >= f_min[j], <= f_max[j];
 
 # Operation level
 var F_t {TECH_NOSTORAGE, PERIODS} >= 0;
