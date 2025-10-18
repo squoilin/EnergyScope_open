@@ -3,7 +3,7 @@ import re
 from typing import Callable
 
 import pandas as pd
-from amplpy import AMPL, Environment, ampl_notebook, models
+from amplpy import AMPL, Environment, ampl_notebook, modules
 
 from energyscope.datasets import Dataset
 from energyscope.models import Model, monthly
@@ -33,8 +33,8 @@ class Energyscope:
                     else:
                         ampl_uuid = os.getenv("AMPL_UUID")
                         if ampl_uuid:
+                            print(f"[INFO] Activating AMPL license with UUID")
                             modules.install("gurobi")
-                            print(f"[INFO] Activating AMPL license with UUID {ampl_uuid}")
                             modules.activate(ampl_uuid)
                         self.__es_model = AMPL()
                 except SystemError:
