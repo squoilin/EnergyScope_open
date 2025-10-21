@@ -118,7 +118,7 @@ To start with, please:
     PRIVATE_LICENSE_UUID = "<REPLACE_WITH_PRIVATE_LICENSE_UUID>"
 
     es_core = Energyscope(model=core,   # here we select the core version
-                            solver_options={'solver':'gurobi'}, modules=['gurobi'],
+                          solver_options={'solver':'gurobi','gurobi_options':'outlev=1'}, modules=['gurobi'],
                             license_uuid=PRIVATE_LICENSE_UUID,
                             notebook=True)
 
