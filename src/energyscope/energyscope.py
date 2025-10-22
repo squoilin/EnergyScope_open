@@ -35,6 +35,8 @@ class Energyscope:
                         if ampl_uuid:
                             print(f"[INFO] Activating AMPL license with UUID")
                             modules.install("gurobi")
+                            modules.install("cplex")
+
                             modules.activate(ampl_uuid)
                         self.__es_model = AMPL()
                 except SystemError:
