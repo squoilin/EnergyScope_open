@@ -157,15 +157,25 @@ def build_and_run_full_model():
     }
 
     # Storage variables
+    # OPTIMIZATION: Only create storage variables where efficiency > 0
+    # This eliminates ~500K unnecessary constraints and ~300K variables
     Storage_in, Storage_out, Storage_level = {}, {}, {}
     if STORAGE_TECH:
         Storage_in = {
             (s, l, h, td): model.add_variable(lb=0, name=f"Storage_in_{s}_{l}_{h}_{td}")
-            for s in STORAGE_TECH for l in LAYERS for h in HOURS for td in TYPICAL_DAYS
+            for s in STORAGE_TECH 
+            for l in LAYERS 
+            if storage_eff_in.get((s, l), 0) > 0  # Only create if storage can accept this layer
+            for h in HOURS 
+            for td in TYPICAL_DAYS
         }
         Storage_out = {
             (s, l, h, td): model.add_variable(lb=0, name=f"Storage_out_{s}_{l}_{h}_{td}")
-            for s in STORAGE_TECH for l in LAYERS for h in HOURS for td in TYPICAL_DAYS
+            for s in STORAGE_TECH 
+            for l in LAYERS 
+            if storage_eff_out.get((s, l), 0) > 0  # Only create if storage can output this layer
+            for h in HOURS 
+            for td in TYPICAL_DAYS
         }
         Storage_level = {
             (s, t): model.add_variable(lb=0, name=f"Storage_level_{s}_{t}")
@@ -332,10 +342,14 @@ def build_and_run_full_model():
                     for entity in (RESOURCES + TECH_NOSTORAGE)
                 )
                 
-                # Add storage contribution
+                # Add storage contribution (only for layers where storage is compatible)
                 if STORAGE_TECH:
                     for s in STORAGE_TECH:
-                        balance_expr += Storage_out[s, l, h, td] - Storage_in[s, l, h, td]
+                        # Only add if variables exist (efficiency > 0)
+                        if (s, l, h, td) in Storage_out:
+                            balance_expr += Storage_out[s, l, h, td]
+                        if (s, l, h, td) in Storage_in:
+                            balance_expr -= Storage_in[s, l, h, td]
                 
                 model.add_linear_constraint(balance_expr == End_uses[l, h, td])
 
@@ -364,12 +378,14 @@ def build_and_run_full_model():
                 # Storage input: sum over layers with eff_in > 0
                 storage_input = sum(
                     Storage_in[j, l, h, td] * storage_eff_in[(j, l)]
-                    for l in LAYERS if storage_eff_in.get((j, l), 0) > 0
+                    for l in LAYERS 
+                    if (j, l, h, td) in Storage_in  # Variable exists
                 )
                 # Storage output: sum over layers with eff_out > 0
                 storage_output = sum(
                     Storage_out[j, l, h, td] / storage_eff_out[(j, l)]
-                    for l in LAYERS if storage_eff_out.get((j, l), 0) > 0
+                    for l in LAYERS 
+                    if (j, l, h, td) in Storage_out  # Variable exists
                 )
 
                 if t == 1:
@@ -403,26 +419,8 @@ def build_and_run_full_model():
                     model.add_linear_constraint(Storage_level[j, t] <= F[j])
         
         # Constraint: Storage layer compatibility [Eqs. 2.17-2.18]
-        # Using AMPL formulation: Storage * (ceil(eff) - 1) = 0
-        # When eff=0: ceil(0)-1 = -1, so Storage * (-1) = 0 => Storage = 0
-        # When eff>0: ceil(eff)-1 = 0, so Storage * 0 = 0 => always satisfied
-        import math
-        for j in STORAGE_TECH:
-            for l in LAYERS:
-                eff_in = storage_eff_in.get((j, l), 0)
-                eff_out = storage_eff_out.get((j, l), 0)
-                coef_in = math.ceil(eff_in) - 1
-                coef_out = math.ceil(eff_out) - 1
-                
-                # Only add constraint if coefficient is non-zero (i.e., when eff=0)
-                if coef_in != 0:
-                    for h in HOURS:
-                        for td in TYPICAL_DAYS:
-                            model.add_linear_constraint(Storage_in[j, l, h, td] * coef_in == 0)
-                if coef_out != 0:
-                    for h in HOURS:
-                        for td in TYPICAL_DAYS:
-                            model.add_linear_constraint(Storage_out[j, l, h, td] * coef_out == 0)
+        # OPTIMIZATION: No longer needed! We only created variables where eff > 0
+        # The constraint is implicitly satisfied by not creating incompatible variables
         
         # Constraint: Energy-to-power ratio [Eq. 2.19]
         for j in STORAGE_TECH:
@@ -434,15 +432,17 @@ def build_and_run_full_model():
             discharge_time = storage_discharge_time.get(j, 0)
             availability = storage_availability.get(j, 1.0)
             
-            # Apply constraint per layer as in AMPL
+            # Apply constraint per layer (only where variables exist)
             for l in LAYERS:
                 for h in HOURS:
                     for td in TYPICAL_DAYS:
-                        model.add_linear_constraint(
-                            Storage_in[j, l, h, td] * charge_time + 
-                            Storage_out[j, l, h, td] * discharge_time <= 
-                            F[j] * availability
-                        )
+                        # Only add constraint if both variables exist
+                        if (j, l, h, td) in Storage_in and (j, l, h, td) in Storage_out:
+                            model.add_linear_constraint(
+                                Storage_in[j, l, h, td] * charge_time + 
+                                Storage_out[j, l, h, td] * discharge_time <= 
+                                F[j] * availability
+                            )
         
         # Constraint: Energy-to-power ratio for EV batteries [Eq. 2.19-bis]
         # This accounts for battery discharge to power the vehicle (F_t) in addition to V2G discharge
@@ -470,14 +470,16 @@ def build_and_run_full_model():
                 for l in LAYERS:
                     for h in HOURS:
                         for td in TYPICAL_DAYS:
-                            # Available battery capacity = Total battery - battery in use by driving vehicles
-                            available_batt = F[j] - (F_t[i, h, td] / veh_cap * batt_size if veh_cap > 0 else 0)
-                            
-                            model.add_linear_constraint(
-                                Storage_in[j, l, h, td] * charge_time + 
-                                (Storage_out[j, l, h, td] + layers_elec_consumption * F_t[i, h, td]) * discharge_time <= 
-                                available_batt * availability
-                            )
+                            # Only add constraint if both variables exist
+                            if (j, l, h, td) in Storage_in and (j, l, h, td) in Storage_out:
+                                # Available battery capacity = Total battery - battery in use by driving vehicles
+                                available_batt = F[j] - (F_t[i, h, td] / veh_cap * batt_size if veh_cap > 0 else 0)
+                                
+                                model.add_linear_constraint(
+                                    Storage_in[j, l, h, td] * charge_time + 
+                                    (Storage_out[j, l, h, td] + layers_elec_consumption * F_t[i, h, td]) * discharge_time <= 
+                                    available_batt * availability
+                                )
     
     # Constraint: Operating strategy for passenger mobility [Eq. 2.24]
     if 'MOBILITY_PASSENGER' in TECHNOLOGIES_OF_END_USES_CATEGORY and Shares_mobility_passenger:
@@ -571,10 +573,12 @@ def build_and_run_full_model():
                     
                     # Heat balance: tech output + solar output + storage net output = share * demand
                     # F_t[j] + F_t_solar[j] + sum_over_layers(Storage_out - Storage_in) = Shares_lowT_dec[j] * demand
-                    storage_contribution = sum(
-                        Storage_out.get((i, l, h, td), 0) - Storage_in.get((i, l, h, td), 0)
-                        for l in LAYERS
-                    )
+                    storage_contribution = 0
+                    for l in LAYERS:
+                        if (i, l, h, td) in Storage_out:
+                            storage_contribution += Storage_out[i, l, h, td]
+                        if (i, l, h, td) in Storage_in:
+                            storage_contribution -= Storage_in[i, l, h, td]
                     
                     model.add_linear_constraint(
                         F_t[j, h, td] + F_t_solar[j, h, td] + storage_contribution == 
@@ -614,10 +618,11 @@ def build_and_run_full_model():
             for h in HOURS:
                 for td in TYPICAL_DAYS:
                     # Storage_out must be at least enough to power the vehicle
-                    # Storage_out[i, "ELECTRICITY", h, td] >= -layers_in_out[j, "ELECTRICITY"] * F_t[j, h, td]
-                    model.add_linear_constraint(
-                        Storage_out[i, "ELECTRICITY", h, td] >= elec_consumption * F_t[j, h, td]
-                    )
+                    # Only add if variable exists
+                    if (i, "ELECTRICITY", h, td) in Storage_out:
+                        model.add_linear_constraint(
+                            Storage_out[i, "ELECTRICITY", h, td] >= elec_consumption * F_t[j, h, td]
+                        )
     
     # Constraint: fmax_perc and fmin_perc [Eq. 2.36]
     # These limit technology output as a percentage of total sector output
