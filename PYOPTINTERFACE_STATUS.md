@@ -12,18 +12,8 @@ The 2.21% difference should be further investigated using a divide-and-conquer a
 
 
 ### 3. Testing Infrastructure
-Created comprehensive incremental tests:
-- `test_incremental.py` - Basic constraint groups
-- `test_incremental2.py` - Extended constraints including mobility
-- `test_incremental3.py` - Infrastructure and resource constraints
-- `test_cost_constraints.py` - Full model without storage
-- `pyoptinterface_nostorage.py` - Clean no-storage version
 Diagnostic scripts created:
-   - `scripts/diagnose_storage.py` - Storage data analysis
-   - `scripts/diagnose_storage2.py` - Storage efficiency data structure check
-   - `scripts/test_phs_only.py` - Isolated PHS storage test
    - `scripts/compute_iis.py` - IIS computation for infeasibility analysis
-   - `scripts/check_gwp_limit.py` - GWP limit verification
 
 ## Lessons Learned
 
@@ -84,11 +74,6 @@ Diagnostic scripts created:
 - **Model Size** (with storage): ~487,000 rows, ~665,000 columns
 - **Model Size** (without storage): ~400,000 rows, ~450,000 columns
 
-## Files Modified
-
-1. `src/energyscope/linopy_backend/data_loader_full.py` - Fixed indexed set extraction
-2. `scripts/pyoptinterface_full_model.py` - Major overhaul with proper structure
-3. Created multiple test scripts for incremental debugging
 
 ## References
 
