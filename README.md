@@ -1,13 +1,47 @@
-# EnergyScope Library
+# EnergyScope Library - Open Source Alternatives to AMPL
 
 ## Overview
 
-This library is part of the EnergyScope project, designed for energy system modeling and analysis. It includes the following core functionalities:
+This repository contains implementations of the EnergyScope energy system model using **open-source alternatives to AMPL**. The goal is to test and validate different Python-based optimization libraries that can replace the proprietary AMPL modeling language while maintaining the same mathematical formulation and results.
+
+This library includes the following core functionalities:
 
 1.  **Model Setup and Documentation**: A set of energy models tailored to specific scenarios, along with comprehensive documentation.
 2.  **Pre-Calculation**: Tools for preparing and processing input data.
 3.  **Model Solving**: Optimization tools for running simulations based on the pre-calculated input.
 4.  **KPI Calculation and Plotting**: Tools to compute Key Performance Indicators (KPIs) and visualize results.
+
+## Model Implementations
+
+### AMPL Model (Baseline)
+The original implementation using AMPL serves as the baseline for comparison:
+
+```bash
+conda activate ESopen
+python scripts/ampl_model.py
+```
+
+### PyOptInterface Model (Open Source Alternative)
+A high-performance implementation using PyOptInterface with support for multiple solvers (Gurobi, HiGHS):
+
+```bash
+conda activate ESopen
+# Full model with ESTD dataset
+python scripts/pyoptinterface_full.py
+
+# Toy model for quick testing
+python scripts/pyoptinterface_toy.py
+```
+
+**Key Features:**
+- ✅ **Complete Implementation**: All constraints (Eq. 2.1-2.39) implemented
+- ✅ **Multiple Solvers**: Supports Gurobi and HiGHS
+- ✅ **Performance**: Similar solve time to AMPL (~53s vs ~40s), but model construction is slower (~40s vs ~0s in AMPL)
+- ✅ **Validated Results**: 2.21% difference from AMPL baseline
+
+For more detailed information about the implementation status and performance comparisons, please refer to [MODEL_STATUS.md](MODEL_STATUS.md).
+
+## EnergyScope (original)
 
 For more detailed information, please refer to the full [documentation](https://library.energyscope.ch).
 
@@ -17,19 +51,99 @@ For more detailed information, please refer to the full [documentation](https://
 
 For detailed installation instructions, please refer to the [Getting Started Guide](https://library.energyscope.ch).
 
-To install the EnergyScope library, use the following command:
+### Environment Setup
+
+First, create a dedicated conda environment for this project:
+
+```bash
+# Create the ESopen environment
+conda create -n ESopen python=3.11 -y
+
+# Activate the environment
+conda activate ESopen
+```
+
+### Basic Installation
+
+To install the EnergyScope library with basic dependencies:
 
 ``` bash
 pip install energyscope
 ```
 
-Alternatively, you may clone the repository and install the package manually:
+### Installation with PyOptInterface Support
+
+To install with PyOptInterface support for open-source optimization:
+
+```bash
+# With both Gurobi and HiGHS support
+pip install energyscope[pyoptinterface]
+
+# With HiGHS only (open-source)
+pip install energyscope[pyoptinterface-highs]
+```
+
+### Installation with All Dependencies
+
+To install with all optional dependencies (Linopy, PyOptInterface, AMPL modules):
 
 ``` bash
-git clone <repo-url>
-cd <project-directory>
+pip install energyscope[all]
+```
+
+### Manual Installation
+
+Alternatively, you may clone the repository and install the package manually:
+
+```bash
+# Create and activate environment
+conda create -n ESopen python=3.11 -y
+conda activate ESopen
+
+# Clone and install
+git clone https://github.com/squoilin/EnergyScope_open.git
+cd EnergyScope_open
 pip install .
 ```
+
+**Note**: For PyOptInterface models, you'll need either:
+- **Gurobi**: Commercial solver (requires license)
+- **HiGHS**: Open-source solver (requires additional installation)
+
+### HiGHS Solver Installation
+
+To use the open-source HiGHS solver, install it using conda:
+
+```bash
+# Activate your environment
+conda activate ESopen
+
+# Install HiGHS from conda-forge
+conda install -c conda-forge highs -y
+
+# Verify installation
+highs --version
+```
+
+**Alternative Installation Methods:**
+
+1. **From Source (Advanced Users):**
+   ```bash
+   # Install prerequisites
+   sudo apt-get install cmake build-essential
+   
+   # Clone and build HiGHS
+   git clone https://github.com/ERGO-Code/HiGHS.git
+   cd HiGHS
+   mkdir build && cd build
+   cmake ..
+   cmake --build .
+   sudo cmake --install .
+   ```
+
+2. **Precompiled Binaries:**
+   - Download from [HiGHS releases](https://github.com/ERGO-Code/HiGHS/releases)
+   - Extract and add to your PATH
 
 ------------------------------------------------------------------------
 

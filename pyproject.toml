@@ -27,8 +27,10 @@ dependencies = [
     "seaborn>=0.13.0,<1.0.0",
     "nbformat>=5.10.0,<6.0.0",
     "amplpy>=0.14.0,<1.0.0",
-    "ipywidgets>=8.1.7,<9.0.0"
-
+    "ipywidgets>=8.1.7,<9.0.0",
+    "pyoptinterface>=0.2.0",
+    "highspy>=1.0.0",
+    "gurobipy>=11.0.0"
 ]
 
 classifiers = [
@@ -44,6 +46,15 @@ linopy = [
     "linopy>=0.3.0",
     "xarray>=2023.0.0",
 ]
+pyoptinterface = [
+    "pyoptinterface>=0.2.0",
+    "highspy>=1.0.0",
+    "gurobipy>=11.0.0",
+]
+pyoptinterface-highs = [
+    "pyoptinterface>=0.2.0",
+    "highspy>=1.0.0",
+]
 ampl_modules = [
     "ampl_module_base",
     "ampl_module_highs",
@@ -51,11 +62,14 @@ ampl_modules = [
 all = [
     "linopy>=0.3.0",
     "xarray>=2023.0.0",
+    "pyoptinterface>=0.2.0",
+    "highspy>=1.0.0",
+    "gurobipy>=11.0.0",
     "ampl_module_base",
     "ampl_module_highs",
 ]
 
 [project.urls]
 Homepage = "https://library.energyscope.ch"
-Repository = "https://gitlab.com/energyscope/energyscope"
-Issues = "https://gitlab.com/energyscope/energyscope/-/issues"
+Repository = "https://github.com/squoilin/EnergyScope_open"
+Issues = "https://github.com/squoilin/EnergyScope_open/issues"
