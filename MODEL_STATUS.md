@@ -37,7 +37,12 @@ This document provides a summary of the current status of the different Energysc
         conda activate dispaset
         python scripts/test_build_core_model.py
         ```
-*   **Status**: **Ready**. Both the toy and core model versions run successfully and solve to optimality. The implementation is functional, though likely slow for large-scale problems.
+    *   **Full Dataset Inefficiency Test**: A script to demonstrate the performance limitations of the non-vectorized model by running it with the complete AMPL dataset. **Note**: This script is expected to be extremely slow and may need to be manually terminated.
+        ```bash
+        conda activate dispaset
+        python scripts/test_linopy_full_model.py
+        ```
+*   **Status**: **Ready**. Both the toy and core model versions run successfully and solve to optimality with their respective *test* datasets. The implementation is functional, though proven to be inefficient for large-scale problems.
 *   **Remaining Work**: While functional, this version is not optimized for performance. The primary remaining work is to complete the vectorized implementation.
 
 ### 2.3. Linopy Model (Vectorized with xarray)
@@ -69,4 +74,5 @@ The following table summarizes the objective function values obtained from the m
 | AMPL                              | Full (ESTD)      | 47572.11            | Baseline result with full dataset.  |
 | Linopy (Non-Vectorized)           | Toy              | 2548.52 M€          | Solves with a small, synthetic dataset. |
 | Linopy (Non-Vectorized)           | Minimal Core     | 45.47 M€            | Solves with a minimal, synthetic dataset. |
+| Linopy (Non-Vectorized)           | Full (ESTD)      | -                   | Does not complete (too slow).       |
 | Linopy (Vectorized with `xarray`) | Minimal Core     | 0.0                 | **Solver failed** (numerical issues). |
