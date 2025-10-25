@@ -63,6 +63,35 @@ This document provides a summary of the current status of the different Energysc
     *   **Complete Implementation**: Some constraint groups (e.g., GWP, mobility) are not fully tested due to a lack of data in the minimal test set. The model needs to be tested with a complete dataset.
     *   **Validation**: Once the model solves, its results must be validated against the AMPL and non-vectorized `linopy` versions to ensure correctness.
 
+### 2.4. PyOptInterface Model
+
+*   **Description**: An implementation of the Energyscope model using `pyoptinterface`, a high-performance Python modeling library. This version is built to be a direct, non-vectorized translation, similar to the initial `linopy` model but using a different backend.
+*   **Main Implementation File(s)**: `scripts/pyoptinterface_toy_model.py`, `scripts/pyoptinterface_core_model.py`, `scripts/pyoptinterface_full_model.py`.
+*   **How to Run**:
+    *   **Toy Model**:
+        ```bash
+        conda activate dispaset
+        python scripts/pyoptinterface_toy_model.py
+        ```
+    *   **Core Model (Minimal Data)**:
+        ```bash
+        conda activate dispaset
+        python scripts/pyoptinterface_core_model.py
+        ```
+    *   **Full Model (ESTD Data)**:
+        ```bash
+        conda activate dispaset
+        python scripts/pyoptinterface_full_model.py
+        ```
+*   **Status**:
+    *   **Toy Model**: **Ready**. Solves to optimality, objective value matches the `linopy` toy model (2548.52 M€).
+    *   **Core Model (Minimal Data)**: **Ready**. Builds and solves to optimality with all relevant constraint groups.
+    *   **Full Model (ESTD Data)**: **Infeasible**. The model builds successfully but the solver (HiGHS) reports that the problem is infeasible. This is likely due to data inconsistencies (e.g., simplified demand profile) rather than a structural model error.
+*   **Remaining Work**:
+    *   **Debug Infeasibility**: The primary task is to identify and resolve the cause of the infeasibility in the full model. This will likely involve a more accurate reconstruction of the end-use demand profiles.
+    *   **Switch to Gurobi**: The model should be tested with Gurobi for potentially faster solve times and better infeasibility diagnostics.
+    *   **Validation**: Once the full model solves, its results must be validated against the AMPL version.
+
 ## 3. Objective Function Comparison
 
 The following table summarizes the objective function values obtained from the models that solve successfully.
@@ -76,3 +105,6 @@ The following table summarizes the objective function values obtained from the m
 | Linopy (Non-Vectorized)           | Minimal Core     | 45.47 M€            | Solves with a minimal, synthetic dataset. |
 | Linopy (Non-Vectorized)           | Full (ESTD)      | -                   | Does not complete (too slow).       |
 | Linopy (Vectorized with `xarray`) | Minimal Core     | 0.0                 | **Solver failed** (numerical issues). |
+| PyOptInterface (Toy)              | Toy              | 2548.52 M€          | Solves with a small, synthetic dataset. |
+| PyOptInterface (Core)             | Minimal Core     | 0.00 M€             | Solves with a minimal, synthetic dataset. |
+| PyOptInterface (Full)             | Full (ESTD)      | -                   | **Solver failed** (infeasible).       |

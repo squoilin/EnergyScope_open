@@ -232,6 +232,16 @@ def create_minimal_core_data():
     
     i_rate = 0.05
     
+    # GWP and network parameters
+    gwp_constr = {
+        'WIND': 10.0, 'GAS_PLANT': 50.0, 'GRID': 5.0, 'BATTERY': 20.0,
+    }
+    gwp_op = {
+        'GAS': 400.0, 'ELECTRICITY_IMPORT': 300.0,
+    }
+    gwp_limit = 100000.0
+    loss_network = {'END_USE': 0.05}
+
     # ==================================================================
     # RETURN DATA STRUCTURE
     # ==================================================================
@@ -269,6 +279,10 @@ def create_minimal_core_data():
             'c_op': c_op,
             'lifetime': lifetime,
             'i_rate': i_rate,
+            'gwp_constr': gwp_constr,
+            'gwp_op': gwp_op,
+            'gwp_limit': gwp_limit,
+            'loss_network': loss_network,
         },
         'time_series': {
             'End_uses': End_uses,  # Pre-computed end-use demand
