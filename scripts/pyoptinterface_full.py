@@ -6,6 +6,7 @@ with Gurobi solver.
 """
 
 import time
+#from energyscope.linopy_backend.data_loader_full import create_full_dataset
 from energyscope.pyoptinterface_backend.data_loader import create_full_dataset
 from energyscope.pyoptinterface_backend.full_model import build_full_model
 

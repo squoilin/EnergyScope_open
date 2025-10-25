@@ -438,28 +438,17 @@ def load_ampl_data():
     
     ampl = AMPL()
     
-    # Get the path to this module and navigate to project root
-    # This file is in: src/energyscope/pyoptinterface_backend/data_loader.py
-    # We need to go up 3 levels to reach project root
-    module_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.join(module_dir, '..', '..', '..')
-    project_root = os.path.normpath(project_root)
-    
-    model_path = os.path.join(project_root, "src", "energyscope", "data", "models", "core", "td")
-    data_path = os.path.join(project_root, "src", "energyscope", "data", "datasets", "core", "td")
-    
-    model_file = os.path.join(model_path, "ESTD_model_core.mod")
-    data_file_1 = os.path.join(data_path, "ESTD_12TD.dat")
-    data_file_2 = os.path.join(data_path, "ESTD_data_core.dat")
+    model_path = "src/energyscope/data/models/core/td/"
+    data_path = "src/energyscope/data/datasets/core/td/"
     
     print("Loading AMPL model and data...")
-    print(f"  Model: {model_file}")
-    print(f"  Data:  {data_file_1}")
-    print(f"  Data:  {data_file_2}")
+    print(f"  Model: {model_path}ESTD_model_core.mod")
+    print(f"  Data:  {data_path}ESTD_12TD.dat")
+    print(f"  Data:  {data_path}ESTD_data_core.dat")
     
-    ampl.read(model_file)
-    ampl.readData(data_file_1)
-    ampl.readData(data_file_2)
+    ampl.read(model_path + "ESTD_model_core.mod")
+    ampl.readData(data_path + "ESTD_12TD.dat")
+    ampl.readData(data_path + "ESTD_data_core.dat")
     
     print("✓ AMPL data loaded successfully")
     return ampl
@@ -468,105 +457,133 @@ def load_ampl_data():
 def extract_data_from_ampl(ampl):
     """
     Extracts sets and parameters from an AMPL instance into a Python dictionary.
-    
-    Args:
-        ampl: AMPL instance with loaded model and data
-        
-    Returns:
-        dict: Model data with keys 'sets' and 'parameters'
     """
     print("\nExtracting data into Python format...")
     
     # Extract sets
     sets = {s[0]: list(s[1].members()) for s in ampl.getSets()}
     print(f"  ✓ Extracted {len(sets)} sets")
-    
-    # Extract parameters as pandas objects
-    params = {}
-    for name, param in ampl.getParameters():
+
+    # Extract parameters
+    parameters = {}
+    for param_tuple in ampl.getParameters():
+        param_name = param_tuple[0]
+        param_obj = param_tuple[1]
         try:
-            df = param.getValues().toPandas()
-            if df.empty:
-                params[name] = pd.Series(dtype=float)
-            elif len(df.columns) == 2:  # Simple parameter with value
-                params[name] = df.set_index(df.columns[0])[df.columns[1]]
-            else:  # Multi-index or DataFrame
-                params[name] = df
-        except Exception as e:
-            print(f"  ⚠ Could not process parameter '{name}' as DataFrame: {e}")
-            try:
-                params[name] = param.value()
-            except:
-                print(f"  ✗ Failed to extract '{name}' with any method: {e}")
-    
-    print(f"  ✓ Extracted {len(params)} parameters")
-    
-    # Extract indexed sets
-    print("  Extracting indexed sets...")
-    
-    # TECHNOLOGIES_OF_END_USES_TYPE
-    try:
-        tech_eut_set = ampl.getSet('TECHNOLOGIES_OF_END_USES_TYPE')
-        if tech_eut_set and tech_eut_set.arity() > 0:
-            tech_dict = {}
-            eut_list = sets.get('END_USES_TYPES', [])
-            for eut in eut_list:
+            df = param_obj.getValues().toPandas()
+            if not df.empty:
+                if df.index.nlevels > 1:
+                    parameters[param_name] = df.squeeze()
+                else:
+                    series_or_scalar = df.squeeze()
+                    if isinstance(series_or_scalar, pd.Series):
+                        parameters[param_name] = series_or_scalar
+                    else:
+                        parameters[param_name] = df.iloc[0,0]
+            else:
+                # If getValues() is empty, it might be a scalar defined with 'default'
                 try:
-                    indexed_set = tech_eut_set.get(eut)
+                    val = param_obj.value()
+                    if val is not None:
+                        parameters[param_name] = val
+                    else:
+                        print(f"  ⚠ Parameter '{param_name}' is empty and has no scalar value.")
+                except Exception as e_val:
+                    print(f"  ⚠ Could not retrieve scalar value for '{param_name}': {e_val}")
+
+        except Exception as e:
+            print(f"  ⚠ Could not process parameter '{param_name}' as DataFrame: {e}")
+            # Fallback for parameters that are not indexed
+            try:
+                val = param_obj.value()
+                if val is not None:
+                    parameters[param_name] = val
+                    print(f"  ✓ Extracted '{param_name}' as a scalar fallback.")
+                else:
+                     print(f"  ⚠ Parameter '{param_name}' could not be extracted.")
+            except Exception as e_scalar:
+                print(f"  ✗ Failed to extract '{param_name}' with any method: {e_scalar}")
+
+    print(f"  ✓ Extracted {len(parameters)} parameters")
+
+    # Assemble the final data dictionary
+    data = {
+        'sets': sets,
+        'parameters': parameters,
+        'time_series': {} # This can be populated if needed
+    }
+    
+    # Special handling for T_H_TD which is a set of tuples
+    t_h_td_set = ampl.getSet('T_H_TD')
+    data['sets']['T_H_TD'] = [tuple(m) for m in t_h_td_set.members()]
+    
+    # Extract indexed sets (sets that map from one set to another)
+    print("  Extracting indexed sets...")
+    try:
+        # TECHNOLOGIES_OF_END_USES_TYPE: mapping from END_USES_TYPES to technologies
+        toet_set = ampl.getSet('TECHNOLOGIES_OF_END_USES_TYPE')
+        if toet_set and toet_set.arity() > 0:
+            toet_dict = {}
+            end_uses_types = data['sets'].get('END_USES_TYPES', [])
+            for eut in end_uses_types:
+                try:
+                    indexed_set = toet_set.get(eut)
                     if indexed_set:
-                        tech_dict[eut] = list(indexed_set.members())
+                        toet_dict[eut] = list(indexed_set.members())
                 except:
                     pass
-            if tech_dict:
-                sets['TECHNOLOGIES_OF_END_USES_TYPE'] = tech_dict
-                print(f"    ✓ TECHNOLOGIES_OF_END_USES_TYPE: {len(tech_dict)} mappings")
+            if toet_dict:
+                data['sets']['TECHNOLOGIES_OF_END_USES_TYPE'] = toet_dict
+                print(f"    ✓ TECHNOLOGIES_OF_END_USES_TYPE: {len(toet_dict)} mappings")
     except Exception as e:
         print(f"    ⚠ Could not extract TECHNOLOGIES_OF_END_USES_TYPE: {e}")
     
-    # TECHNOLOGIES_OF_END_USES_CATEGORY
     try:
-        tech_cat_set = ampl.getSet('TECHNOLOGIES_OF_END_USES_CATEGORY')
-        if tech_cat_set and tech_cat_set.arity() > 0:
-            cat_dict = {}
-            cat_list = sets.get('END_USES_CATEGORIES', [])
-            for cat in cat_list:
+        # TECHNOLOGIES_OF_END_USES_CATEGORY: mapping from END_USES_CATEGORIES to technologies
+        toec_set = ampl.getSet('TECHNOLOGIES_OF_END_USES_CATEGORY')
+        if toec_set and toec_set.arity() > 0:
+            toec_dict = {}
+            end_uses_categories = data['sets'].get('END_USES_CATEGORIES', [])
+            for euc in end_uses_categories:
                 try:
-                    indexed_set = tech_cat_set.get(cat)
+                    indexed_set = toec_set.get(euc)
                     if indexed_set:
-                        cat_dict[cat] = list(indexed_set.members())
+                        toec_dict[euc] = list(indexed_set.members())
                 except:
                     pass
-            if cat_dict:
-                sets['TECHNOLOGIES_OF_END_USES_CATEGORY'] = cat_dict
-                print(f"    ✓ TECHNOLOGIES_OF_END_USES_CATEGORY: {len(cat_dict)} mappings")
+            if toec_dict:
+                data['sets']['TECHNOLOGIES_OF_END_USES_CATEGORY'] = toec_dict
+                print(f"    ✓ TECHNOLOGIES_OF_END_USES_CATEGORY: {len(toec_dict)} mappings")
     except Exception as e:
         print(f"    ⚠ Could not extract TECHNOLOGIES_OF_END_USES_CATEGORY: {e}")
     
-    # EVs_BATT_OF_V2G indexed set (for V2G/EV storage constraints)
+    # Extract EVs_BATT_OF_V2G indexed set (for V2G/EV storage constraints)
     try:
         evs_batt_v2g_set = ampl.getSet('EVs_BATT_OF_V2G')
         if evs_batt_v2g_set and evs_batt_v2g_set.arity() > 0:
             evs_dict = {}
-            v2g_techs = sets.get('V2G', [])
+            v2g_techs = data['sets'].get('V2G', [])
             for v2g in v2g_techs:
                 try:
                     indexed_set = evs_batt_v2g_set.get(v2g)
                     if indexed_set:
+                        # This set should have exactly one battery per V2G technology
                         evs_dict[v2g] = list(indexed_set.members())
                 except:
                     pass
             if evs_dict:
-                sets['EVs_BATT_OF_V2G'] = evs_dict
+                data['sets']['EVs_BATT_OF_V2G'] = evs_dict
                 print(f"    ✓ EVs_BATT_OF_V2G: {len(evs_dict)} mappings")
     except Exception as e:
         print(f"    ⚠ Could not extract EVs_BATT_OF_V2G: {e}")
     
-    # TS_OF_DEC_TECH indexed set (for thermal solar constraints)
+    # Extract TS_OF_DEC_TECH indexed set (for thermal solar constraints)
     try:
         ts_dec_set = ampl.getSet('TS_OF_DEC_TECH')
         if ts_dec_set and ts_dec_set.arity() > 0:
             ts_dict = {}
-            dec_techs = sets.get('TECHNOLOGIES_OF_END_USES_TYPE', {}).get('HEAT_LOW_T_DECEN', [])
+            # Get decentralized heating technologies (excluding DEC_SOLAR itself)
+            dec_techs = data['sets'].get('TECHNOLOGIES_OF_END_USES_TYPE', {}).get('HEAT_LOW_T_DECEN', [])
             dec_techs = [t for t in dec_techs if t != 'DEC_SOLAR']
             for dec_tech in dec_techs:
                 try:
@@ -576,33 +593,56 @@ def extract_data_from_ampl(ampl):
                 except:
                     pass
             if ts_dict:
-                sets['TS_OF_DEC_TECH'] = ts_dict
+                data['sets']['TS_OF_DEC_TECH'] = ts_dict
                 print(f"    ✓ TS_OF_DEC_TECH: {len(ts_dict)} mappings")
     except Exception as e:
         print(f"    ⚠ Could not extract TS_OF_DEC_TECH: {e}")
-    
-    # Reconstruct t_op if missing
-    if 't_op' not in params:
-        print("  Reconstructing 't_op' parameter...")
-        print("  't_op' not found in data. Using default value of 1 (as per AMPL model).")
-        hours = sets.get('HOURS', list(range(1, 25)))
-        typical_days = sets.get('TYPICAL_DAYS', list(range(1, 13)))
-        t_op_default = {(h, td): 1 for h in hours for td in typical_days}
-        params['t_op'] = pd.Series(t_op_default)
-        print("  ✓ 't_op' successfully reconstructed with default value 1.")
-    
-    return {
-        'sets': sets,
-        'parameters': params
-    }
+
+    # Reconstruct t_op, which is a parameter in AMPL with default value 1
+    # In the ESTD model, t_op has "default 1" and is not explicitly set in data files
+    # The typical day weighting is handled through the T_H_TD mapping, not through t_op
+    print("  Reconstructing 't_op' parameter...")
+    try:
+        tds = data['sets']['TYPICAL_DAYS']
+        hours = data['sets']['HOURS']
+        t_op_data = {}
+
+        if 'TYPICAL_DAYS_WEIGHT' in parameters:
+            # Use the weight parameter if it was explicitly extracted
+            print("  Using 'TYPICAL_DAYS_WEIGHT' to build t_op.")
+            td_weight = parameters['TYPICAL_DAYS_WEIGHT'].to_dict()
+            for td_name, weight in td_weight.items():
+                for h in hours:
+                    td_index = tds.index(td_name) + 1 if isinstance(td_name, str) else td_name
+                    t_op_data[(h, td_index)] = weight
+        else:
+            # Default to 1 for each hour as per AMPL model definition
+            # The weighting is implicit in the T_H_TD set structure
+            print("  't_op' not found in data. Using default value of 1 (as per AMPL model).")
+            for td in tds:
+                for h in hours:
+                    td_index = tds.index(td) + 1 if isinstance(td, str) else td
+                    t_op_data[(h, td_index)] = 1.0
+        
+        if t_op_data:
+            t_op_series = pd.Series(t_op_data)
+            t_op_series.index.names = ['hour', 'td']
+            parameters['t_op'] = t_op_series
+            print("  ✓ 't_op' successfully reconstructed with default value 1.")
+        else:
+            print("  ⚠ 't_op' could not be reconstructed (no typical days?).")
+
+    except Exception as e:
+        print(f"  ✗ Failed to reconstruct 't_op': {e}")
+        import traceback
+        traceback.print_exc()
+
+    return data
 
 
 def create_full_dataset():
     """
-    Loads and converts the full AMPL dataset (ESTD) for PyOptInterface models.
-    
-    Returns:
-        dict: Model data with keys 'sets' and 'parameters'
+    Loads and converts the full AMPL dataset for the linopy model.
     """
     ampl = load_ampl_data()
     data = extract_data_from_ampl(ampl)

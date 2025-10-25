@@ -10,6 +10,7 @@ import pyoptinterface as poi
 from pyoptinterface import gurobi
 import pandas as pd
 
+from energyscope.linopy_backend.data_loader_full import create_full_dataset
 
 def build_full_model(data, solver='gurobi', verbose=True, enable_output=True, timing=True):
     """
@@ -76,33 +77,27 @@ def build_full_model(data, solver='gurobi', verbose=True, enable_output=True, ti
     # F_t is defined for RESOURCES union TECHNOLOGIES (including storage)
     ENTITIES_WITH_F_T = RESOURCES + ALL_TECH
 
-    # Extract parameters (handle both dict and pandas formats)
-    def _to_dict(param):
-        """Convert parameter to dict if it's a pandas object, otherwise return as-is."""
-        if hasattr(param, 'to_dict'):
-            return param.to_dict()
-        return param if isinstance(param, dict) else dict(param) if param is not None else {}
-    
-    f_max = _to_dict(data['parameters']['f_max'])
-    f_min = _to_dict(data['parameters']['f_min'])
-    c_p_t = _to_dict(data['parameters']['c_p_t'])
-    layers_in_out = _to_dict(data['parameters']['layers_in_out'])
-    avail = _to_dict(data['parameters']['avail'])
-    t_op = _to_dict(data['parameters']['t_op'])
-    c_inv = _to_dict(data['parameters']['c_inv'])
-    c_maint = _to_dict(data['parameters']['c_maint'])
-    c_op = _to_dict(data['parameters']['c_op'])
-    lifetime = _to_dict(data['parameters']['lifetime'])
+    # Extract parameters
+    f_max = data['parameters']['f_max'].to_dict()
+    f_min = data['parameters']['f_min'].to_dict()
+    c_p_t = data['parameters']['c_p_t'].to_dict()
+    layers_in_out = data['parameters']['layers_in_out'].to_dict()
+    avail = data['parameters']['avail'].to_dict()
+    t_op = data['parameters']['t_op'].to_dict()
+    c_inv = data['parameters']['c_inv'].to_dict()
+    c_maint = data['parameters']['c_maint'].to_dict()
+    c_op = data['parameters']['c_op'].to_dict()
+    lifetime = data['parameters']['lifetime'].to_dict()
     i_rate = data['parameters']['i_rate']
-    gwp_constr_param = _to_dict(data['parameters'].get('gwp_constr', {}))
-    gwp_op_param = _to_dict(data['parameters'].get('gwp_op', {}))
+    gwp_constr_param = data['parameters']['gwp_constr'].to_dict()
+    gwp_op_param = data['parameters']['gwp_op'].to_dict()
     gwp_limit_param = data['parameters'].get('gwp_limit', float('inf'))
     
     # Time series
-    electricity_time_series = _to_dict(data['parameters'].get('electricity_time_series', {}))
-    heating_time_series = _to_dict(data['parameters'].get('heating_time_series', {}))
-    mob_pass_time_series = _to_dict(data['parameters'].get('mob_pass_time_series', {}))
-    mob_freight_time_series = _to_dict(data['parameters'].get('mob_freight_time_series', {}))
+    electricity_time_series = data['parameters']['electricity_time_series'].to_dict()
+    heating_time_series = data['parameters']['heating_time_series'].to_dict()
+    mob_pass_time_series = data['parameters'].get('mob_pass_time_series', {})
+    mob_freight_time_series = data['parameters'].get('mob_freight_time_series', {})
     
     # End uses input data
     end_uses_input = {}
@@ -138,20 +133,22 @@ def build_full_model(data, solver='gurobi', verbose=True, enable_output=True, ti
     share_heat_dhn_max = data['parameters'].get('share_heat_dhn_max', 1)
     
     # Storage parameters
-    storage_eff_in = _to_dict(data['parameters'].get('storage_eff_in', {}))
-    storage_eff_out = _to_dict(data['parameters'].get('storage_eff_out', {}))
-    storage_losses = _to_dict(data['parameters'].get('storage_losses', {}))
-    storage_charge_time = _to_dict(data['parameters'].get('storage_charge_time', {}))
-    storage_discharge_time = _to_dict(data['parameters'].get('storage_discharge_time', {}))
-    storage_availability = _to_dict(data['parameters'].get('storage_availability', {}))
+    storage_eff_in = data['parameters'].get('storage_eff_in', pd.DataFrame()).to_dict() if 'storage_eff_in' in data['parameters'] else {}
+    storage_eff_out = data['parameters'].get('storage_eff_out', pd.DataFrame()).to_dict() if 'storage_eff_out' in data['parameters'] else {}
+    storage_losses = data['parameters'].get('storage_losses', pd.Series()).to_dict() if 'storage_losses' in data['parameters'] else {}
+    storage_charge_time = data['parameters'].get('storage_charge_time', pd.Series()).to_dict() if 'storage_charge_time' in data['parameters'] else {}
+    storage_discharge_time = data['parameters'].get('storage_discharge_time', pd.Series()).to_dict() if 'storage_discharge_time' in data['parameters'] else {}
+    storage_availability = data['parameters'].get('storage_availability', pd.Series()).to_dict() if 'storage_availability' in data['parameters'] else {}
     STORAGE_DAILY = data['sets'].get('STORAGE_DAILY', [])
     
     # Loss network
-    loss_network = _to_dict(data['parameters'].get('loss_network', {}))
+    loss_network = data['parameters'].get('loss_network', {})
+    if isinstance(loss_network, pd.Series):
+        loss_network = loss_network.to_dict()
     
     # Optional parameters for V2G/EV storage
-    vehicle_capacity = _to_dict(data['parameters'].get('vehicle_capacity', {}))
-    batt_per_car = _to_dict(data['parameters'].get('batt_per_car', {}))
+    vehicle_capacity = data['parameters'].get('vehicle_capacity', pd.Series()).to_dict() if 'vehicle_capacity' in data['parameters'] else {}
+    batt_per_car = data['parameters'].get('batt_per_car', pd.Series()).to_dict() if 'batt_per_car' in data['parameters'] else {}
 
     # Create model
     if verbose:
@@ -356,7 +353,7 @@ def build_full_model(data, solver='gurobi', verbose=True, enable_output=True, ti
     
     # Constraint: Yearly capacity factor [Eq. 2.11]
     # This limits total annual output to account for downtime and maintenance
-    c_p = _to_dict(data['parameters'].get('c_p', {}))
+    c_p = data['parameters'].get('c_p', pd.Series()).to_dict() if 'c_p' in data['parameters'] else {}
     for j in ALL_TECH:
         if j in c_p:
             annual_output = sum(
@@ -659,8 +656,8 @@ def build_full_model(data, solver='gurobi', verbose=True, enable_output=True, ti
     
     # Constraint: fmax_perc and fmin_perc [Eq. 2.36]
     # These limit technology output as a percentage of total sector output
-    fmax_perc = _to_dict(data['parameters'].get('fmax_perc', {}))
-    fmin_perc = _to_dict(data['parameters'].get('fmin_perc', {}))
+    fmax_perc = data['parameters'].get('fmax_perc', pd.Series()).to_dict() if 'fmax_perc' in data['parameters'] else {}
+    fmin_perc = data['parameters'].get('fmin_perc', pd.Series()).to_dict() if 'fmin_perc' in data['parameters'] else {}
     
     for eut in END_USES_TYPES:
         if eut in TECHNOLOGIES_OF_END_USES_TYPE:
