@@ -271,6 +271,18 @@ def build_and_run_full_model():
             for td in TYPICAL_DAYS:
                 cf = c_p_t.get((j, h, td), 1.0)
                 model.add_linear_constraint(F_t[j, h, td] <= F[j] * cf)
+    
+    # Constraint: Yearly capacity factor [Eq. 2.11]
+    # This limits total annual output to account for downtime and maintenance
+    print("    - Yearly capacity factor...")
+    c_p = data['parameters'].get('c_p', pd.Series()).to_dict() if 'c_p' in data['parameters'] else {}
+    for j in ALL_TECH:
+        if j in c_p:
+            annual_output = sum(
+                F_t[j, h, td] * t_op.get((h, td), 1.0)
+                for h in HOURS for td in TYPICAL_DAYS
+            )
+            model.add_linear_constraint(annual_output <= F[j] * c_p[j] * total_time)
 
     # Constraint: Layer balance [Eq. 2.13]
     print("    - Layer balance...")
@@ -462,6 +474,40 @@ def build_and_run_full_model():
                 if t in F
             )
         model.add_linear_constraint(pv_area + solar_thermal_area <= solar_area)
+    
+    # Constraint: fmax_perc and fmin_perc [Eq. 2.36]
+    # These limit technology output as a percentage of total sector output
+    print("    - Technology percentage constraints...")
+    fmax_perc = data['parameters'].get('fmax_perc', pd.Series()).to_dict() if 'fmax_perc' in data['parameters'] else {}
+    fmin_perc = data['parameters'].get('fmin_perc', pd.Series()).to_dict() if 'fmin_perc' in data['parameters'] else {}
+    
+    for eut in END_USES_TYPES:
+        if eut in TECHNOLOGIES_OF_END_USES_TYPE:
+            techs_in_type = [t for t in TECHNOLOGIES_OF_END_USES_TYPE[eut] if t in TECH_NOSTORAGE]
+            if not techs_in_type:
+                continue
+            
+            # Total output for this end-use type across all technologies
+            total_output = sum(
+                F_t[j2, h, td] * t_op.get((h, td), 1.0)
+                for j2 in techs_in_type
+                for h in HOURS for td in TYPICAL_DAYS
+            )
+            
+            # Apply constraints for each technology
+            for j in techs_in_type:
+                tech_output = sum(
+                    F_t[j, h, td] * t_op.get((h, td), 1.0)
+                    for h in HOURS for td in TYPICAL_DAYS
+                )
+                
+                # fmax_perc constraint
+                if j in fmax_perc and fmax_perc[j] < 1.0:
+                    model.add_linear_constraint(tech_output <= fmax_perc[j] * total_output)
+                
+                # fmin_perc constraint
+                if j in fmin_perc and fmin_perc[j] > 0.0:
+                    model.add_linear_constraint(tech_output >= fmin_perc[j] * total_output)
 
     print("  Constraints added.")
 

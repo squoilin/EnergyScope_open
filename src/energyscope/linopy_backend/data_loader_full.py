@@ -143,7 +143,9 @@ def extract_data_from_ampl(ampl):
     except Exception as e:
         print(f"    ⚠ Could not extract TECHNOLOGIES_OF_END_USES_CATEGORY: {e}")
 
-    # Reconstruct t_op, which is a calculated parameter in AMPL
+    # Reconstruct t_op, which is a parameter in AMPL with default value 1
+    # In the ESTD model, t_op has "default 1" and is not explicitly set in data files
+    # The typical day weighting is handled through the T_H_TD mapping, not through t_op
     print("  Reconstructing 't_op' parameter...")
     try:
         tds = data['sets']['TYPICAL_DAYS']
@@ -151,7 +153,7 @@ def extract_data_from_ampl(ampl):
         t_op_data = {}
 
         if 'TYPICAL_DAYS_WEIGHT' in parameters:
-            # Prefer using the weight parameter if it was extracted
+            # Use the weight parameter if it was explicitly extracted
             print("  Using 'TYPICAL_DAYS_WEIGHT' to build t_op.")
             td_weight = parameters['TYPICAL_DAYS_WEIGHT'].to_dict()
             for td_name, weight in td_weight.items():
@@ -159,23 +161,19 @@ def extract_data_from_ampl(ampl):
                     td_index = tds.index(td_name) + 1 if isinstance(td_name, str) else td_name
                     t_op_data[(h, td_index)] = weight
         else:
-            # Fallback to equal weights if the parameter is not found
-            print("  'TYPICAL_DAYS_WEIGHT' not found. Falling back to equal weight distribution.")
-            hours_in_year = 8760.0
-            num_tds = len(tds)
-            if num_tds > 0:
-                weight = hours_in_year / (num_tds * len(hours))
-                print(f"  Calculated equal weight: {weight:.2f}")
-                for td in tds:
-                    for h in hours:
-                        td_index = tds.index(td) + 1 if isinstance(td, str) else td
-                        t_op_data[(h, td_index)] = weight
+            # Default to 1 for each hour as per AMPL model definition
+            # The weighting is implicit in the T_H_TD set structure
+            print("  't_op' not found in data. Using default value of 1 (as per AMPL model).")
+            for td in tds:
+                for h in hours:
+                    td_index = tds.index(td) + 1 if isinstance(td, str) else td
+                    t_op_data[(h, td_index)] = 1.0
         
         if t_op_data:
             t_op_series = pd.Series(t_op_data)
             t_op_series.index.names = ['hour', 'td']
             parameters['t_op'] = t_op_series
-            print("  ✓ 't_op' successfully reconstructed.")
+            print("  ✓ 't_op' successfully reconstructed with default value 1.")
         else:
             print("  ⚠ 't_op' could not be reconstructed (no typical days?).")
 
