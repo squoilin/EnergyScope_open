@@ -3,7 +3,7 @@ Energyscope Core Model implemented in PyOptInterface.
 """
 
 import pyoptinterface as poi
-from pyoptinterface import highs
+from pyoptinterface import gurobi
 import pandas as pd
 from energyscope.linopy_backend.test_data_core import create_minimal_core_data
 
@@ -33,13 +33,16 @@ def build_and_run_core_model():
 
     f_max = data['parameters']['f_max']
     f_min = data['parameters']['f_min']
-    c_p_t = data['parameters']['c_p_t']
-    layers_in_out = data['parameters']['layers_in_out']
-    End_uses = data['time_series'].get('End_uses', data['time_series'].get('end_uses_demand', None))
+    c_p_t = data['parameters']['c_p_t'].to_dict()
+    layers_in_out = data['parameters']['layers_in_out'].stack().to_dict()
+    End_uses = data['time_series'].get('End_uses', data['time_series'].get('end_uses_demand', None)).to_dict()
+    t_op = data['parameters']['t_op'].to_dict()
+    storage_eff_in = data['parameters']['storage_eff_in'].stack().to_dict()
+    storage_eff_out = data['parameters']['storage_eff_out'].stack().to_dict()
 
     # 2. Create a model
-    model = highs.Model()
-    print("  Model created with HiGHS backend.")
+    model = gurobi.Model()
+    print("  Model created with Gurobi backend.")
 
     # 3. Define variables
     F = {
@@ -69,7 +72,7 @@ def build_and_run_core_model():
 
     print("  Variables created.")
 
-    # 4. Add constraints (starting with energy balance)
+    # 4. Add constraints
     print("  Adding energy balance constraints...")
     
     # Constraint 1.1: capacity_factor_t
@@ -94,16 +97,14 @@ def build_and_run_core_model():
                         balance_expr += Storage_out[s, l, h, td] - Storage_in[s, l, h, td]
 
                 demand = End_uses.get((l, h, td), 0)
-                # Only add constraint if it involves variables
-                if hasattr(balance_expr, 'is_expression'):
-                    model.add_linear_constraint(balance_expr - demand == 0)
+                if hasattr(balance_expr, 'is_expression') or abs(demand) > 1e-9:
+                     model.add_linear_constraint(balance_expr - demand == 0)
     
     print("  Energy balance constraints added.")
 
     # ADD RESOURCES CONSTRAINTS
     print("  Adding resource constraints...")
     avail = data['parameters'].get('avail', {})
-    t_op = data['parameters']['t_op']
     for i in RESOURCES:
         if i in avail:
             annual_consumption = 0
@@ -117,8 +118,6 @@ def build_and_run_core_model():
     # ADD STORAGE CONSTRAINTS
     print("  Adding storage constraints...")
     if STORAGE_TECH:
-        storage_eff_in = data['parameters']['storage_eff_in']
-        storage_eff_out = data['parameters']['storage_eff_out']
         storage_losses = data['parameters'].get('storage_losses', {s: 0 for s in STORAGE_TECH})
         PERIODS = data['sets']['PERIODS']
         T_H_TD = data['sets']['T_H_TD']
@@ -148,29 +147,26 @@ def build_and_run_core_model():
 
     # 5. Define objective function
     print("  Adding cost constraints and objective...")
-    TotalCost = model.add_variable(lb=0, name="TotalCost")
     c_inv = data['parameters']['c_inv']
     c_maint = data['parameters']['c_maint']
     c_op = data['parameters'].get('c_op', {})
     lifetime = data['parameters']['lifetime']
     i_rate = data['parameters']['i_rate']
 
-    investment_total = 0
-    for j in ALL_TECH:
-        lt = lifetime[j]
-        tau = i_rate * (1 + i_rate)**lt / ((1 + i_rate)**lt - 1)
-        investment_total += tau * c_inv[j] * F[j]
+    investment_total = sum(
+        (i_rate * (1 + i_rate)**lifetime[j] / ((1 + i_rate)**lifetime[j] - 1) if lifetime.get(j,0) > 0 else 0) * c_inv[j] * F[j]
+        for j in ALL_TECH
+    )
 
     maintenance_total = sum(c_maint[j] * F[j] for j in ALL_TECH)
     
-    operating_total = 0
-    for i in RESOURCES:
-        if i in c_op:
-            annual_usage = sum(F_t[i, h, td] * t_op.get((h,td), 1.0) for h in HOURS for td in TYPICAL_DAYS)
-            operating_total += c_op[i] * annual_usage
+    operating_total = sum(
+        c_op[i] * sum(F_t[i, h, td] * t_op.get((h,td), 1.0) for h in HOURS for td in TYPICAL_DAYS)
+        for i in RESOURCES if i in c_op
+    )
 
-    model.add_linear_constraint(TotalCost == investment_total + maintenance_total + operating_total)
-    model.set_objective(TotalCost, poi.ObjectiveSense.Minimize)
+    total_cost = investment_total + maintenance_total + operating_total
+    model.set_objective(total_cost, poi.ObjectiveSense.Minimize)
     print("  Objective function set.")
 
     # ADD GWP CONSTRAINTS
