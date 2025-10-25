@@ -15,7 +15,7 @@ if __name__ == "__main__":
     print("  ✓ Toy data loaded.\n")
     
     # Build and solve model
-    result = build_toy_model(data, solver='gurobi', verbose=True)
+    result = build_toy_model(data, solver='highs', verbose=True)
     
     # Print summary
     if result['status'].name == 'OPTIMAL':
