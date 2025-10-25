@@ -48,10 +48,10 @@ class TestToyModel:
         assert 'F_t' in model.variables
         assert model.objective is not None
     
-    @pytest.mark.skipif(
-        not pytest.config.getoption("--run-solver-tests", default=False),
-        reason="Solver tests skipped (use --run-solver-tests to enable)"
-    )
+    # @pytest.mark.skipif(
+    #     not pytest.config.getoption("--run-solver-tests", default=False),
+    #     reason="Solver tests skipped (use --run-solver-tests to enable)"
+    # )
     def test_model_solving(self, toy_data):
         """Test that model solves successfully."""
         model, solution = solve_toy_model(toy_data, solver='highs')
@@ -60,10 +60,10 @@ class TestToyModel:
         assert solution.status == 'ok'
         assert model.objective.value > 0
     
-    @pytest.mark.skipif(
-        not pytest.config.getoption("--run-solver-tests", default=False),
-        reason="Solver tests skipped (use --run-solver-tests to enable)"
-    )
+    # @pytest.mark.skipif(
+    #     not pytest.config.getoption("--run-solver-tests", default=False),
+    #     reason="Solver tests skipped (use --run-solver-tests to enable)"
+    # )
     def test_result_parsing(self, toy_data):
         """Test that results are parsed correctly."""
         model, solution = solve_toy_model(toy_data, solver='highs')
@@ -87,10 +87,10 @@ class TestToyModel:
         assert len(F) == 5  # 5 technologies
         assert (F['F'] >= 0).all()  # Non-negative capacities
     
-    @pytest.mark.skipif(
-        not pytest.config.getoption("--run-solver-tests", default=False),
-        reason="Solver tests skipped (use --run-solver-tests to enable)"
-    )
+    # @pytest.mark.skipif(
+    #     not pytest.config.getoption("--run-solver-tests", default=False),
+    #     reason="Solver tests skipped (use --run-solver-tests to enable)"
+    # )
     def test_energy_balance(self, toy_data):
         """Test that energy balance is satisfied in solution."""
         model, solution = solve_toy_model(toy_data, solver='highs')

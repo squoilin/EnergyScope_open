@@ -26,7 +26,7 @@ print("\nBuilding and solving linopy model...")
 print("Solver: highs")
 
 try:
-    model, status = solve_toy_model(data, solver='highs')
+    model, status = solve_toy_model(data, solver='gurobi')
     
     print(f"\nSolution status: {status}")
     print(f"Objective value: {model.objective.value:.2f} M€")
