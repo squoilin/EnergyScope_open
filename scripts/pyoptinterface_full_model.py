@@ -35,6 +35,12 @@ def build_and_run_full_model():
     TECHNOLOGIES_OF_END_USES_CATEGORY = data['sets'].get('TECHNOLOGIES_OF_END_USES_CATEGORY', {})
     TECHNOLOGIES_OF_END_USES_TYPE = data['sets'].get('TECHNOLOGIES_OF_END_USES_TYPE', {})
     
+    # Optional sets for advanced constraints
+    V2G = data['sets'].get('V2G', [])
+    EVs_BATT = data['sets'].get('EVs_BATT', [])
+    EVs_BATT_OF_V2G = data['sets'].get('EVs_BATT_OF_V2G', {})
+    TS_OF_DEC_TECH = data['sets'].get('TS_OF_DEC_TECH', {})
+    
     ALL_TECH = TECHNOLOGIES + STORAGE_TECH
     TECH_NOSTORAGE = [t for t in ALL_TECH if t not in STORAGE_TECH]
     # F_t is defined for RESOURCES union TECHNOLOGIES (including storage)
@@ -108,6 +114,10 @@ def build_and_run_full_model():
     loss_network = data['parameters'].get('loss_network', {})
     if isinstance(loss_network, pd.Series):
         loss_network = loss_network.to_dict()
+    
+    # Optional parameters for V2G/EV storage
+    vehicle_capacity = data['parameters'].get('vehicle_capacity', pd.Series()).to_dict() if 'vehicle_capacity' in data['parameters'] else {}
+    batt_per_car = data['parameters'].get('batt_per_car', pd.Series()).to_dict() if 'batt_per_car' in data['parameters'] else {}
 
     # 2. Create a model
     model = gurobi.Model()
@@ -161,6 +171,23 @@ def build_and_run_full_model():
     if 'MOBILITY_FREIGHT' in TECHNOLOGIES_OF_END_USES_CATEGORY:
         for tech in TECHNOLOGIES_OF_END_USES_CATEGORY['MOBILITY_FREIGHT']:
             Shares_mobility_freight[tech] = model.add_variable(lb=0, name=f"Shares_mobility_freight_{tech}")
+    
+    # Shares for decentralized low-temperature heating technologies (for thermal solar)
+    Shares_lowT_dec = {}
+    dec_heat_techs = TECHNOLOGIES_OF_END_USES_TYPE.get('HEAT_LOW_T_DECEN', [])
+    dec_heat_techs_no_solar = [t for t in dec_heat_techs if t != 'DEC_SOLAR']
+    for tech in dec_heat_techs_no_solar:
+        Shares_lowT_dec[tech] = model.add_variable(lb=0, name=f"Shares_lowT_dec_{tech}")
+    
+    # Thermal solar variables (F_solar, F_t_solar)
+    F_solar = {}
+    F_t_solar = {}
+    if dec_heat_techs_no_solar:
+        for tech in dec_heat_techs_no_solar:
+            F_solar[tech] = model.add_variable(lb=0, name=f"F_solar_{tech}")
+            for h in HOURS:
+                for td in TYPICAL_DAYS:
+                    F_t_solar[tech, h, td] = model.add_variable(lb=0, name=f"F_t_solar_{tech}_{h}_{td}")
     
     # End_uses as VARIABLES (not fixed parameters!)
     End_uses = {
@@ -395,8 +422,8 @@ def build_and_run_full_model():
         # Constraint: Energy-to-power ratio [Eq. 2.19]
         print("    - Energy-to-power ratio...")
         for j in STORAGE_TECH:
-            # Skip EV batteries (they have special constraints)
-            if j in ['BEV_BATT', 'PHEV_BATT']:
+            # Skip EV batteries (they have special constraints in Eq. 2.19-bis)
+            if j in EVs_BATT:
                 continue
             
             charge_time = storage_charge_time.get(j, 0)
@@ -412,6 +439,42 @@ def build_and_run_full_model():
                             Storage_out[j, l, h, td] * discharge_time <= 
                             F[j] * availability
                         )
+        
+        # Constraint: Energy-to-power ratio for EV batteries [Eq. 2.19-bis]
+        # This accounts for battery discharge to power the vehicle (F_t) in addition to V2G discharge
+        print("    - Energy-to-power ratio for EV batteries (V2G)...")
+        if V2G and EVs_BATT_OF_V2G:
+            for i in V2G:
+                if i not in EVs_BATT_OF_V2G:
+                    continue
+                # Get the battery associated with this V2G vehicle
+                batt_list = EVs_BATT_OF_V2G[i]
+                if not batt_list:
+                    continue
+                j = batt_list[0]  # Should be exactly one battery per V2G technology
+                
+                charge_time = storage_charge_time.get(j, 0)
+                discharge_time = storage_discharge_time.get(j, 0)
+                availability = storage_availability.get(j, 1.0)
+                veh_cap = vehicle_capacity.get(i, 1.0)
+                batt_size = batt_per_car.get(i, 0)
+                
+                # AMPL: Storage_in * charge_time + (Storage_out + layers_in_out[i,"ELECTRICITY"]* F_t) * discharge_time 
+                #       <= (F[j] - F_t[i] / vehicle_capacity * batt_per_car) * availability
+                # layers_in_out[i,"ELECTRICITY"] is negative (consumption), so we take absolute value
+                layers_elec_consumption = abs(layers_in_out.get((i, "ELECTRICITY"), 0))
+                
+                for l in LAYERS:
+                    for h in HOURS:
+                        for td in TYPICAL_DAYS:
+                            # Available battery capacity = Total battery - battery in use by driving vehicles
+                            available_batt = F[j] - (F_t[i, h, td] / veh_cap * batt_size if veh_cap > 0 else 0)
+                            
+                            model.add_linear_constraint(
+                                Storage_in[j, l, h, td] * charge_time + 
+                                (Storage_out[j, l, h, td] + layers_elec_consumption * F_t[i, h, td]) * discharge_time <= 
+                                available_batt * availability
+                            )
     
     # Constraint: Operating strategy for passenger mobility [Eq. 2.24]
     print("    - Operating strategy passenger mobility...")
@@ -474,6 +537,95 @@ def build_and_run_full_model():
                 if t in F
             )
         model.add_linear_constraint(pv_area + solar_thermal_area <= solar_area)
+    
+    # Constraint: Thermal solar capacity factor [Eq. 2.27]
+    print("    - Thermal solar capacity factor...")
+    if F_solar and 'DEC_SOLAR' in ALL_TECH:
+        for j in dec_heat_techs_no_solar:
+            if j in F_solar:
+                for h in HOURS:
+                    for td in TYPICAL_DAYS:
+                        cf_solar = c_p_t.get(('DEC_SOLAR', h, td), 1.0)
+                        model.add_linear_constraint(F_t_solar[j, h, td] <= F_solar[j] * cf_solar)
+    
+    # Constraint: Total thermal solar capacity [Eq. 2.28]
+    print("    - Total thermal solar capacity...")
+    if F_solar and 'DEC_SOLAR' in ALL_TECH:
+        total_solar = sum(F_solar.get(j, 0) for j in dec_heat_techs_no_solar if j in F_solar)
+        model.add_linear_constraint(F['DEC_SOLAR'] == total_solar)
+    
+    # Constraint: Decentralized heating balance with thermal solar [Eq. 2.29]
+    print("    - Decentralized heating balance with thermal solar...")
+    if TS_OF_DEC_TECH and Shares_lowT_dec:
+        for j in dec_heat_techs_no_solar:
+            if j not in TS_OF_DEC_TECH or j not in Shares_lowT_dec:
+                continue
+            # Get the thermal storage associated with this technology
+            ts_list = TS_OF_DEC_TECH[j]
+            if not ts_list:
+                continue
+            i = ts_list[0]  # Should be exactly one thermal storage per technology
+            
+            for h in HOURS:
+                for td in TYPICAL_DAYS:
+                    t_op_val = t_op.get((h, td), 1.0)
+                    
+                    # Heat demand for decentralized heating
+                    hw = end_uses_input.get("HEAT_LOW_T_HW", 0) / total_time if total_time > 0 else 0
+                    sh = end_uses_input.get("HEAT_LOW_T_SH", 0) * heating_time_series.get((h, td), 0) / t_op_val if t_op_val > 0 else 0
+                    heat_demand = hw + sh
+                    
+                    # Heat balance: tech output + solar output + storage net output = share * demand
+                    # F_t[j] + F_t_solar[j] + sum_over_layers(Storage_out - Storage_in) = Shares_lowT_dec[j] * demand
+                    storage_contribution = sum(
+                        Storage_out.get((i, l, h, td), 0) - Storage_in.get((i, l, h, td), 0)
+                        for l in LAYERS
+                    )
+                    
+                    model.add_linear_constraint(
+                        F_t[j, h, td] + F_t_solar[j, h, td] + storage_contribution == 
+                        Shares_lowT_dec[j] * heat_demand
+                    )
+    
+    # Constraint: EV storage sizing [Eq. 2.30]
+    print("    - EV storage sizing (V2G)...")
+    if V2G and EVs_BATT_OF_V2G and vehicle_capacity and batt_per_car:
+        for j in V2G:
+            if j not in EVs_BATT_OF_V2G:
+                continue
+            batt_list = EVs_BATT_OF_V2G[j]
+            if not batt_list:
+                continue
+            i = batt_list[0]  # Battery for this V2G vehicle
+            
+            veh_cap = vehicle_capacity.get(j, 1.0)
+            batt_size = batt_per_car.get(j, 0)
+            
+            # F[battery] = F[vehicle] / vehicle_capacity * batt_per_car
+            if veh_cap > 0 and j in F and i in F:
+                model.add_linear_constraint(F[i] == F[j] / veh_cap * batt_size)
+    
+    # Constraint: EV battery supplies vehicle demand (V2G) [Eq. 2.31]
+    print("    - EV battery supplies vehicle demand (V2G)...")
+    if V2G and EVs_BATT_OF_V2G:
+        for j in V2G:
+            if j not in EVs_BATT_OF_V2G:
+                continue
+            batt_list = EVs_BATT_OF_V2G[j]
+            if not batt_list:
+                continue
+            i = batt_list[0]  # Battery for this V2G vehicle
+            
+            # layers_in_out[j, "ELECTRICITY"] is negative (consumption)
+            elec_consumption = abs(layers_in_out.get((j, "ELECTRICITY"), 0))
+            
+            for h in HOURS:
+                for td in TYPICAL_DAYS:
+                    # Storage_out must be at least enough to power the vehicle
+                    # Storage_out[i, "ELECTRICITY", h, td] >= -layers_in_out[j, "ELECTRICITY"] * F_t[j, h, td]
+                    model.add_linear_constraint(
+                        Storage_out[i, "ELECTRICITY", h, td] >= elec_consumption * F_t[j, h, td]
+                    )
     
     # Constraint: fmax_perc and fmin_perc [Eq. 2.36]
     # These limit technology output as a percentage of total sector output

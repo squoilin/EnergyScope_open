@@ -142,6 +142,47 @@ def extract_data_from_ampl(ampl):
                 print(f"    ✓ TECHNOLOGIES_OF_END_USES_CATEGORY: {len(toec_dict)} mappings")
     except Exception as e:
         print(f"    ⚠ Could not extract TECHNOLOGIES_OF_END_USES_CATEGORY: {e}")
+    
+    # Extract EVs_BATT_OF_V2G indexed set (for V2G/EV storage constraints)
+    try:
+        evs_batt_v2g_set = ampl.getSet('EVs_BATT_OF_V2G')
+        if evs_batt_v2g_set and evs_batt_v2g_set.arity() > 0:
+            evs_dict = {}
+            v2g_techs = data['sets'].get('V2G', [])
+            for v2g in v2g_techs:
+                try:
+                    indexed_set = evs_batt_v2g_set.get(v2g)
+                    if indexed_set:
+                        # This set should have exactly one battery per V2G technology
+                        evs_dict[v2g] = list(indexed_set.members())
+                except:
+                    pass
+            if evs_dict:
+                data['sets']['EVs_BATT_OF_V2G'] = evs_dict
+                print(f"    ✓ EVs_BATT_OF_V2G: {len(evs_dict)} mappings")
+    except Exception as e:
+        print(f"    ⚠ Could not extract EVs_BATT_OF_V2G: {e}")
+    
+    # Extract TS_OF_DEC_TECH indexed set (for thermal solar constraints)
+    try:
+        ts_dec_set = ampl.getSet('TS_OF_DEC_TECH')
+        if ts_dec_set and ts_dec_set.arity() > 0:
+            ts_dict = {}
+            # Get decentralized heating technologies (excluding DEC_SOLAR itself)
+            dec_techs = data['sets'].get('TECHNOLOGIES_OF_END_USES_TYPE', {}).get('HEAT_LOW_T_DECEN', [])
+            dec_techs = [t for t in dec_techs if t != 'DEC_SOLAR']
+            for dec_tech in dec_techs:
+                try:
+                    indexed_set = ts_dec_set.get(dec_tech)
+                    if indexed_set:
+                        ts_dict[dec_tech] = list(indexed_set.members())
+                except:
+                    pass
+            if ts_dict:
+                data['sets']['TS_OF_DEC_TECH'] = ts_dict
+                print(f"    ✓ TS_OF_DEC_TECH: {len(ts_dict)} mappings")
+    except Exception as e:
+        print(f"    ⚠ Could not extract TS_OF_DEC_TECH: {e}")
 
     # Reconstruct t_op, which is a parameter in AMPL with default value 1
     # In the ESTD model, t_op has "default 1" and is not explicitly set in data files
