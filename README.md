@@ -4,13 +4,6 @@
 
 This repository contains implementations of the EnergyScope energy system model using **open-source alternatives to AMPL**. The goal is to test and validate different Python-based optimization libraries that can replace the proprietary AMPL modeling language while maintaining the same mathematical formulation and results.
 
-This library includes the following core functionalities:
-
-1.  **Model Setup and Documentation**: A set of energy models tailored to specific scenarios, along with comprehensive documentation.
-2.  **Pre-Calculation**: Tools for preparing and processing input data.
-3.  **Model Solving**: Optimization tools for running simulations based on the pre-calculated input.
-4.  **KPI Calculation and Plotting**: Tools to compute Key Performance Indicators (KPIs) and visualize results.
-
 ## Model Implementations
 
 ### AMPL Model (Baseline)
@@ -77,6 +70,21 @@ pip install -e .
 
 # 4. Install HiGHS solver (optional, for open-source optimization)
 conda install -c conda-forge highs -y
+```
+
+### Install with All Dependencies
+
+To install this modified version with all optional dependencies (PyOptInterface, Linopy, AMPL modules):
+
+```bash
+# Install with all dependencies
+pip install -e .[all]
+
+# Or install specific optional dependencies
+pip install -e .[pyoptinterface]      # PyOptInterface with Gurobi and HiGHS
+pip install -e .[pyoptinterface-highs] # PyOptInterface with HiGHS only
+pip install -e .[linopy]              # Linopy backend
+pip install -e .[ampl_modules]        # AMPL modules
 ```
 
 **Note**: For PyOptInterface models, you'll need either:
