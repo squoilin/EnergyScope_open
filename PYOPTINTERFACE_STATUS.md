@@ -94,7 +94,7 @@ Diagnostic scripts created:
 
 - AMPL Model: `src/energyscope/data/models/core/td/ESTD_model_core.mod`
 - AMPL Data: `src/energyscope/data/datasets/core/td/ESTD_*.dat`
-- Baseline AMPL Objective: 47,572.11 M€
+- PyOptInterface documentation: https://metab0t.github.io/PyOptInterface/
 
 ---
 *Last Updated: October 25, 2025*
