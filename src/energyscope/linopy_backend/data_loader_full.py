@@ -102,6 +102,46 @@ def extract_data_from_ampl(ampl):
     # Special handling for T_H_TD which is a set of tuples
     t_h_td_set = ampl.getSet('T_H_TD')
     data['sets']['T_H_TD'] = [tuple(m) for m in t_h_td_set.members()]
+    
+    # Extract indexed sets (sets that map from one set to another)
+    print("  Extracting indexed sets...")
+    try:
+        # TECHNOLOGIES_OF_END_USES_TYPE: mapping from END_USES_TYPES to technologies
+        toet_set = ampl.getSet('TECHNOLOGIES_OF_END_USES_TYPE')
+        if toet_set and toet_set.arity() > 0:
+            toet_dict = {}
+            end_uses_types = data['sets'].get('END_USES_TYPES', [])
+            for eut in end_uses_types:
+                try:
+                    indexed_set = toet_set.get(eut)
+                    if indexed_set:
+                        toet_dict[eut] = list(indexed_set.members())
+                except:
+                    pass
+            if toet_dict:
+                data['sets']['TECHNOLOGIES_OF_END_USES_TYPE'] = toet_dict
+                print(f"    ✓ TECHNOLOGIES_OF_END_USES_TYPE: {len(toet_dict)} mappings")
+    except Exception as e:
+        print(f"    ⚠ Could not extract TECHNOLOGIES_OF_END_USES_TYPE: {e}")
+    
+    try:
+        # TECHNOLOGIES_OF_END_USES_CATEGORY: mapping from END_USES_CATEGORIES to technologies
+        toec_set = ampl.getSet('TECHNOLOGIES_OF_END_USES_CATEGORY')
+        if toec_set and toec_set.arity() > 0:
+            toec_dict = {}
+            end_uses_categories = data['sets'].get('END_USES_CATEGORIES', [])
+            for euc in end_uses_categories:
+                try:
+                    indexed_set = toec_set.get(euc)
+                    if indexed_set:
+                        toec_dict[euc] = list(indexed_set.members())
+                except:
+                    pass
+            if toec_dict:
+                data['sets']['TECHNOLOGIES_OF_END_USES_CATEGORY'] = toec_dict
+                print(f"    ✓ TECHNOLOGIES_OF_END_USES_CATEGORY: {len(toec_dict)} mappings")
+    except Exception as e:
+        print(f"    ⚠ Could not extract TECHNOLOGIES_OF_END_USES_CATEGORY: {e}")
 
     # Reconstruct t_op, which is a calculated parameter in AMPL
     print("  Reconstructing 't_op' parameter...")

@@ -37,7 +37,8 @@ def build_and_run_full_model():
     
     ALL_TECH = TECHNOLOGIES + STORAGE_TECH
     TECH_NOSTORAGE = [t for t in ALL_TECH if t not in STORAGE_TECH]
-    ENTITIES_WITH_F_T = RESOURCES + TECH_NOSTORAGE
+    # F_t is defined for RESOURCES union TECHNOLOGIES (including storage)
+    ENTITIES_WITH_F_T = RESOURCES + ALL_TECH
 
     # Extract parameters
     f_max = data['parameters']['f_max'].to_dict()
@@ -98,6 +99,10 @@ def build_and_run_full_model():
     storage_eff_in = data['parameters'].get('storage_eff_in', pd.DataFrame()).to_dict() if 'storage_eff_in' in data['parameters'] else {}
     storage_eff_out = data['parameters'].get('storage_eff_out', pd.DataFrame()).to_dict() if 'storage_eff_out' in data['parameters'] else {}
     storage_losses = data['parameters'].get('storage_losses', pd.Series()).to_dict() if 'storage_losses' in data['parameters'] else {}
+    storage_charge_time = data['parameters'].get('storage_charge_time', pd.Series()).to_dict() if 'storage_charge_time' in data['parameters'] else {}
+    storage_discharge_time = data['parameters'].get('storage_discharge_time', pd.Series()).to_dict() if 'storage_discharge_time' in data['parameters'] else {}
+    storage_availability = data['parameters'].get('storage_availability', pd.Series()).to_dict() if 'storage_availability' in data['parameters'] else {}
+    STORAGE_DAILY = data['sets'].get('STORAGE_DAILY', [])
     
     # Loss network
     loss_network = data['parameters'].get('loss_network', {})
@@ -261,7 +266,7 @@ def build_and_run_full_model():
     
     # Constraint: Hourly capacity factor [Eq. 2.10]
     print("    - Hourly capacity factor...")
-    for j in TECH_NOSTORAGE:
+    for j in ALL_TECH:  # Applies to all technologies including storage
         for h in HOURS:
             for td in TYPICAL_DAYS:
                 cf = c_p_t.get((j, h, td), 1.0)
@@ -272,11 +277,13 @@ def build_and_run_full_model():
     for l in LAYERS:
         for h in HOURS:
             for td in TYPICAL_DAYS:
+                # Sum over RESOURCES and non-storage TECHNOLOGIES only
                 balance_expr = sum(
                     layers_in_out.get((entity, l), 0) * F_t[entity, h, td]
-                    for entity in ENTITIES_WITH_F_T
+                    for entity in (RESOURCES + TECH_NOSTORAGE)
                 )
                 
+                # Add storage contribution
                 if STORAGE_TECH:
                     for s in STORAGE_TECH:
                         balance_expr += Storage_out[s, l, h, td] - Storage_in[s, l, h, td]
@@ -296,9 +303,6 @@ def build_and_run_full_model():
             model.add_linear_constraint(annual_consumption <= avail[i])
 
     # Constraint: Storage level [Eq. 2.14]
-    # NOTE: Storage constraints are currently causing infeasibility
-    # The model works without storage (objective ~10,748 M€)
-    # TODO: Debug storage constraint formulation - see PYOPTINTERFACE_STATUS.md
     print("    - Storage level...")
     if STORAGE_TECH:
         for j in STORAGE_TECH:
@@ -310,12 +314,14 @@ def build_and_run_full_model():
                 h, td = h_td_for_t[0]
                 t_op_val = t_op.get((h, td), 1.0)
                 
+                # Storage input: sum over layers with eff_in > 0
                 storage_input = sum(
-                    Storage_in[j, l, h, td] * storage_eff_in.get((j, l), 0) 
+                    Storage_in[j, l, h, td] * storage_eff_in[(j, l)]
                     for l in LAYERS if storage_eff_in.get((j, l), 0) > 0
                 )
+                # Storage output: sum over layers with eff_out > 0
                 storage_output = sum(
-                    Storage_out[j, l, h, td] / storage_eff_out.get((j, l), 1) 
+                    Storage_out[j, l, h, td] / storage_eff_out[(j, l)]
                     for l in LAYERS if storage_eff_out.get((j, l), 0) > 0
                 )
 
@@ -330,10 +336,70 @@ def build_and_run_full_model():
                         Storage_level[j, t] == Storage_level[j, t-1] * (1.0 - loss_rate) + 
                         t_op_val * (storage_input - storage_output)
                     )
-            
-            # Constraint: Storage level cannot exceed capacity [Eq. 2.16]
+        
+        # Constraint: Daily storage [Eq. 2.15]
+        # For daily storage, level must equal F_t at each period
+        print("    - Daily storage...")
+        for j in STORAGE_DAILY:
             for t in PERIODS:
-                model.add_linear_constraint(Storage_level[j, t] <= F[j])
+                h_td_for_t = [(h, td) for (p, h, td) in T_H_TD if p == t]
+                if not h_td_for_t: 
+                    continue
+                h, td = h_td_for_t[0]
+                # In AMPL: Storage_level [j, t] = F_t [j, h, td]
+                # F_t for storage represents the storage level at that time
+                model.add_linear_constraint(Storage_level[j, t] == F_t[j, h, td])
+        
+        # Constraint: Seasonal storage level cannot exceed capacity [Eq. 2.16]
+        print("    - Seasonal storage capacity limit...")
+        for j in STORAGE_TECH:
+            if j not in STORAGE_DAILY:  # Only for seasonal storage
+                for t in PERIODS:
+                    model.add_linear_constraint(Storage_level[j, t] <= F[j])
+        
+        # Constraint: Storage layer compatibility [Eqs. 2.17-2.18]
+        # Using AMPL formulation: Storage * (ceil(eff) - 1) = 0
+        # When eff=0: ceil(0)-1 = -1, so Storage * (-1) = 0 => Storage = 0
+        # When eff>0: ceil(eff)-1 = 0, so Storage * 0 = 0 => always satisfied
+        print("    - Storage layer compatibility...")
+        import math
+        for j in STORAGE_TECH:
+            for l in LAYERS:
+                eff_in = storage_eff_in.get((j, l), 0)
+                eff_out = storage_eff_out.get((j, l), 0)
+                coef_in = math.ceil(eff_in) - 1
+                coef_out = math.ceil(eff_out) - 1
+                
+                # Only add constraint if coefficient is non-zero (i.e., when eff=0)
+                if coef_in != 0:
+                    for h in HOURS:
+                        for td in TYPICAL_DAYS:
+                            model.add_linear_constraint(Storage_in[j, l, h, td] * coef_in == 0)
+                if coef_out != 0:
+                    for h in HOURS:
+                        for td in TYPICAL_DAYS:
+                            model.add_linear_constraint(Storage_out[j, l, h, td] * coef_out == 0)
+        
+        # Constraint: Energy-to-power ratio [Eq. 2.19]
+        print("    - Energy-to-power ratio...")
+        for j in STORAGE_TECH:
+            # Skip EV batteries (they have special constraints)
+            if j in ['BEV_BATT', 'PHEV_BATT']:
+                continue
+            
+            charge_time = storage_charge_time.get(j, 0)
+            discharge_time = storage_discharge_time.get(j, 0)
+            availability = storage_availability.get(j, 1.0)
+            
+            # Apply constraint per layer as in AMPL
+            for l in LAYERS:
+                for h in HOURS:
+                    for td in TYPICAL_DAYS:
+                        model.add_linear_constraint(
+                            Storage_in[j, l, h, td] * charge_time + 
+                            Storage_out[j, l, h, td] * discharge_time <= 
+                            F[j] * availability
+                        )
     
     # Constraint: Operating strategy for passenger mobility [Eq. 2.24]
     print("    - Operating strategy passenger mobility...")
@@ -413,18 +479,28 @@ def build_and_run_full_model():
     )
     model.add_linear_constraint(TotalCost == investment_total + maintenance_total + operating_total)
 
-    gwp_constr_total = sum(gwp_constr_param.get(j, 0) * F[j] for j in ALL_TECH)
+    # GWP calculation - ONLY operational emissions from resources (construction emissions commented out in AMPL)
+    # gwp_constr_total = sum(gwp_constr_param.get(j, 0) * F[j] for j in ALL_TECH)  # NOT USED
     gwp_op_total = sum(
         gwp_op_param.get(i, 0) * sum(F_t[i, h, td] * t_op.get((h,td), 1.0) for h in HOURS for td in TYPICAL_DAYS) 
         for i in RESOURCES if i in gwp_op_param
     )
-    model.add_linear_constraint(TotalGWP == gwp_constr_total + gwp_op_total)
+    # TotalGWP = operational emissions only (as per AMPL line 214)
+    model.add_linear_constraint(TotalGWP == gwp_op_total)
     if gwp_limit_param < float('inf'):
         model.add_linear_constraint(TotalGWP <= gwp_limit_param)
     
     model.set_objective(TotalCost, poi.ObjectiveSense.Minimize)
     print("  Objective function set.")
 
+    # 6. Write model to file for inspection
+    print("\nWriting model to file for inspection...")
+    try:
+        model.write("pyopt_full_model.lp")
+        print("  Model written to pyopt_full_model.lp")
+    except:
+        print("  Could not write LP file")
+    
     # 6. Solve the model
     print("\nSolving the model...")
     model.optimize()
@@ -451,14 +527,14 @@ def build_and_run_full_model():
         print("\n✓ PyOptInterface full model ran successfully.")
     else:
         print("\n✗ Could not find the optimal solution.")
-        print("\n  Trying to get IIS for debugging...")
+        print("\n  Trying to compute IIS for debugging...")
         try:
-            # Try to compute IIS
-            model.set_raw_parameter("IISMethod", 1)
+            # Try to compute IIS and write to file
             model.compute_iis()
-            print("  IIS computed - infeasible constraints logged to gurobi.ilp")
-        except:
-            print("  Could not compute IIS due to pyoptinterface limitations.")
+            model.write("pyopt_full_model.ilp")
+            print("  IIS computed and written to pyopt_full_model.ilp")
+        except Exception as e:
+            print(f"  Could not compute IIS: {e}")
 
 
 if __name__ == "__main__":
