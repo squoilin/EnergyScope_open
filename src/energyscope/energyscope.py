@@ -3,7 +3,7 @@ import re
 from typing import Callable
 
 import pandas as pd
-from amplpy import AMPL, Environment, ampl_notebook
+from amplpy import AMPL, Environment, ampl_notebook, modules
 
 from energyscope.datasets import Dataset
 from energyscope.models import Model, monthly
@@ -27,7 +27,18 @@ class Energyscope:
                 self.__es_model = ampl_notebook(license_uuid=self.license_uuid, modules=self.modules)
             else:
                 try:
-                    self.__es_model = AMPL(Environment(os.environ["AMPL_PATH"]))
+                    ampl_path = os.getenv("AMPL_PATH")
+                    if ampl_path and os.path.exists(ampl_path):
+                        self.__es_model = AMPL(Environment(ampl_path))
+                    else:
+                        ampl_uuid = os.getenv("AMPL_UUID")
+                        if ampl_uuid:
+                            print(f"[INFO] Activating AMPL license with UUID")
+                            modules.install("gurobi")
+                            modules.install("cplex")
+
+                            modules.activate(ampl_uuid)
+                        self.__es_model = AMPL()
                 except SystemError:
                     # Try to create the object a second time to prevent errors when starting `ampl_lic`
                     self.__es_model = AMPL()

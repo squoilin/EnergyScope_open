@@ -26,6 +26,9 @@ dependencies = [
     "SALib>=1.5.0,<2.0.0",
     "seaborn>=0.13.0,<1.0.0",
     "nbformat>=5.10.0,<6.0.0",
+    "amplpy>=0.14.0,<1.0.0",
+    "ipywidgets>=8.1.7,<9.0.0"
+
 ]
 
 classifiers = [
