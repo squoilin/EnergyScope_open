@@ -25,7 +25,9 @@ python scripts/ampl_model.py
 A high-performance implementation using PyOptInterface with support for multiple solvers (Gurobi, HiGHS):
 
 ```bash
+# Activate environment
 conda activate ESopen
+
 # Full model with ESTD dataset
 python scripts/pyoptinterface_full.py
 
@@ -41,15 +43,7 @@ python scripts/pyoptinterface_toy.py
 
 For more detailed information about the implementation status and performance comparisons, please refer to [MODEL_STATUS.md](MODEL_STATUS.md).
 
-## EnergyScope (original)
-
-For more detailed information, please refer to the full [documentation](https://library.energyscope.ch).
-
-------------------------------------------------------------------------
-
 ## Installation
-
-For detailed installation instructions, please refer to the [Getting Started Guide](https://library.energyscope.ch).
 
 ### Environment Setup
 
@@ -63,47 +57,26 @@ conda create -n ESopen python=3.11 -y
 conda activate ESopen
 ```
 
-### Basic Installation
+### Install This Modified Version
 
-To install the EnergyScope library with basic dependencies:
+This repository contains a modified version of EnergyScope with PyOptInterface support. Install it in development mode:
 
-``` bash
-pip install energyscope
-```
-
-### Installation with PyOptInterface Support
-
-To install with PyOptInterface support for open-source optimization:
+For a complete setup from scratch:
 
 ```bash
-# With both Gurobi and HiGHS support
-pip install energyscope[pyoptinterface]
-
-# With HiGHS only (open-source)
-pip install energyscope[pyoptinterface-highs]
-```
-
-### Installation with All Dependencies
-
-To install with all optional dependencies (Linopy, PyOptInterface, AMPL modules):
-
-``` bash
-pip install energyscope[all]
-```
-
-### Manual Installation
-
-Alternatively, you may clone the repository and install the package manually:
-
-```bash
-# Create and activate environment
+# 1. Create and activate environment
 conda create -n ESopen python=3.11 -y
 conda activate ESopen
 
-# Clone and install
+# 2. Clone this repository
 git clone https://github.com/squoilin/EnergyScope_open.git
 cd EnergyScope_open
-pip install .
+
+# 3. Install in development mode
+pip install -e .
+
+# 4. Install HiGHS solver (optional, for open-source optimization)
+conda install -c conda-forge highs -y
 ```
 
 **Note**: For PyOptInterface models, you'll need either:
