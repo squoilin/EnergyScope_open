@@ -3,6 +3,7 @@ Energyscope Full Model implemented in PyOptInterface.
 This implementation matches the AMPL model structure.
 """
 
+import time
 import pyoptinterface as poi
 from pyoptinterface import gurobi
 import pandas as pd
@@ -15,10 +16,16 @@ def build_and_run_full_model():
     print("="*70)
     print("Building and running PyOptInterface full model")
     print("="*70)
+    
+    # Start timing
+    t_start_total = time.time()
 
     # 1. Load data
+    print("\n[1/3] Loading data...")
+    t_data_start = time.time()
     data = create_full_dataset()
-    print("  Full ESTD data loaded.")
+    t_data = time.time() - t_data_start
+    print(f"  ✓ Data loaded in {t_data:.2f}s")
 
     # Extract sets and parameters
     TECHNOLOGIES = data['sets']['TECHNOLOGIES']
@@ -119,12 +126,23 @@ def build_and_run_full_model():
     vehicle_capacity = data['parameters'].get('vehicle_capacity', pd.Series()).to_dict() if 'vehicle_capacity' in data['parameters'] else {}
     batt_per_car = data['parameters'].get('batt_per_car', pd.Series()).to_dict() if 'batt_per_car' in data['parameters'] else {}
 
-    # 2. Create a model
+    # 2. Build model (variables + constraints)
+    print("\n[2/3] Building model (variables + constraints)...")
+    t_build_start = time.time()
+    
     model = gurobi.Model()
-    print("  Model created with Gurobi backend.")
+    
+    # Enable Gurobi output for real-time monitoring
+    model.set_model_attribute(poi.ModelAttribute.Silent, False)
+    
+    # Also set Gurobi-specific OutputFlag to ensure output is shown
+    try:
+        model.set_raw_parameter("OutputFlag", 1)  # 1 = enable output, 0 = disable
+        model.set_raw_parameter("LogToConsole", 1)  # Ensure logs go to console
+    except:
+        pass  # Older versions may not support this
 
     # 3. Define variables
-    print("  Creating variables...")
     
     # Main capacity variables
     F = {
@@ -205,16 +223,12 @@ def build_and_run_full_model():
     TotalCost = model.add_variable(lb=0, name="TotalCost")
     TotalGWP = model.add_variable(lb=0, name="TotalGWP")
 
-    print("  Variables created.")
-
     # 4. Add constraints
-    print("  Adding constraints...")
     
     # Constraint: Freight shares must sum to 1 [Eq. 2.26]
     model.add_linear_constraint(Share_freight_train + Share_freight_road + Share_freight_boat == 1)
     
     # Constraint: End-uses demand calculation [Eq. 2.8 / Figure 2.8]
-    print("    - End-uses demand calculation...")
     for l in LAYERS:
         for h in HOURS:
             for td in TYPICAL_DAYS:
@@ -274,7 +288,6 @@ def build_and_run_full_model():
                     model.add_linear_constraint(End_uses[l, h, td] == 0)
     
     # Constraint: Network losses [Eq. 2.20]
-    print("    - Network losses...")
     for eut in END_USES_TYPES:
         loss_pct = loss_network.get(eut, 0)
         if loss_pct > 0:
@@ -292,7 +305,6 @@ def build_and_run_full_model():
                     model.add_linear_constraint(Network_losses[eut, h, td] == 0)
     
     # Constraint: Hourly capacity factor [Eq. 2.10]
-    print("    - Hourly capacity factor...")
     for j in ALL_TECH:  # Applies to all technologies including storage
         for h in HOURS:
             for td in TYPICAL_DAYS:
@@ -301,7 +313,6 @@ def build_and_run_full_model():
     
     # Constraint: Yearly capacity factor [Eq. 2.11]
     # This limits total annual output to account for downtime and maintenance
-    print("    - Yearly capacity factor...")
     c_p = data['parameters'].get('c_p', pd.Series()).to_dict() if 'c_p' in data['parameters'] else {}
     for j in ALL_TECH:
         if j in c_p:
@@ -312,7 +323,6 @@ def build_and_run_full_model():
             model.add_linear_constraint(annual_output <= F[j] * c_p[j] * total_time)
 
     # Constraint: Layer balance [Eq. 2.13]
-    print("    - Layer balance...")
     for l in LAYERS:
         for h in HOURS:
             for td in TYPICAL_DAYS:
@@ -330,7 +340,6 @@ def build_and_run_full_model():
                 model.add_linear_constraint(balance_expr == End_uses[l, h, td])
 
     # Constraint: Resources availability [Eq. 2.12]
-    print("    - Resources availability...")
     for i in RESOURCES:
         if i in avail:
             if pd.isna(avail[i]) or avail[i] == float('inf'):
@@ -342,7 +351,6 @@ def build_and_run_full_model():
             model.add_linear_constraint(annual_consumption <= avail[i])
 
     # Constraint: Storage level [Eq. 2.14]
-    print("    - Storage level...")
     if STORAGE_TECH:
         for j in STORAGE_TECH:
             loss_rate = storage_losses.get(j, 0)
@@ -378,7 +386,6 @@ def build_and_run_full_model():
         
         # Constraint: Daily storage [Eq. 2.15]
         # For daily storage, level must equal F_t at each period
-        print("    - Daily storage...")
         for j in STORAGE_DAILY:
             for t in PERIODS:
                 h_td_for_t = [(h, td) for (p, h, td) in T_H_TD if p == t]
@@ -390,7 +397,6 @@ def build_and_run_full_model():
                 model.add_linear_constraint(Storage_level[j, t] == F_t[j, h, td])
         
         # Constraint: Seasonal storage level cannot exceed capacity [Eq. 2.16]
-        print("    - Seasonal storage capacity limit...")
         for j in STORAGE_TECH:
             if j not in STORAGE_DAILY:  # Only for seasonal storage
                 for t in PERIODS:
@@ -400,7 +406,6 @@ def build_and_run_full_model():
         # Using AMPL formulation: Storage * (ceil(eff) - 1) = 0
         # When eff=0: ceil(0)-1 = -1, so Storage * (-1) = 0 => Storage = 0
         # When eff>0: ceil(eff)-1 = 0, so Storage * 0 = 0 => always satisfied
-        print("    - Storage layer compatibility...")
         import math
         for j in STORAGE_TECH:
             for l in LAYERS:
@@ -420,7 +425,6 @@ def build_and_run_full_model():
                             model.add_linear_constraint(Storage_out[j, l, h, td] * coef_out == 0)
         
         # Constraint: Energy-to-power ratio [Eq. 2.19]
-        print("    - Energy-to-power ratio...")
         for j in STORAGE_TECH:
             # Skip EV batteries (they have special constraints in Eq. 2.19-bis)
             if j in EVs_BATT:
@@ -442,7 +446,6 @@ def build_and_run_full_model():
         
         # Constraint: Energy-to-power ratio for EV batteries [Eq. 2.19-bis]
         # This accounts for battery discharge to power the vehicle (F_t) in addition to V2G discharge
-        print("    - Energy-to-power ratio for EV batteries (V2G)...")
         if V2G and EVs_BATT_OF_V2G:
             for i in V2G:
                 if i not in EVs_BATT_OF_V2G:
@@ -477,7 +480,6 @@ def build_and_run_full_model():
                             )
     
     # Constraint: Operating strategy for passenger mobility [Eq. 2.24]
-    print("    - Operating strategy passenger mobility...")
     if 'MOBILITY_PASSENGER' in TECHNOLOGIES_OF_END_USES_CATEGORY and Shares_mobility_passenger:
         for j in TECHNOLOGIES_OF_END_USES_CATEGORY['MOBILITY_PASSENGER']:
             if j in TECH_NOSTORAGE:
@@ -488,7 +490,6 @@ def build_and_run_full_model():
                         model.add_linear_constraint(F_t[j, h, td] == Shares_mobility_passenger[j] * mob_pass_demand)
     
     # Constraint: Operating strategy for freight mobility [Eq. 2.25]
-    print("    - Operating strategy freight mobility...")
     if 'MOBILITY_FREIGHT' in TECHNOLOGIES_OF_END_USES_CATEGORY and Shares_mobility_freight:
         for j in TECHNOLOGIES_OF_END_USES_CATEGORY['MOBILITY_FREIGHT']:
             if j in TECH_NOSTORAGE:
@@ -499,7 +500,6 @@ def build_and_run_full_model():
                         model.add_linear_constraint(F_t[j, h, td] == Shares_mobility_freight[j] * mob_freight_demand)
     
     # Constraint: Extra grid [Eq. 2.21]
-    print("    - Extra grid...")
     c_grid_extra = data['parameters'].get('c_grid_extra', 0)
     if 'GRID' in ALL_TECH and c_grid_extra > 0:
         grid_tech = ['WIND_ONSHORE', 'WIND_OFFSHORE', 'PV']
@@ -508,7 +508,6 @@ def build_and_run_full_model():
         model.add_linear_constraint(F['GRID'] == 1 + (c_grid_extra / c_inv.get('GRID', 1)) * (grid_f - grid_f_min))
     
     # Constraint: Extra DHN [Eq. 2.22]
-    print("    - Extra DHN...")
     if 'DHN' in ALL_TECH:
         dhn_capacity = sum(
             layers_in_out.get((j, "HEAT_LOW_T_DHN"), 0) * F.get(j, 0)
@@ -518,12 +517,10 @@ def build_and_run_full_model():
         model.add_linear_constraint(F['DHN'] == dhn_capacity)
     
     # Constraint: Extra efficiency [Eq. 2.37]
-    print("    - Extra efficiency...")
     if 'EFFICIENCY' in ALL_TECH:
         model.add_linear_constraint(F['EFFICIENCY'] == 1 / (1 + i_rate))
     
     # Constraint: Solar area limited [Eq. 2.39]
-    print("    - Solar area limited...")
     solar_area = data['parameters'].get('solar_area', float('inf'))
     power_density_pv = data['parameters'].get('power_density_pv', 1)
     power_density_solar_thermal = data['parameters'].get('power_density_solar_thermal', 1)
@@ -539,7 +536,6 @@ def build_and_run_full_model():
         model.add_linear_constraint(pv_area + solar_thermal_area <= solar_area)
     
     # Constraint: Thermal solar capacity factor [Eq. 2.27]
-    print("    - Thermal solar capacity factor...")
     if F_solar and 'DEC_SOLAR' in ALL_TECH:
         for j in dec_heat_techs_no_solar:
             if j in F_solar:
@@ -549,13 +545,11 @@ def build_and_run_full_model():
                         model.add_linear_constraint(F_t_solar[j, h, td] <= F_solar[j] * cf_solar)
     
     # Constraint: Total thermal solar capacity [Eq. 2.28]
-    print("    - Total thermal solar capacity...")
     if F_solar and 'DEC_SOLAR' in ALL_TECH:
         total_solar = sum(F_solar.get(j, 0) for j in dec_heat_techs_no_solar if j in F_solar)
         model.add_linear_constraint(F['DEC_SOLAR'] == total_solar)
     
     # Constraint: Decentralized heating balance with thermal solar [Eq. 2.29]
-    print("    - Decentralized heating balance with thermal solar...")
     if TS_OF_DEC_TECH and Shares_lowT_dec:
         for j in dec_heat_techs_no_solar:
             if j not in TS_OF_DEC_TECH or j not in Shares_lowT_dec:
@@ -588,7 +582,6 @@ def build_and_run_full_model():
                     )
     
     # Constraint: EV storage sizing [Eq. 2.30]
-    print("    - EV storage sizing (V2G)...")
     if V2G and EVs_BATT_OF_V2G and vehicle_capacity and batt_per_car:
         for j in V2G:
             if j not in EVs_BATT_OF_V2G:
@@ -606,7 +599,6 @@ def build_and_run_full_model():
                 model.add_linear_constraint(F[i] == F[j] / veh_cap * batt_size)
     
     # Constraint: EV battery supplies vehicle demand (V2G) [Eq. 2.31]
-    print("    - EV battery supplies vehicle demand (V2G)...")
     if V2G and EVs_BATT_OF_V2G:
         for j in V2G:
             if j not in EVs_BATT_OF_V2G:
@@ -629,7 +621,6 @@ def build_and_run_full_model():
     
     # Constraint: fmax_perc and fmin_perc [Eq. 2.36]
     # These limit technology output as a percentage of total sector output
-    print("    - Technology percentage constraints...")
     fmax_perc = data['parameters'].get('fmax_perc', pd.Series()).to_dict() if 'fmax_perc' in data['parameters'] else {}
     fmin_perc = data['parameters'].get('fmin_perc', pd.Series()).to_dict() if 'fmin_perc' in data['parameters'] else {}
     
@@ -661,10 +652,7 @@ def build_and_run_full_model():
                 if j in fmin_perc and fmin_perc[j] > 0.0:
                     model.add_linear_constraint(tech_output >= fmin_perc[j] * total_output)
 
-    print("  Constraints added.")
-
     # 5. Define objective function
-    print("  Adding cost and GWP constraints and objective...")
     
     investment_total = sum(
         i_rate * (1 + i_rate)**lifetime[j] / ((1 + i_rate)**lifetime[j] - 1) * c_inv[j] * F[j] 
@@ -689,26 +677,39 @@ def build_and_run_full_model():
         model.add_linear_constraint(TotalGWP <= gwp_limit_param)
     
     model.set_objective(TotalCost, poi.ObjectiveSense.Minimize)
-    print("  Objective function set.")
-
-    # 6. Write model to file for inspection
-    print("\nWriting model to file for inspection...")
-    try:
-        model.write("pyopt_full_model.lp")
-        print("  Model written to pyopt_full_model.lp")
-    except:
-        print("  Could not write LP file")
     
+    t_build = time.time() - t_build_start
+    print(f"  ✓ Model built in {t_build:.2f}s")
+    
+    # Get model statistics
+    n_vars = len(F) + len(F_t) + len(Storage_in) + len(Storage_out) + len(Storage_level) + len(End_uses) + len(Network_losses) + len(Shares_mobility_passenger) + len(Shares_mobility_freight) + len(Shares_lowT_dec) + len(F_solar) + len(F_t_solar) + 7
+    print(f"    Variables: ~{n_vars:,}")
+    print(f"    F: {len(F):,}, F_t: {len(F_t):,}, Storage vars: {len(Storage_in) + len(Storage_out) + len(Storage_level):,}")
+
     # 6. Solve the model
-    print("\nSolving the model...")
+    print("\n[3/3] Solving with Gurobi...")
+    t_solve_start = time.time()
+    
+    # Set Gurobi parameters right before optimization
+    model.set_raw_parameter("OutputFlag", 1)
+    model.set_raw_parameter("DisplayInterval", 5)  # Show output every 5 seconds
+    
     model.optimize()
+    t_solve = time.time() - t_solve_start
 
     # 7. Print results
+    t_total = time.time() - t_start_total
+    
     term_status = model.get_model_attribute(poi.ModelAttribute.TerminationStatus)
     print("\n" + "="*70)
     print("RESULTS")
     print("="*70)
     print(f"  Termination status: {term_status}")
+    print(f"\n  TIMING SUMMARY:")
+    print(f"    Data loading:   {t_data:>8.2f}s ({100*t_data/t_total:>5.1f}%)")
+    print(f"    Model building: {t_build:>8.2f}s ({100*t_build/t_total:>5.1f}%)")
+    print(f"    Solving:        {t_solve:>8.2f}s ({100*t_solve/t_total:>5.1f}%)")
+    print(f"    TOTAL:          {t_total:>8.2f}s")
 
     if term_status == poi.TerminationStatusCode.OPTIMAL:
         obj_val = model.get_model_attribute(poi.ModelAttribute.ObjectiveValue)
