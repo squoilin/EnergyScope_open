@@ -7,10 +7,9 @@ from Equations 2.1-2.39 with optimizations for computational efficiency.
 
 import time
 import pyoptinterface as poi
-from pyoptinterface import gurobi
+from pyoptinterface import gurobi, highs
 import pandas as pd
 
-from energyscope.linopy_backend.data_loader_full import create_full_dataset
 
 def build_full_model(data, solver='gurobi', verbose=True, enable_output=True, timing=True):
     """
@@ -98,7 +97,7 @@ def build_full_model(data, solver='gurobi', verbose=True, enable_output=True, ti
     heating_time_series = data['parameters']['heating_time_series'].to_dict()
     mob_pass_time_series = data['parameters'].get('mob_pass_time_series', {})
     mob_freight_time_series = data['parameters'].get('mob_freight_time_series', {})
-    
+      
     # End uses input data
     end_uses_input = {}
     if 'end_uses_demand_year' in data['parameters']:
@@ -157,6 +156,8 @@ def build_full_model(data, solver='gurobi', verbose=True, enable_output=True, ti
     # Create model with specified solver
     if solver.lower() == 'gurobi':
         model = gurobi.Model()
+    elif solver.lower() == 'highs':
+        model = highs.Model()
     else:
         # Could add support for other solvers here
         raise ValueError(f"Unsupported solver: {solver}")
@@ -164,11 +165,18 @@ def build_full_model(data, solver='gurobi', verbose=True, enable_output=True, ti
     # Enable/disable solver output
     if enable_output:
         model.set_model_attribute(poi.ModelAttribute.Silent, False)
-        try:
-            model.set_raw_parameter("OutputFlag", 1)
-            model.set_raw_parameter("LogToConsole", 1)
-        except:
-            pass
+        # Set solver-specific output parameters
+        if solver.lower() == 'gurobi':
+            try:
+                model.set_raw_parameter("OutputFlag", 1)
+                model.set_raw_parameter("LogToConsole", 1)
+            except:
+                pass
+        elif solver.lower() == 'highs':
+            try:
+                model.set_raw_parameter("log_to_console", True)
+            except:
+                pass
     else:
         model.set_model_attribute(poi.ModelAttribute.Silent, True)
 
@@ -734,13 +742,19 @@ def build_full_model(data, solver='gurobi', verbose=True, enable_output=True, ti
     if timing:
         t_solve_start = time.time()
     
-    # Set solver-specific parameters
-    if enable_output and solver.lower() == 'gurobi':
-        try:
-            model.set_raw_parameter("OutputFlag", 1)
-            model.set_raw_parameter("DisplayInterval", 5)
-        except:
-            pass
+    # Set solver-specific parameters right before optimization
+    if enable_output:
+        if solver.lower() == 'gurobi':
+            try:
+                model.set_raw_parameter("OutputFlag", 1)
+                model.set_raw_parameter("DisplayInterval", 5)
+            except:
+                pass
+        elif solver.lower() == 'highs':
+            try:
+                model.set_raw_parameter("log_to_console", True)
+            except:
+                pass
     
     model.optimize()
     
